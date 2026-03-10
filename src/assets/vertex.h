@@ -5,13 +5,13 @@
 #include "../math/vec3.h"
 
 struct Vertex{
-    Vec3 position;
-    Vec3 normal;
-    Vec2 uv;
+    Vec3f position;
+    Vec3f normal;
+    Vec2f uv;
 
     Vertex() {}
 
-    Vertex(const Vec3& _position, const Vec3& _normal, const Vec2& _uv)
+    Vertex(const Vec3f& _position, const Vec3f& _normal, const Vec2f& _uv)
         : position(_position), normal(_normal), uv(_uv) {}
 };
 

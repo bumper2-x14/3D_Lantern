@@ -7,10 +7,10 @@
 
 class MD_Mesh {
     public:
-    
-    private:
         MeshData* data;
-    
+        void setupMD_Mesh();
+
+    private:      
         unsigned int VAO;
         unsigned int VBO;
         unsigned int EBO;
