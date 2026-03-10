@@ -58,6 +58,36 @@ class Mat4 {
             return matrix[col][row];
         }
 
+        Mat4<T>& operator=(const Mat4<T>& _m) const {
+            for (int i = 0; i < 4; i++){
+                for (int j = 0; j < 4; j++){
+                    matrix[i][j] = _m.matrix[i][j];
+                }
+            }
+        }
+
+        Vec4<T> operator*(const Vec4<T>& v) const {
+            return Vec4<T>(
+                (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z + (*this)(0,3)*v.w,
+                (*this)(1,0)*v.x + (*this)(1,1)*v.y + (*this)(1,2)*v.z + (*this)(1,3)*v.w,
+                (*this)(2,0)*v.x + (*this)(2,1)*v.y + (*this)(2,2)*v.z + (*this)(2,3)*v.w,
+                (*this)(3,0)*v.x + (*this)(3,1)*v.y + (*this)(3,2)*v.z + (*this)(3,3)*v.w
+            );
+        }
+
+        Vec3<T> operator*(const Vec3<T>& v) const {
+            return Vec3<T>(
+                (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z + (*this)(0,3),
+                (*this)(1,0)*v.x + (*this)(1,1)*v.y + (*this)(1,2)*v.z + (*this)(1,3),
+                (*this)(2,0)*v.x + (*this)(2,1)*v.y + (*this)(2,2)*v.z + (*this)(2,3)
+            );
+        }
+
+        Vec3<T> project(const Vec4<T>& v) const {
+            Vec4<T> r = (*this) * v;
+            return Vec3<T>(r.x / r.w, r.y / r.w, r.z / r.w);
+        }
+
         const T* data() const { return &matrix[0][0]; }
         
         T* data() { return &matrix[0][0]; }
@@ -156,46 +186,86 @@ class Mat4 {
 
         static Mat4<T> identity() { return Mat4(); }
 
-        static Mat4<T> translation(const Vec3<T>& tr) {
+        static Mat4<T> translation(const Vec3<T>& delta) {
             Mat4 m;
-            m(0, 3) = tr.x;
-            m(1, 3) = tr.y;
-            m(2, 3) = tr.z;
+            m(0, 3) = delta.x;
+            m(1, 3) = delta.y;
+            m(2, 3) = delta.z;
             return m;
         }
 
-        static Mat4<T> scale(const Vec3<T>& s) {
+        static Mat4<T> inverseTranslation(const Vec3<T>& delta) {
             Mat4 m;
-            m(0, 0) = s.x;
-            m(1, 1) = s.y;
-            m(2, 2) = s.z;
+            m(0, 3) = -delta.x;
+            m(1, 3) = -delta.y;
+            m(2, 3) = -delta.z;
             return m;
         }
 
-        static Mat4<T> rotationX(T radian) {
+        static Mat4<T> scale(const Vec3<T>& scale) {
             Mat4 m;
-            T radian_cos = std::cos(radian);
-            T radian_sin = std::sin(radian);
-            m(1, 1) =  radian_cos;  m(1, 2) = -radian_sin;
-            m(2, 1) =  radian_sin;  m(2, 2) =  radian_cos;
+            m(0, 0) = scale.x;
+            m(1, 1) = scale.y;
+            m(2, 2) = scale.z;
             return m;
         }
 
-        static Mat4 rotationY(T radian) {
+        static Mat4<T> inverseScale(const Vec3<T>& scale) {
             Mat4 m;
-            T radian_cos = std::cos(radian);
-            T radian_sin = std::sin(radian);
-            m(0, 0) =  radian_cos;  m(0, 2) =  radian_sin;
-            m(2, 0) = -radian_sin;  m(2, 2) =  radian_cos;
+            m(0, 0) = 1 / scale.x;
+            m(1, 1) = 1 / scale.y;
+            m(2, 2) = 1 / scale.z;
             return m;
         }
 
-        static Mat4 rotationZ(T radian) {
-            Mat4 m;
-            T radian_cos = std::cos(radian);
-            T radian_sin = std::sin(radian);
-            m(0, 0) =  radian_cos;  m(0, 1) = -radian_sin;
-            m(1, 0) =  radian_sin;  m(1, 1) =  radian_cos;
+        static Mat4<T> rotationX(T theta) {
+            Mat4<T> m;
+            T theta_cos = std::cos(theta);
+            T theta_sin = std::sin(theta);
+            m(1, 1) =  theta_cos;  m(1, 2) = -theta_sin;
+            m(2, 1) =  theta_sin;  m(2, 2) =  theta_cos;
+            return m;
+        }
+
+        static Mat4<T> rotationY(T theta) {
+            Mat4<T> m;
+            T theta_cos = std::cos(theta);
+            T theta_sin = std::sin(theta);
+            m(0, 0) =  theta_cos;  m(0, 2) =  theta_sin;
+            m(2, 0) = -theta_sin;  m(2, 2) =  theta_cos;
+            return m;
+        }
+
+        static Mat4<T> rotationZ(T theta) {
+            Mat4<T> m;
+            T theta_cos = std::cos(theta);
+            T theta_sin = std::sin(theta);
+            m(0, 0) =  theta_cos;  m(0, 1) = -theta_sin;
+            m(1, 0) =  theta_sin;  m(1, 1) =  theta_cos;
+            return m;
+        }
+
+        static Mat4<T> rotation(T theta, const Vec3<T>& axis) {
+            Vec3<T> a = normalize(axis);
+            T c = std::cos(theta);
+            T s = std::sin(theta);
+            T t = T(1) - c;
+
+            Mat4<T> m = Mat4<T>::zero();
+            // Column 0
+            m(0,0) = t*a.x*a.x + c;
+            m(1,0) = t*a.x*a.y + s*a.z;
+            m(2,0) = t*a.x*a.z - s*a.y;
+            // Column 1
+            m(0,1) = t*a.x*a.y - s*a.z;
+            m(1,1) = t*a.y*a.y + c;
+            m(2,1) = t*a.y*a.z + s*a.x;
+            // Column 2
+            m(0,2) = t*a.x*a.z + s*a.y;
+            m(1,2) = t*a.y*a.z - s*a.x;
+            m(2,2) = t*a.z*a.z + c;
+
+            m(3,3) = T(1);
             return m;
         }
 
@@ -209,19 +279,20 @@ class Mat4 {
             m(2, 3) = -(T(2) * far * near) / (far - near);
             m(3, 2) = -T(1);
             m(3, 3) =  T(0);
-        return m;
+            return m;
         }
 
-        static Mat4 lookAt(Vec3<T> eye, Vec3<T> target, Vec3<T> up) {
+        // Returns a world to camera lookAt matrix 
+        static Mat4 lookAt(const Vec3<T>& eye, const Vec3<T>& target, const Vec3<T>& up) {
             Vec3<T> f = normalize(target - eye);
             Vec3<T> r = normalize(cross(f, up));
             Vec3<T> u = cross(r, f);
 
             Mat4 m = Mat4::zero();
-            m(0, 0) =  r.x;  m(0, 1) =  r.y;  m(0, 2) =  r.z;  m(0, 3) = -dot(r, eye);
-            m(1, 0) =  u.x;  m(1, 1) =  u.y;  m(1, 2) =  u.z;  m(1, 3) = -dot(u, eye);
-            m(2, 0) = -f.x;  m(2, 1) = -f.y;  m(2, 2) = -f.z;  m(2, 3) =  dot(f, eye);
-            m(3, 3) =  T(1);
+            m(0,0) =  r.x;  m(0,1) =  r.y;  m(0,2) =  r.z;  m(0,3) = -dot(r, eye);
+            m(1,0) =  u.x;  m(1,1) =  u.y;  m(1,2) =  u.z;  m(1,3) = -dot(u, eye);
+            m(2,0) = -f.x;  m(2,1) = -f.y;  m(2,2) = -f.z;  m(2,3) =  dot(f, eye);
+            m(3,3) = T(1);
             return m;
         }
 

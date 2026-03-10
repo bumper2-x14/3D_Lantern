@@ -1,8 +1,100 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-class Transform {
+#include "mat4.h"
 
+class Transform {
+    public:
+        Transform(const Mat4f& _mat): mat(_mat) {
+            mat_inv = mat.inverseTRS();
+        }
+
+        Transform(const Mat4f& _mat, const Mat4f& _mat_inv): mat(_mat), mat_inv(_mat_inv) {}
+
+        Transform(const float (&_mat)[4][4]): mat(_mat) {
+            mat_inv = mat.inverseTRS();
+        }
+
+        Transform inverse() const {
+            return Transform(mat_inv, mat);
+        }
+
+        Transform operator*(const Transform& t) const {
+            return Transform(
+                            (mat * t.mat),
+                            (t.mat_inv * mat_inv)
+                        );
+        }
+
+        //================================================//
+
+        static Transform translate(const Vec3f& delta) {
+            return Transform(Mat4f::translation(delta), 
+                            Mat4f::inverseTranslation(delta)
+                        );
+        }
+
+        static Transform scale(const Vec3f& scalar) {
+            return Transform(Mat4f::scale(scalar),
+                            Mat4f::inverseScale(scalar)
+                        );
+        }
+
+        static Transform rotateX(const float theta) {
+            Mat4f m = Mat4f::rotationX(theta);
+            return Transform(m, m.transpose());
+        }
+
+        static Transform rotateY(const float theta) {
+            Mat4f m = Mat4f::rotationY(theta);
+            return Transform(m, m.transpose());
+        }
+
+        static Transform rotateZ(const float theta) {
+            Mat4f m = Mat4f::rotationZ(theta);
+            return Transform(m, m.transpose());
+        }
+
+        static Transform roate(const float theta, const Vec3f& axis){
+            Mat4f m = Mat4f::rotation(theta, axis);
+            return Transform(m, m.transpose());
+        }
+
+        // Transform::lookAt
+        // mat     = cameraToWorld — used in raytracing to transform rays from camera space into world space
+        // mat_inv = worldToCamera — used as the view matrix in OpenGL 
+        static Transform lookAt(const Vec3f& eye, const Vec3f& target, const Vec3f& up) {
+            Vec3f f = normalize(target - eye);
+            Vec3f r = normalize(cross(f, up));
+            Vec3f u = cross(r, f);
+
+            Mat4f camToWorld = Mat4f::zero();
+            camToWorld(0,0) =  r.x;  camToWorld(1,0) =  r.y;  camToWorld(2,0) =  r.z;
+            camToWorld(0,1) =  u.x;  camToWorld(1,1) =  u.y;  camToWorld(2,1) =  u.z;
+            camToWorld(0,2) = -f.x;  camToWorld(1,2) = -f.y;  camToWorld(2,2) = -f.z;
+            camToWorld(0,3) = eye.x; camToWorld(1,3) = eye.y; camToWorld(2,3) = eye.z;
+            camToWorld(3,3) = 1.0;
+
+            // worldToCamera: transpose R block, recompute translation (no full inverse needed)
+            Mat4f worldToCam = Mat4f::zero();
+            worldToCam(0,0) =  r.x;  worldToCam(0,1) =  r.y;  worldToCam(0,2) =  r.z;
+            worldToCam(1,0) =  u.x;  worldToCam(1,1) =  u.y;  worldToCam(1,2) =  u.z;
+            worldToCam(2,0) = -f.x;  worldToCam(2,1) = -f.y;  worldToCam(2,2) = -f.z;
+            worldToCam(0,3) = -dot(r, eye);
+            worldToCam(1,3) = -dot(u, eye);
+            worldToCam(2,3) =  dot(f, eye);
+            worldToCam(3,3) = 1.0;
+
+            return Transform(camToWorld, worldToCam);
+        }
+
+    private:
+        Mat4f mat, mat_inv;
 };
+
+
+inline Transform inverse(const Transform& t) {
+    return t.inverse();
+}
 
 #endif
