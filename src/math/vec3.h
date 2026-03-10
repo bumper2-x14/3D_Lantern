@@ -96,6 +96,9 @@ class Vec3 {
 
 };
 
+using Vec3f = Vec3<float>;
+using Vec3d = Vec3<double>;
+
 template <typename T>
 Vec3<T> operator*(T scalar, const Vec3<T>& v){
     return Vec3<T>(v.x * scalar, v.y * scalar, v.z * scalar);

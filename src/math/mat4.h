@@ -229,4 +229,7 @@ class Mat4 {
         T matrix[4][4];
 };
 
+using Mat4f = Mat4<float>;
+using Mat4d = Mat4<double>;
+
 #endif

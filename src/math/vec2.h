@@ -91,6 +91,9 @@ class Vec2 {
         }
 };
 
+using Vec2f = Vec2<float>;
+using Vec2d = Vec2<double>;
+
 template <typename T>
 Vec2<T> operator*(T scalar, const Vec2<T>& v){
     return Vec2<T>(v.x * scalar, v.y * scalar);
@@ -117,5 +120,8 @@ template <typename T>
 T distance(const Vec2<T>& a, const Vec2<T>& b){
     return (a - b).length();
 }
+
+using Vec2f = Vec2<float>;
+using Vec2d = Vec2<double>;
 
 #endif

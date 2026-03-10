@@ -62,4 +62,7 @@ public:
 
 };
 
+using Point3f = Point3<float>;
+using Point3d = Point3<double>; 
+
 #endif
