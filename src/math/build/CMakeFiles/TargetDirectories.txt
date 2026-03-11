@@ -1,0 +1,3 @@
+/home/etulyon1/L2-2/conception/3d-lantern/src/math/build/CMakeFiles/mat4.dir
+/home/etulyon1/L2-2/conception/3d-lantern/src/math/build/CMakeFiles/edit_cache.dir
+/home/etulyon1/L2-2/conception/3d-lantern/src/math/build/CMakeFiles/rebuild_cache.dir
