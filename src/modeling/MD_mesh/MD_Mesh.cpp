@@ -5,12 +5,16 @@
 #include "MD_Mesh.h"
 
 MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigned int>& _indice){
+    data = new MeshData;
     data->vertices = _vertices;
     data->indices = _indice;
 }
 
 MD_Mesh::MD_Mesh(const MeshData* _data){
-    //data=_data;
+    data = new MeshData(*_data);
+}
+MD_Mesh::~MD_Mesh(){
+    delete data;
 }
 
 void MD_Mesh::setupMD_Mesh(){
@@ -21,10 +25,10 @@ void MD_Mesh::setupMD_Mesh(){
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
+    glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex), data->vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indices.size() * sizeof(unsigned int), data->indices[0], GL_STATIC_DRAW);
 
     // vertex positions
     glEnableVertexAttribArray(0);	
