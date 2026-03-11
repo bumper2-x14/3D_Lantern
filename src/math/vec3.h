@@ -93,7 +93,6 @@ class Vec3 {
         T lengthSquared() const {
             return x*x + y*y + z*z;
         }
-
 };
 
 using Vec3f = Vec3<float>;

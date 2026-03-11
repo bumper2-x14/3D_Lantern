@@ -58,12 +58,13 @@ class Mat4 {
             return matrix[col][row];
         }
 
-        Mat4<T>& operator=(const Mat4<T>& _m) const {
+        Mat4<T>& operator=(const Mat4<T>& _m) {
             for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
                     matrix[i][j] = _m.matrix[i][j];
                 }
             }
+            return *this;
         }
 
         Vec4<T> operator*(const Vec4<T>& v) const {

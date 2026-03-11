@@ -1,10 +1,16 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
+#include <iostream>
+#include <cassert>
+#include <chrono>
+
 #include "mat4.h"
 
 class Transform {
     public:
+        Transform(): mat(Mat4f::identity()), mat_inv(Mat4f::identity()) {}
+
         Transform(const Mat4f& _mat): mat(_mat) {
             mat_inv = mat.inverseTRS();
         }
@@ -26,6 +32,21 @@ class Transform {
                         );
         }
 
+        template <typename T>
+        Vec4<T> operator*(const Vec4<T>& v) const {
+            return mat * v;
+        }
+        
+        template <typename T>
+        Vec3<T> operator*(const Vec3<T>& v) const {
+            return mat * v;
+        }
+
+        template <typename T>
+        Vec3<T> transformNormal(const Vec3<T>& n) const {
+            return mat_inv.transpose() * n;
+        }
+    
         //================================================//
 
         static Transform translate(const Vec3f& delta) {

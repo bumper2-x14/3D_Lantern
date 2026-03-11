@@ -59,7 +59,7 @@ const Interval<T> Interval<T>::universe = Interval(-std::numeric_limits<double>:
 
 template <typename T> 
 Interval<T> operator+(const Interval<T>& ival, double displacement){
-    return Interval(ival.min + displacement, ival.max + displacement);
+    return Interval<T>(ival.min + displacement, ival.max + displacement);
 }
 
 template <typename T> 

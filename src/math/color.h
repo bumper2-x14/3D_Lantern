@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include <iostream>
 #include <cstdint>
 #include <ostream>
 
@@ -86,9 +87,7 @@ class Color {
                 static_cast<uint8_t>(gcol.g * 255.0f),
                 static_cast<uint8_t>(gcol.b * 255.0f)
             };
-        }
-        
-
+        }            
 };
 
 inline Color operator*(float s, const Color& c) { return c * s; }
