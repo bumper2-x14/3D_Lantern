@@ -1,5 +1,5 @@
 #include <vector>
-
+#include <glad/glad.h>
 
 #include "assets/mesh_data.h"
 #include "assets/vertex.h"
@@ -26,10 +26,10 @@ void MD_Mesh::setupMD_Mesh(){
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex), data->vertices[0], GL_STATIC_DRAW);  
+    glBufferData(GL_ARRAY_BUFFER, data->vertices.size() * sizeof(Vertex), &data->vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indices.size() * sizeof(unsigned int), data->indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data->indices.size() * sizeof(unsigned int), &data->indices[0], GL_STATIC_DRAW);
 
     // vertex positions
     glEnableVertexAttribArray(0);	
@@ -37,7 +37,7 @@ void MD_Mesh::setupMD_Mesh(){
 
     // vertex normals
     glEnableVertexAttribArray(1);	
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
     glBindVertexArray(0);
 }
