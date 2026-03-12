@@ -1,10 +1,5 @@
 enable_testing()
 
-file(GLOB_RECURSE TEST_SOURCES "*.cpp")
-
-foreach(test_src ${TEST_SOURCES})
-    get_filename_component(test_name ${test_src} NAME_WE)
-    add_executable(${test_name} ${test_src})
-    target_link_libraries(${test_name} PRIVATE math)
-    add_test(NAME ${test_name} COMMAND ${test_name})
-endforeach()
+# Add subfolders
+add_subdirectory(math_test)
+add_subdirectory(modeling_test)

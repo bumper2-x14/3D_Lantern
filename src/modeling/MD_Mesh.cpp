@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <glad/glad.h>
 
@@ -90,4 +91,6 @@ void MD_Mesh::regressionTest(){
 
     bool succes = mesh.setupMD_Mesh();
     assert(succes);
+
+    std::cout<<"All MD_Mesh tests passed successfully\n";
 }
