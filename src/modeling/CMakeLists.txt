@@ -1,6 +1,10 @@
-#add_subdirectory(MD_light)
-#add_subdirectory(MD_renderer)
-#add_subdirectory(MD_shape)
-add_subdirectory(MD_camera)
-#add_subdirectory(MD_mesh)
-#add_subdirectory(MD_shader)
+add_library(modeling STATIC
+    MD_Mesh.cpp
+)
+
+target_include_directories(modeling PUBLIC ${CMAKE_SOURCE_DIR}/src)
+
+target_link_libraries(modeling PUBLIC
+    math
+    assets
+)

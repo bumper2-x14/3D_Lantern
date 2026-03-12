@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../../assets/mesh_data.h"
+#include "assets/mesh_data.h"
 
 class MD_Mesh{
     public:

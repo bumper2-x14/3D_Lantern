@@ -1,7 +1,8 @@
 #include <vector>
 
-#include "../../assets/mesh_data.h"
-#include "../../assets/vertex.h"
+
+#include "assets/mesh_data.h"
+#include "assets/vertex.h"
 #include "MD_Mesh.h"
 
 MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigned int>& _indice){
