@@ -14,6 +14,7 @@ MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigne
 MD_Mesh::MD_Mesh(const MeshData* _data){
     data = new MeshData(*_data);
 }
+
 MD_Mesh::~MD_Mesh(){
     delete data;
 }
