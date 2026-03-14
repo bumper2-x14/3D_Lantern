@@ -7,12 +7,12 @@
 #include "assets/vertex.h"
 
 class Sphere{
-     public : 
-        Sphere();
-        void draw_sphere();
+   public : 
+      Sphere();
+      void build_sphere();
 
-     private : 
-        MD_Mesh* mesh;
+   private : 
+      MD_Mesh mesh;
         
 };
 #endif 
