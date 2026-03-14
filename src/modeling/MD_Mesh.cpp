@@ -6,6 +6,8 @@
 #include "assets/vertex.h"
 #include "MD_Mesh.h"
 
+MD_Mesh::MD_Mesh(): data(nullptr) {}
+
 MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices,
                      const std::vector<unsigned int>& _indice){
     data = new MeshData;

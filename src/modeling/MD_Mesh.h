@@ -9,6 +9,7 @@ class MD_Mesh{
     public:
         MeshData* data;
         
+        MD_Mesh();
         MD_Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigned int>& _indice);
         MD_Mesh(const MeshData* _data);
 
