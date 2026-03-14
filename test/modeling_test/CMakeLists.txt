@@ -1,3 +1,5 @@
+find_package(SDL2 REQUIRED)
+
 file(GLOB TEST_SOURCES "*.cpp")
 
 foreach(test_src ${TEST_SOURCES})
