@@ -21,17 +21,17 @@ class MD_Camera {
         float getYaw();
         unsigned int getIdShader(); 
 
-        float getSensevity();
+        float getSensitivity()const;
 
-        void setSensevity(float sensevity);
-
-        Mat4f genLookAt();
-    
+        void setSensitivity(float sensitivity);
+        
+        Mat4f genLookAt()const;
+                            
         void setShader(int _idShader);
-
+        
         void update(bool w,bool s,bool a,bool d,
                         float xoffset,float yoffset,float speed);
-        void setView();
+        void setView()const;
 
         static void regressionTest();
     
@@ -39,9 +39,9 @@ class MD_Camera {
         Vec3f cameraPos;
         Vec3f cameraFront;
         Vec3f cameraUp;
-        float yaw=0;
+        float yaw=-90;
         float pitch=0;
-        float sensevity=0.50;
+        float sensitivity=0.50;
         unsigned int idShader;
 };
 #endif
