@@ -6,6 +6,8 @@
 #include <chrono>
 #include <cmath>
 
+#include "utility"
+
 template<typename T>
 class Vec4 {
     public:
@@ -99,6 +101,12 @@ inline Vec4<T> normalize(const Vec4<T>& v) {
     T len = v.length();
     assert (len != 0);
     return v / len;
+}
+
+template <typename T>
+inline Vec3<T> random(T min_r, T max_r) {
+    return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), 
+                    randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
 }
 
 #endif

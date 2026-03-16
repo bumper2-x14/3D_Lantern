@@ -22,14 +22,17 @@ inline int randomInt(int min, int max){
     return min + std::rand() % (max - min + 1);
 }
 
-
 inline float randomFloat(float min, float max){
     return min + (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX)) * (max - min);
 }
 
-
 inline double randomDouble(double min, double max) {
     return min + (static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX)) * (max - min);
+}
+
+template <typename T>
+inline double randomizer(T min, T max) {
+    return min + (static_cast<T>(std::rand()) / static_cast<T>(RAND_MAX)) * (max - min);
 }
 
 

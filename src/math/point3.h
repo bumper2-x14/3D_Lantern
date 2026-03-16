@@ -4,6 +4,8 @@
 #include <cassert>
 #include "vec3.h"
 
+#include "utility"
+
 template <typename T>
 class Point3 {
     public:
@@ -63,5 +65,10 @@ class Point3 {
 
 using Point3f = Point3<float>;
 using Point3d = Point3<double>; 
+
+template <typename T>
+inline Point3<T> random(T min_r, T max_r) {
+    return Point3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
+}
 
 #endif

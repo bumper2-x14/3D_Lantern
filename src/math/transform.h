@@ -11,13 +11,13 @@ class Transform {
     public:
         Transform(): mat(Mat4f::identity()), mat_inv(Mat4f::identity()) {}
 
-        Transform(const Mat4f& _mat): mat(_mat) {
+        explicit Transform(const Mat4f& _mat): mat(_mat) {
             mat_inv = mat.inverseTRS();
         }
 
         Transform(const Mat4f& _mat, const Mat4f& _mat_inv): mat(_mat), mat_inv(_mat_inv) {}
 
-        Transform(const float (&_mat)[4][4]): mat(_mat) {
+        explicit Transform(const float (&_mat)[4][4]): mat(_mat) {
             mat_inv = mat.inverseTRS();
         }
 
@@ -44,9 +44,13 @@ class Transform {
 
         template <typename T>
         Vec3<T> transformNormal(const Vec3<T>& n) const {
-            return mat_inv.transpose() * n;
+            return normaliz1e(mat_inv.transpose() * n);
         }
     
+
+        const Mat4f& getMatrix()        const { return mat;     }
+        const Mat4f& getInverseMatrix() const { return mat_inv; }
+
         //================================================//
 
         static Transform translate(const Vec3f& delta) {
@@ -61,22 +65,22 @@ class Transform {
                         );
         }
 
-        static Transform rotateX(const float theta) {
+        static Transform rotateX(float theta) {
             Mat4f m = Mat4f::rotationX(theta);
             return Transform(m, m.transpose());
         }
 
-        static Transform rotateY(const float theta) {
+        static Transform rotateY(float theta) {
             Mat4f m = Mat4f::rotationY(theta);
             return Transform(m, m.transpose());
         }
 
-        static Transform rotateZ(const float theta) {
+        static Transform rotateZ(float theta) {
             Mat4f m = Mat4f::rotationZ(theta);
             return Transform(m, m.transpose());
         }
 
-        static Transform roate(const float theta, const Vec3f& axis){
+        static Transform rotate(float theta, const Vec3f& axis){
             Mat4f m = Mat4f::rotation(theta, axis);
             return Transform(m, m.transpose());
         }
@@ -117,5 +121,6 @@ class Transform {
 inline Transform inverse(const Transform& t) {
     return t.inverse();
 }
+
 
 #endif

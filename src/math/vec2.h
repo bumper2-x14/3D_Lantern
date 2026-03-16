@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cmath>
 
+#include "utility.h"
+
 template<typename T>
 class Vec2 {
     public:
@@ -117,11 +119,13 @@ inline Vec2<T> normalize(const Vec2<T>& v) {
 }
 
 template <typename T>
-T distance(const Vec2<T>& a, const Vec2<T>& b){
+inline T distance(const Vec2<T>& a, const Vec2<T>& b){
     return (a - b).length();
 }
 
-using Vec2f = Vec2<float>;
-using Vec2d = Vec2<double>;
+template <typename T>
+inline Vec2<T> random(T min_r, T max_r) {
+    return Vec2<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
+} 
 
 #endif
