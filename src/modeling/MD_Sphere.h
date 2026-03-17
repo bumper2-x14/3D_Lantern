@@ -15,7 +15,7 @@ class Sphere : public MD_Shape{
       void applyTransform(Transform* transform) override;
 
    private : 
-      MD_Mesh mesh;
+
       float longitude_seg;
       float latitude_seg;
 

@@ -56,7 +56,10 @@ void Sphere::buildShape(){
 }
 
 void Sphere::applyTransform(Transform* transform){
-    for (int i=0 ; i < mesh.data->vertices.size() ; i++){
-        mesh.data->vertices[i].position *= transform.mat; 
+    //for (int i=0 ; i < mesh.data->vertices.size() ; i++)
+    for (auto& v : mesh.data->vertices){
+        v.position = transform->mat * v.position;
+        v.normal = transform->transformNormal(v.normal);
     }
 }
+
