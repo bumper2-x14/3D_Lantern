@@ -9,11 +9,11 @@ class MD_Camera {
         public:
         //constructors
         MD_Camera();
-        MD_Camera(const &Vec3f _cameraPos);   
-        MD_Camera(const &Vec3f _cameraPos, const &Vec3f _cameraFront);
-        MD_Camera(float x, float y, float z, Vec3f _cameraFront);
-        MD_Camera(float x, float y, float z, float dx, float dy, float dz);
-        MD_Camera(const &Vec3f _cameraPos,float dx,float dy,float dz);
+        MD_Camera( const Vec3f& _cameraPos);   
+        MD_Camera( const Vec3f& _cameraPos, const Vec3f& _cameraFront);
+        MD_Camera( float x, float y, float z, const Vec3f& _cameraFront);
+        MD_Camera( float x, float y, float z, float dx, float dy, float dz);
+        MD_Camera( const Vec3f& _cameraPos, float dx, float dy, float dz);
 
 
         Vec3f getCameraPos();
@@ -25,7 +25,7 @@ class MD_Camera {
 
 
         float getSensitivity()const;
-        void setSensitivity(float sensitivity);
+        void setSensitivity( float sensitivity);
         
         //to generate the lookAt matrices
         Mat4f genLookAt()const;
@@ -35,7 +35,7 @@ class MD_Camera {
         void setShader(int _idShader);
 
         //change our camera object variable so that it moves around and looks around
-        void update(bool w ,bool s ,bool a ,bool d ,
+        void update( bool w ,bool s ,bool a ,bool d ,
                         float xoffset ,float yoffset ,float speed );
         
         //generates and puts the look at matrice in shader uniform
