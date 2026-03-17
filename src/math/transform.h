@@ -9,6 +9,10 @@
 
 class Transform {
     public:
+        Mat4f mat, mat_inv;
+
+        //==================================================================//
+
         Transform(): mat(Mat4f::identity()), mat_inv(Mat4f::identity()) {}
 
         explicit Transform(const Mat4f& _mat): mat(_mat) {
@@ -112,9 +116,6 @@ class Transform {
 
             return Transform(camToWorld, worldToCam);
         }
-
-    private:
-        Mat4f mat, mat_inv;
 };
 
 
