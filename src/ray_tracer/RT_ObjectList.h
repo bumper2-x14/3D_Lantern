@@ -15,7 +15,7 @@ class RT_ObjectList : public RT_Object {
         bool empty() const;
         int size() const;
 
-        bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) override;  
+        bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec)const override;  
         
     private:
         std::vector<RT_Object*> objects;

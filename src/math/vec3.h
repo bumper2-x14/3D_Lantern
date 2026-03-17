@@ -146,7 +146,7 @@ inline Vec3<T> random(T min_r, T max_r) {
 template <typename T>
 inline Vec3<T> UnitDiskRandom() {
     while(true) {
-        Vec3<T> p = Vec3<T>(randomizer(-1, 1), randomizer(-1, 1), 0);
+        Vec3<T> p = Vec3<T>(randomizer<T>(-1, 1), randomizer<T>(-1, 1), 0);
         if (p.lengthSquared() < 1)
             return p;
     }
