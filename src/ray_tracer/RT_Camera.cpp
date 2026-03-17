@@ -17,11 +17,10 @@ void RT_Camera::initialize(float aspect_ratio, int width, int samples_per_pix) {
 
     // Stratified sampling: divide pixel into sqrt_spp × sqrt_spp sub-cells
     sqrt_spp = int(std::sqrt(samples_per_pix));
-    
-    //recip_sqrt_spp = 1.0 / sqrt_spp; // TODO: Will be moved to RT_Renderer
+    recip_sqrt_spp = 1.0 / sqrt_spp; 
 
     // Weight for averaging accumulated sample colors
-    double sample_scale = 1.0 / samples_per_pix;
+    // double sample_scale = 1.0 / samples_per_pix; //// TODO: Will be moved to RT_Renderer
     
     // Calculate camera basis vectors
     w = normalize(center - lookAt);

@@ -10,11 +10,11 @@ struct RT_Record {
     Point3d p;
     Vec3d normal;
     double t;
-    bool is_front_faced;
+    bool front_face;
 
     void setNormal(const Rayd& ray, const Vec3d& outward_normal){
-        is_front_faced = dot(ray.getDirection(), outward_normal) < 0;
-        normal = is_front_faced ? outward_normal : -outward_normal;
+        front_face = dot(ray.getDirection(), outward_normal) < 0;
+        normal = front_face ? outward_normal : -outward_normal;
     }
 };
 
