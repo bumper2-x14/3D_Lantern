@@ -3,13 +3,16 @@
 
 #include <vector>
 
+#include "MD_Shape.h"
 #include "MD_Mesh.h"
 #include "assets/vertex.h"
 
-class Sphere{
+
+class Sphere : public MD_Shape{
    public : 
       Sphere(float _longtitude_seg, float _latitude_seg);
-      void buildSphere();
+      void buildShape() override;
+      void applyTransform(Transform* transform) override;
 
    private : 
       MD_Mesh mesh;

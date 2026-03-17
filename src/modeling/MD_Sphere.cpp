@@ -5,11 +5,11 @@
 #include "assets/vertex.h"
 
 Sphere::Sphere(float _longtitude_seg = 25, float _latitude_seg = 25) {
-    buildSphere();
+    buildShape();
     mesh.setupMD_Mesh();
 }
 
-void Sphere::buildSphere(){
+void Sphere::buildShape(){
     
     float delta1 = M_PI /(2.0 * latitude_seg );
     float delta2 = (2 * M_PI) / longitude_seg;
@@ -53,4 +53,10 @@ void Sphere::buildSphere(){
         }
     }
 
+}
+
+void Sphere::applyTransform(Transform* transform){
+    for (int i=0 ; i < mesh.data->vertices.size() ; i++){
+        mesh.data->vertices[i].position *= transform.mat; 
+    }
 }
