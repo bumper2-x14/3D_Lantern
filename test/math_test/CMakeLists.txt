@@ -5,4 +5,14 @@ foreach(test_src ${TEST_SOURCES})
     add_executable(${test_name} ${test_src})
     target_link_libraries(${test_name} PRIVATE math)
     add_test(NAME ${test_name} COMMAND ${test_name})
+    
+    # Register Valgrind-wrapped test if Valgrind is available
+    if(VALGRIND_EXECUTABLE)
+        add_test(NAME ${test_name}_valgrind
+                 COMMAND ${VALGRIND_EXECUTABLE}
+                         --leak-check=full
+                         --track-origins=yes
+                         --error-exitcode=1
+                         $<TARGET_FILE:${test_name}>)
+    endif()
 endforeach()
