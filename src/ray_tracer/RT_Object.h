@@ -22,7 +22,7 @@ class RT_Object {
     public:
         virtual ~RT_Object() = default;    
 
-        virtual bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const;
+        virtual bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const = 0;
 };
 
 #endif

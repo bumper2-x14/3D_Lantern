@@ -53,9 +53,9 @@ using Intervald = Interval<double>;
 
 
 template <typename T> 
-const Interval<T> Interval<T>::empty = Interval(+std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+const Interval<T> Interval<T>::empty = Interval(+std::numeric_limits<T>::infinity(), -std::numeric_limits<T>::infinity());
 template <typename T>
-const Interval<T> Interval<T>::universe = Interval(-std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity());
+const Interval<T> Interval<T>::universe = Interval(-std::numeric_limits<T>::infinity(), +std::numeric_limits<T>::infinity());
 
 template <typename T> 
 Interval<T> operator+(const Interval<T>& ival, double displacement){

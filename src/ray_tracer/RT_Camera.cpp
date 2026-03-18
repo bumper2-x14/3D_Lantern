@@ -1,7 +1,8 @@
 #include <cmath>
+#include <cassert>
 
-#include "RT_Camera.h"
 #include "math/utility.h"
+#include "RT_Camera.h"
 
 RT_Camera::RT_Camera() {}
 
@@ -11,10 +12,7 @@ RT_Camera::RT_Camera(const Point3d& _center, const Point3d& _lookAt, const Vec3d
         defocus_angle(_defocus_angle), focus_distance(_focus_distance) {}
 
 
-void RT_Camera::initialize(float aspect_ratio, int width, int samples_per_pix) {
-    int height = int(width / aspect_ratio);
-    height = (height < 1) ? 1 : height;
-
+void RT_Camera::initialize(float aspect_ratio, int width, int height, int samples_per_pix) {
     // Stratified sampling: divide pixel into sqrt_spp × sqrt_spp sub-cells
     sqrt_spp = int(std::sqrt(samples_per_pix));
     recip_sqrt_spp = 1.0 / sqrt_spp; 
@@ -81,4 +79,38 @@ Rayd RT_Camera::generateRay(int i, int j, int inner_i, int inner_j) const {
     double ray_time = randomDouble(0, 1);
     
     return Rayd(ray_orig, ray_dir, ray_time);
+}
+
+void RT_Camera::regressionTest() {
+    // Test default constructor
+    RT_Camera cam1;
+    assert(cam1.center == Point3d(0, 0, 0));
+    assert(cam1.lookAt == Point3d(0, 0, -1));
+    assert(cam1.view_up == Vec3d(0, 1, 0));
+    assert(cam1.vertical_fov == 90);
+    assert(cam1.defocus_angle == 0);
+    assert(cam1.focus_distance == 10);
+
+    // Test parameterized constructor
+    RT_Camera cam2(
+        Point3d(0, 0, 0),
+        Point3d(0, 0, -1),
+        Vec3d(0, 1, 0),
+        90.0, 0.0, 10.0
+    );
+
+    // Test initialize sets derived members correctly
+    cam2.initialize(16.0/9.0, 800, 450, 4);
+    assert(cam2.sqrt_spp == 2);
+    assert(std::abs(cam2.recip_sqrt_spp - 0.5) < 1e-6);
+
+    // Test generateRay returns non-degenerate ray
+    Rayd ray = cam2.generateRay(0, 0, 0, 0);
+    assert(ray.getDirection().length() > 0);
+
+    // Center pixel should point roughly toward -Z
+    Rayd center_ray = cam2.generateRay(400, 225, 0, 0);
+    assert(dot(normalize(center_ray.getDirection()), Vec3d(0, 0, -1)) > 0.9);
+
+    std::cout << "All RT_Camera tests passed successfully\n";
 }

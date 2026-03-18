@@ -4,7 +4,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 
+template <typename T> double infinity = std::numeric_limits<T>::infinity();
 
 constexpr double PI = 3.14159265358979323846;
 

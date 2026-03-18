@@ -104,8 +104,8 @@ inline Vec4<T> normalize(const Vec4<T>& v) {
 }
 
 template <typename T>
-inline Vec3<T> random(T min_r, T max_r) {
-    return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), 
+inline Vec4<T> random(T min_r, T max_r) {
+    return Vec4<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), 
                     randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
 }
 

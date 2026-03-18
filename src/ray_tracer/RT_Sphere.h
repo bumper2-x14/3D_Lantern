@@ -12,6 +12,8 @@ class RT_Sphere : public RT_Object {
         // TODO
         // getSphereUV(double u, double v) ...
 
+        static void regressionTest();
+
     private:
         Point3d center;
         double radius;

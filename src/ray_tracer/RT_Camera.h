@@ -12,8 +12,10 @@ class RT_Camera {
         RT_Camera(const Point3d& _center, const Point3d& _lookAt, const Vec3d& _view_up, 
                     double _vertical_fov, double _defocus_angle, double _focus_distance);
 
-        void initialize(float aspect_ratio, int width, int samples_per_pix);
-        
+        void initialize(float aspect_ratio, int width, int height, int samples_per_pix);
+        Rayd generateRay(int i, int j, int inner_i, int inner_j) const;
+
+        static void regressionTest();
 
     private:
         Point3d center = Point3d(0,0,0); // Camera position in the scene
@@ -35,12 +37,11 @@ class RT_Camera {
         Vec3d defocus_disk_u;        // Defocus disk horizontal radius
         Vec3d defocus_disk_v;        // Defocus disk vertical radius
 
-        // Functions
 
-        Rayd generateRay(int i, int j, int inner_i, int inner_j) const;
         Vec3d sampleStartifiedPixel(int inner_i, int inner_j) const;
         Vec3d samplePixel(int i, int j) const;
         Point3d defocusDiskSample() const; 
+
 };
 
 #endif

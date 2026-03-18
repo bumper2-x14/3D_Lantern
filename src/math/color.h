@@ -50,6 +50,16 @@ class Color {
             return *this; 
         }
 
+        Color operator-=(const Color& c) { 
+            r-=c.r; g-=c.g; b-=c.b; 
+            return *this; 
+        }
+
+        Color operator/=(float s) {
+             r/=s; g/=s; b/=s; 
+             return *this; 
+        }
+
         static Color lerp(const Color& a, const Color& b, float t) {
             return a * (1.0f - t) + b * t;
         }
@@ -92,10 +102,12 @@ class Color {
 
 inline Color operator*(float s, const Color& c) { return c * s; }
 
+inline float checkNaN(float v) { return std::isnan(v) ? 0.0f : v; }
+
 inline void writeColor(std::ostream& out, const Color& color) {
-    //TODO: Replace NaN components with zero.
-    RGB c = color.toRGB();
-    out << c.r << ' ' << c.g << ' ' << c.b << '\n';
+    Color safe(checkNaN(color.r), checkNaN(color.g), checkNaN(color.b));
+    RGB c = safe.toRGB();
+    out << (int)c.r << ' ' << (int)c.g << ' ' << (int)c.b << '\n';
 }
 
 #endif

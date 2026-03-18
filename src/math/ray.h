@@ -8,6 +8,8 @@ template <typename T>
 class Ray {
     public:
         Ray() {}
+        Ray(const Point3<T>& _origin, const Vec3<T>& _direction): Ray(_origin, _direction, 0.0) {}
+            
         Ray(const Point3<T>& _origin, const Vec3<T>& _direction, double _time):
             origin(_origin), direction(_direction), time(_time) {}
 

@@ -36,6 +36,12 @@ class Transform {
                         );
         }
 
+        Transform& operator*=(const Transform& t) {
+            mat = mat * t.mat;
+            mat_inv = t.mat_inv * mat_inv;
+            return *this;
+        }
+
         template <typename T>
         Vec4<T> operator*(const Vec4<T>& v) const {
             return mat * v;
