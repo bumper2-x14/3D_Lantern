@@ -115,14 +115,14 @@ void RT_Renderer::regressionTest() {
     RT_Sphere sphere(Point3d(0, 0, -1), 0.5);
     scene2.add(&sphere);
 
-    RT_Renderer renderer3(100, 16.0/9.0, 4, 10);
+    RT_Renderer renderer3(800, 16.0/9.0, 4, 10);
     renderer3.setCamera(&cam2);
     renderer3.setScene(&scene2);
     renderer3.setBackground(Color(0.5, 0.7, 1.0));
     renderer3.render();
 
     // Check buffer was written — center pixel should not be black (hits sphere)
-    int cx = 50, cy = renderer3.img_height / 2;
+    int cx = 400, cy = renderer3.img_height / 2;
     Color center = renderer3.img_buffer[cy * renderer3.img_width + cx];
     assert(center.r > 0 || center.g > 0 || center.b > 0);
 

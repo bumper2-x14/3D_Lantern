@@ -5,7 +5,10 @@ project(3D_lantern LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Enabled for code execution and memory testing
 enable_testing()  
+
 add_subdirectory(external)
 add_subdirectory(src)
 add_subdirectory(test)
