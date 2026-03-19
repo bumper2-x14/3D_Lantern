@@ -94,5 +94,14 @@ void MD_Mesh::regressionTest(){
     bool succes = mesh.setupMD_Mesh();
     assert(succes);
 
+    MeshData original(v,i);
+    MD_Mesh mesh2(&original);
+
+    assert(mesh2.data != nullptr);
+    assert(mesh2.data->vertices.size() == original.vertices.size());
+    assert(mesh2.data->indices.size() == original.indices.size());
+    assert(mesh2.data->indices[0] == original.indices[0]);
+    //deep copy check
+    assert(mesh2.data != &original); 
     std::cout<<"All MD_Mesh tests passed successfully\n";
 }

@@ -13,7 +13,8 @@ class Sphere : public MD_Shape{
       Sphere(float _longtitude_seg, float _latitude_seg);
       void buildShape() override;
       void applyTransform(Transform* transform) override;
-
+      static void regressionTest();
+      
    private : 
 
       float longitude_seg;

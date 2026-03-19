@@ -52,7 +52,6 @@ void Sphere::buildShape(){
 
         }
     }
-
 }
 
 void Sphere::applyTransform(Transform* transform){
@@ -61,5 +60,29 @@ void Sphere::applyTransform(Transform* transform){
         v.position = transform->mat * v.position;
         v.normal = transform->transformNormal(v.normal);
     }
+}
+
+void Sphere::regressionTest(){
+    Sphere sphereTest(10, 10);
+
+    assert(sphereTest.getMesh().data != nullptr && "Mesh data is null");
+
+    assert(sphereTest.getMesh().data->indices.empty() && "Indices list is empty");
+    assert(sphereTest.getMesh().data->vertices.empty() && "Vertex list is empty");
+    
+    const Vertex& vInitial = sphereTest.mesh.data->vertices[0];
+    float len = std::sqrt(
+                    vInitial.position.x * vInitial.position.x +
+                    vInitial.position.y * vInitial.position.y +
+                    vInitial.position.z * vInitial.position.z);
+    
+    assert((len - 1.0) < 0.001f && "First vertex is not on the unit sphere");  
+
+    Transform tr = Transform::translate(Vec3f(1.0f, 0.0f, 0.0f));
+    sphereTest.applyTransform(&tr);
+    Vertex vAfter = sphereTest.mesh.data->vertices[0];
+    assert(std::abs(vAfter.position.x - (vInitial.position.x + 1.0f)) < 0.001f &&
+       "Translation on X axis failed");
+
 }
 

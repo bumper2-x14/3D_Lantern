@@ -14,6 +14,7 @@ class MeshData {
         MeshData();
         MeshData(const std::vector<Vertex>& _vertices, const std::vector<unsigned int>& _indice);
 
+        static void regressionTest();
 };
 
 #endif
