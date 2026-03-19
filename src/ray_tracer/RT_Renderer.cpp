@@ -4,6 +4,8 @@
 #include "RT_Renderer.h"
 #include "math/utility.h"
 #include "RT_Lambertian.h"
+#include "RT_Dielectric.h"
+#include "RT_Metalic.h"
 
 RT_Renderer::RT_Renderer(int _width, double _aspect_ratio, int _samples_per_pixel, int _depth):
     camera(nullptr), scene(nullptr), background(Color(0,0,0)),img_width(_width), 
@@ -112,10 +114,10 @@ void RT_Renderer::regressionTest() {
     );
 
     // Materials
-    RT_Lambertian mat_center(Color(0.4, 0.4, 0.8));
+    RT_Metalic mat_center(Color(0.4, 0.4, 0.8), 0);
     RT_Lambertian mat_left  (Color(0.8, 0.3, 0.3));
-    RT_Lambertian mat_right (Color(0.3, 0.8, 0.3));
-    RT_Lambertian mat_small (Color(0.8, 0.8, 0.3));
+    RT_Dielecric mat_right (1.490);
+    RT_Metalic mat_small (Color(0.8, 0.8, 0.3), 0.6);
     RT_Lambertian mat_ground(Color(0.7, 0.6, 0.5));
 
     // Spheres

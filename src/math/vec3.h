@@ -160,10 +160,12 @@ inline Vec3<T> UnitDiskRandom() {
 template <typename T>
 inline Vec3<T> randomUnitVector() {
     while (true) {
-        Vec3<T> p = random<T>((T)-1, (T)1);
+        Vec3<T> p(randomizer<T>(T(-1), T(1)),
+                  randomizer<T>(T(-1), T(1)),
+                  randomizer<T>(T(-1), T(1)));
         T lensq = p.lengthSquared();
-        if (1e-160 < lensq && lensq <= 1)
-            return p / sqrt(lensq);
+        if (T(1e-160) < lensq && lensq <= T(1))
+            return p / std::sqrt(lensq);
     }
 }
 
@@ -176,5 +178,17 @@ inline Vec3<T> randomOnHemisphere(const Vec3<T>& normal) {
         return -unit_vec;
 }
 
+template <typename T>
+inline Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& normal) {
+    return v - 2 * dot(v, normal) * normal;
+}
+
+template <typename T>
+inline Vec3<T> refract (const Vec3<T>& uv, const Vec3<T>& n, T eta_ratio) {
+    T cos_theta = std::min(dot(-uv, n), T(1));
+    Vec3<T> r_perp = eta_ratio * (uv + cos_theta * n);
+    Vec3<T> r_para = -std::sqrt(std::abs(T(1) - r_perp.lengthSquared())) * n;
+    return r_perp + r_para;
+}
 
 #endif
