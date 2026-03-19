@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "utility"
+#include "utility.h"
 
 template <typename T>
 class Vec3 {
@@ -95,6 +95,11 @@ class Vec3 {
         T lengthSquared() const {
             return x*x + y*y + z*z;
         }
+
+        bool nearZero() const {
+            auto s = 1e-8;
+            return (std::abs(x) < s) && (std::abs(y) < s) && (std::abs(z) < s);
+        }
 };
 
 using Vec3f = Vec3<float>;
@@ -151,5 +156,25 @@ inline Vec3<T> UnitDiskRandom() {
             return p;
     }
 }
+
+template <typename T>
+inline Vec3<T> randomUnitVector() {
+    while (true) {
+        Vec3<T> p = random<T>((T)-1, (T)1);
+        T lensq = p.lengthSquared();
+        if (1e-160 < lensq && lensq <= 1)
+            return p / sqrt(lensq);
+    }
+}
+
+template <typename T>
+inline Vec3<T> randomOnHemisphere(const Vec3<T>& normal) {
+    Vec3<T> unit_vec = randomUnitVector<T>();
+    if (dot(unit_vec, normal) > 0.0) 
+        return unit_vec;
+    else
+        return -unit_vec;
+}
+
 
 #endif

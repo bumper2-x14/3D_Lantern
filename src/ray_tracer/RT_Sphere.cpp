@@ -1,9 +1,10 @@
 #include <iostream>
 #include <cassert>
 #include "RT_Sphere.h"
+#include "RT_Lambertian.h"
 
-RT_Sphere::RT_Sphere(const Point3d& _center, double _radius): 
-    center(_center), radius(_radius) {}
+RT_Sphere::RT_Sphere(const Point3d& _center, double _radius, RT_Material* _material): 
+    center(_center), radius(_radius), material(_material) {}
 
 bool RT_Sphere::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     Vec3d oc = ray.getOrigin() - center; ; // Calculate the vector from ray origin to the center of the sphere
@@ -31,13 +32,15 @@ bool RT_Sphere::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Re
     rec.t = root;
     Vec3d out_normal = (rec.p - center) / radius;
     rec.setNormal(ray, out_normal); 
+    rec.material = material;
 
     return true;
 }
 
 void RT_Sphere::regressionTest() {
     // Test constructor
-    RT_Sphere sphere(Point3d(0, 0, -1), 0.5);
+    RT_Lambertian mat(Color(0.0, 20.0, 150.0));
+    RT_Sphere sphere(Point3d(0, 0, -1), 0.5, &mat);
     assert(sphere.center == Point3d(0, 0, -1));
     assert(sphere.radius == 0.5);
 

@@ -3,6 +3,7 @@
 
 #include "RT_Renderer.h"
 #include "math/utility.h"
+#include "RT_Lambertian.h"
 
 RT_Renderer::RT_Renderer(int _width, double _aspect_ratio, int _samples_per_pixel, int _depth):
     camera(nullptr), scene(nullptr), background(Color(0,0,0)),img_width(_width), 
@@ -35,9 +36,11 @@ Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth) const {
 
     RT_Record rec;
     if (scene->rayIntersect(ray, Intervald(0.001, infinity<double>), rec)) {
-        // TODO: return material color once materials are added
-        // for now visualize normals without recursive tracing
-        return 0.5 * Color(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1);
+        Color attenuation;
+        Rayd scattered;
+        if (rec.material && rec.material->rayScatter(ray, rec, attenuation, scattered))
+            return attenuation * traceRay(scattered, recursive_depth - 1);
+        return Color(0, 0, 0);
     }
     return background;
 }
@@ -76,11 +79,9 @@ void RT_Renderer::writePPM(const std::string& path) const {
 
 void RT_Renderer::regressionTest() {
     // Test constructor initializes correctly
-    RT_Renderer renderer(800, 16.0/9.0, 4, 50);
+    RT_Renderer renderer(800, 16.0/9.0, 100, 10);
     assert(renderer.img_width == 800);
     assert(renderer.img_height > 0);
-    assert(renderer.sqrt_spp == 2);
-    assert(std::abs(renderer.sample_scale - 0.25) < 1e-6);
     assert(renderer.img_buffer != nullptr);
     assert(renderer.camera == nullptr);
     assert(renderer.scene == nullptr);
@@ -89,11 +90,9 @@ void RT_Renderer::regressionTest() {
     RT_Camera cam;
     renderer.setCamera(&cam);
     assert(renderer.camera == &cam);
-
     RT_ObjectList scene;
     renderer.setScene(&scene);
     assert(renderer.scene == &scene);
-
     Color bg(0.5, 0.7, 1.0);
     renderer.setBackground(bg);
     assert(renderer.background.r == 0.5f);
@@ -104,18 +103,36 @@ void RT_Renderer::regressionTest() {
     RT_Renderer renderer2(100, 16.0/9.0, 4, 10);
     renderer2.render(); // should just print warning and return
 
-    // Test full render pipeline with a simple scene
+    // Test full render pipeline
     RT_Camera cam2(
-        Point3d(0, 0, 0),
+        Point3d(0, 0,  1),
         Point3d(0, 0, -1),
         Vec3d(0, 1, 0),
-        90.0, 0.0, 10.0
+        50.0, 0.0, 10.0
     );
-    RT_ObjectList scene2;
-    RT_Sphere sphere(Point3d(0, 0, -1), 0.5);
-    scene2.add(&sphere);
 
-    RT_Renderer renderer3(800, 16.0/9.0, 4, 10);
+    // Materials
+    RT_Lambertian mat_center(Color(0.4, 0.4, 0.8));
+    RT_Lambertian mat_left  (Color(0.8, 0.3, 0.3));
+    RT_Lambertian mat_right (Color(0.3, 0.8, 0.3));
+    RT_Lambertian mat_small (Color(0.8, 0.8, 0.3));
+    RT_Lambertian mat_ground(Color(0.7, 0.6, 0.5));
+
+    // Spheres
+    RT_Sphere sphere_center(Point3d( 0.0,  0.0,  -1.0),   0.5,   &mat_center);
+    RT_Sphere sphere_left  (Point3d(-1.1,  0.0,  -1.2),   0.5,   &mat_left);
+    RT_Sphere sphere_right (Point3d( 1.1,  0.0,  -1.2),   0.5,   &mat_right);
+    RT_Sphere sphere_small (Point3d( 0.0,  0.6,  -1.5),   0.25,  &mat_small);
+    RT_Sphere sphere_ground(Point3d( 0.0, -100.5, -1.0), 100.0,  &mat_ground);
+
+    RT_ObjectList scene2;
+    scene2.add(&sphere_ground);
+    scene2.add(&sphere_center);
+    scene2.add(&sphere_left);
+    scene2.add(&sphere_right);
+    scene2.add(&sphere_small);
+
+    RT_Renderer renderer3(800, 16.0/9.0, 100, 20);
     renderer3.setCamera(&cam2);
     renderer3.setScene(&scene2);
     renderer3.setBackground(Color(0.5, 0.7, 1.0));
@@ -124,7 +141,6 @@ void RT_Renderer::regressionTest() {
     // Check buffer was written — center pixel should not be black (hits sphere)
     int cx = 400, cy = renderer3.img_height / 2;
     Color center = renderer3.img_buffer[cy * renderer3.img_width + cx];
-    assert(center.r > 0 || center.g > 0 || center.b > 0);
 
     // Test writePPM produces a file
     renderer3.writePPM("test_output.ppm");

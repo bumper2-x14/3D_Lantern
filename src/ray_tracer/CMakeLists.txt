@@ -3,6 +3,7 @@ add_library(ray_tracer STATIC
     RT_ObjectList.cpp
     RT_Camera.cpp
     RT_Renderer.cpp
+    RT_Lambertian.cpp
 )
 
 target_include_directories(ray_tracer PUBLIC ${CMAKE_SOURCE_DIR}/src)
