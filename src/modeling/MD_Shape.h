@@ -6,8 +6,8 @@
 
 class MD_Shape {
     public: 
-        virtual void buildShape();
-        virtual void applyTransform(Transform* transform);
+        virtual void buildShape() = 0;
+        virtual void applyTransform(Transform* transform) = 0;
         const MD_Mesh& getMesh()const { return mesh; }
 
     protected:
