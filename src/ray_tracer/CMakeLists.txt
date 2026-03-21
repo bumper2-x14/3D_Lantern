@@ -1,10 +1,12 @@
 add_library(ray_tracer STATIC 
     RT_Sphere.cpp
+    RT_Disk.cpp
+    RT_Cylinder.cpp
     RT_ObjectList.cpp
     RT_Camera.cpp
     RT_Renderer.cpp
     RT_Lambertian.cpp
-    RT_Metalic.cpp
+    RT_Metallic.cpp
     RT_Dielectric.cpp
 )
 

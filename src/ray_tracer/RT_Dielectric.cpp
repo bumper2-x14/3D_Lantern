@@ -2,9 +2,9 @@
 #include "RT_Dielectric.h"
 
 
-RT_Dielecric::RT_Dielecric(double _refraction_index) : refraction_index(_refraction_index) {}
+RT_Dielectric::RT_Dielectric(double _refraction_index) : refraction_index(_refraction_index) {}
     
-bool RT_Dielecric::rayScatter(const Rayd& ray_in, const RT_Record& rec, 
+bool RT_Dielectric::rayScatter(const Rayd& ray_in, const RT_Record& rec, 
                                     Color& attenuation, Rayd& scattered_ray) const {
     // No color absortation for glass
     attenuation = Color(1.0, 1.0, 1.0);
