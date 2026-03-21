@@ -7,7 +7,7 @@
 Sphere::Sphere(float _longtitude_seg , float _latitude_seg ) {
     latitude_seg = _latitude_seg ;
     longitude_seg = _longtitude_seg ;
-    
+
     buildShape();
     mesh.setupMD_Mesh();
 }
@@ -70,10 +70,10 @@ void Sphere::regressionTest(){
 
     assert(sphereTest.getMesh().data != nullptr && "Mesh data is null");
 
-    assert(sphereTest.getMesh().data->indices.empty() && "Indices list is empty");
-    assert(sphereTest.getMesh().data->vertices.empty() && "Vertex list is empty");
+    assert(!sphereTest.getMesh().data->indices.empty() && "Indices list is empty");
+    assert(!sphereTest.getMesh().data->vertices.empty() && "Vertex list is empty");
     
-    const Vertex& vInitial = sphereTest.mesh.data->vertices[0];
+    const Vertex vInitial = sphereTest.mesh.data->vertices[0];
     float len = std::sqrt(
                     vInitial.position.x * vInitial.position.x +
                     vInitial.position.y * vInitial.position.y +
