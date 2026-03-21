@@ -1,9 +1,9 @@
-#ifndef _CAMERA_ 
-#define _CAMERA_
+#ifndef CAMERA_H 
+#define CAMERA_H
 
-#include <math/vec3.h> 
-#include <math/mat4.h>
-#include <math/utility.h>
+#include "math/vec3.h" 
+#include "math/mat4.h"
+#include "math/utility.h"
 
 class MD_Camera {
         public:
@@ -20,7 +20,7 @@ class MD_Camera {
         Vec3f getCameraFront();
         Vec3f getCameraUp();
         float getPitch();
-        float getYaw();
+        float get_Yaw();
         unsigned int getIdShader(); 
 
 

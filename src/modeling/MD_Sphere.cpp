@@ -7,6 +7,8 @@
 Sphere::Sphere(float _longtitude_seg = 25, float _latitude_seg = 25) {
     buildShape();
     mesh.setupMD_Mesh();
+    latitude_seg = _latitude_seg ;
+    longitude_seg = _longtitude_seg ;
 }
 
 void Sphere::buildShape(){

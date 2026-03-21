@@ -54,7 +54,7 @@ class Transform {
 
         template <typename T>
         Vec3<T> transformNormal(const Vec3<T>& n) const {
-            return normaliz1e(mat_inv.transpose() * n);
+            return normalize(mat_inv.transpose() * n);
         }
     
 

@@ -2,6 +2,8 @@ add_library(modeling STATIC
     MD_Mesh.cpp
     MD_Camera.cpp
     MD_Shader.cpp
+    MD_Object.cpp
+    MD_Sphere.cpp
 )
 
 
