@@ -31,6 +31,7 @@ bool RT_ObjectList::rayIntersect(const Rayd& ray, const Intervald& t_interval, R
 } 
 
 #include "ray_tracer/RT_Sphere.h"
+#include "ray_tracer/RT_Lambertian.h"
 
 void RT_ObjectList::regressionTest() {
 
@@ -39,14 +40,16 @@ void RT_ObjectList::regressionTest() {
     assert(list1.empty());
     assert(list1.size() == 0);
 
+    RT_Lambertian mat(Color(10.0, 10.0, 150.0)); 
+
     // Test constructor with object
-    RT_Sphere sphere1(Point3d(0, 0, -1), 0.5);
+    RT_Sphere sphere1(Point3d(0, 0, -1), 0.5, &mat);
     RT_ObjectList list2(&sphere1);
     assert(!list2.empty());
     assert(list2.size() == 1);
 
     // Test add
-    RT_Sphere sphere2(Point3d(0, -100.5, -1), 100);
+    RT_Sphere sphere2(Point3d(0, -100.5, -1), 100, &mat);
     list2.add(&sphere2);
     assert(list2.size() == 2);
 
@@ -57,7 +60,7 @@ void RT_ObjectList::regressionTest() {
 
     // Test rayIntersect hits sphere
     RT_ObjectList list3;
-    RT_Sphere sphere3(Point3d(0, 0, -1), 0.5);
+    RT_Sphere sphere3(Point3d(0, 0, -1), 0.5, &mat);
     list3.add(&sphere3);
     Rayd ray(Point3d(0, 0, 0), Vec3d(0, 0, -1));
     RT_Record rec;
@@ -73,8 +76,8 @@ void RT_ObjectList::regressionTest() {
 
     // Test closest hit is returned with two spheres
     RT_ObjectList list4;
-    RT_Sphere near(Point3d(0, 0, -1), 0.5);
-    RT_Sphere far(Point3d(0, 0, -3), 0.5);
+    RT_Sphere near(Point3d(0, 0, -1), 0.5, &mat);
+    RT_Sphere far(Point3d(0, 0, -3), 0.5, &mat);
     list4.add(&near);
     list4.add(&far);
     RT_Record closest_rec;

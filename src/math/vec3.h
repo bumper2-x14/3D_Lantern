@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "utility"
+#include "utility.h"
 
 template <typename T>
 class Vec3 {
@@ -95,6 +95,11 @@ class Vec3 {
         T lengthSquared() const {
             return x*x + y*y + z*z;
         }
+
+        bool nearZero() const {
+            auto s = 1e-8;
+            return (std::abs(x) < s) && (std::abs(y) < s) && (std::abs(z) < s);
+        }
 };
 
 using Vec3f = Vec3<float>;
@@ -150,6 +155,40 @@ inline Vec3<T> UnitDiskRandom() {
         if (p.lengthSquared() < 1)
             return p;
     }
+}
+
+template <typename T>
+inline Vec3<T> randomUnitVector() {
+    while (true) {
+        Vec3<T> p(randomizer<T>(T(-1), T(1)),
+                  randomizer<T>(T(-1), T(1)),
+                  randomizer<T>(T(-1), T(1)));
+        T lensq = p.lengthSquared();
+        if (T(1e-160) < lensq && lensq <= T(1))
+            return p / std::sqrt(lensq);
+    }
+}
+
+template <typename T>
+inline Vec3<T> randomOnHemisphere(const Vec3<T>& normal) {
+    Vec3<T> unit_vec = randomUnitVector<T>();
+    if (dot(unit_vec, normal) > 0.0) 
+        return unit_vec;
+    else
+        return -unit_vec;
+}
+
+template <typename T>
+inline Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& normal) {
+    return v - 2 * dot(v, normal) * normal;
+}
+
+template <typename T>
+inline Vec3<T> refract (const Vec3<T>& uv, const Vec3<T>& n, T eta_ratio) {
+    T cos_theta = std::min(dot(-uv, n), T(1));
+    Vec3<T> r_perp = eta_ratio * (uv + cos_theta * n);
+    Vec3<T> r_para = -std::sqrt(std::abs(T(1) - r_perp.lengthSquared())) * n;
+    return r_perp + r_para;
 }
 
 #endif

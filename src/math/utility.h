@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
+#include <random>
 
 template <typename T> double infinity = std::numeric_limits<T>::infinity();
 
@@ -33,9 +34,16 @@ inline double randomDouble(double min, double max) {
 }
 
 template <typename T>
-inline double randomizer(T min, T max) {
-    return min + (static_cast<T>(std::rand()) / static_cast<T>(RAND_MAX)) * (max - min);
+inline T randomizer(T min, T max) {
+    static std::mt19937 gen(std::random_device{}());
+    static std::uniform_real_distribution<T> dist(T(0), T(1));
+    return min + dist(gen) * (max - min);
 }
 
+inline double schlick(double cosine, double ref_index) {
+    double r0 = (1 - ref_index) / (1 + ref_index);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * std::pow(1 - cosine, 5);
+}
 
 #endif
