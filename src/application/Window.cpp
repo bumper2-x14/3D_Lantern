@@ -19,7 +19,7 @@ Window::Window(){
     //glViewport(0, 0, width, height);
 }
 
-Window::Window(const std::string &name){
+Window::Window(const std::string& name){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -89,53 +89,54 @@ void Window::winInitGl(){
 
 void Window::winRun(){
         int x , y , ax , ay;
-        Uint64 now , last ;
+        Uint64 now , last;
+        last = SDL_GetPerformanceCounter();
         SDL_Event e;
         double deltaTime = 0;
         glEnable(GL_DEPTH_TEST);
         MD_Camera camera(0,0,-3,0,0,1);
         MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
-        Sphere sp(15,15);   
+        Sphere sp(25,25);   
         MD_Object ob(&sp,nullptr);
         while(!stop){
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shader.apply();
-           while(SDL_PollEvent(&e)){
-            if(e.type == SDL_QUIT){
-                stop = true;
-            }
-            if(e.type == SDL_KEYDOWN){
-                if(e.key.keysym.sym == SDLK_ESCAPE)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            shader.apply();
+            while(SDL_PollEvent(&e)){
+                if(e.type == SDL_QUIT){
                     stop = true;
+                }
+                const Uint8* keystate = SDL_GetKeyboardState(NULL);
+
                 camera.update(
-                        e.key.keysym.sym == SDLK_z ,
-                        e.key.keysym.sym == SDLK_s ,  
-                        e.key.keysym.sym == SDLK_q , 
-                        e.key.keysym.sym == SDLK_d , 
-                        0,0,0.5*deltaTime);
-                /*
-                if(e.key.keysym.sym == SDLK_z){
-                  camera.update(true,false,false,false,0,0,7*deltaTime);
-                }
-                if(e.key.keysym.sym == SDLK_s){
-                  camera.update(false,true,false,false,0,0,7*deltaTime);
-                }
-                if(e.key.keysym.sym == SDLK_q){
-                  camera.update(false,false,true,false,0,0,7*deltaTime);
-                }
-                if(e.key.keysym.sym == SDLK_d){
-                  camera.update(false,false,false,true,0,0,7*deltaTime);
-                } */
-                if(e.type == SDL_MOUSEMOTION ){
-              if(e.button.button == SDL_BUTTON_LEFT ){    
-                  SDL_GetMouseState( &x, &y); 
-                  camera.update(false,false,false,false,x-ax,y-ay,7); 
-                  ax=x; 
-                  ay=y;
-                
-              }
+                    keystate[SDL_SCANCODE_Z],
+                    keystate[SDL_SCANCODE_S],
+                    keystate[SDL_SCANCODE_Q],
+                    keystate[SDL_SCANCODE_D],
+                    0,0,
+                    5.0 * deltaTime
+                );
+                    /*
+                    if(e.key.keysym.sym == SDLK_z){
+                    camera.update(true,false,false,false,0,0,7*deltaTime);
+                    }
+                    if(e.key.keysym.sym == SDLK_s){
+                    camera.update(false,true,false,false,0,0,7*deltaTime);
+                    }
+                    if(e.key.keysym.sym == SDLK_q){
+                    camera.update(false,false,true,false,0,0,7*deltaTime);
+                    }
+                    if(e.key.keysym.sym == SDLK_d){
+                    camera.update(false,false,false,true,0,0,7*deltaTime);
+                    } */
+                    /*
+                    if(e.type == SDL_MOUSEMOTION ){
+                if(e.button.button == SDL_BUTTON_LEFT ){    
+                    SDL_GetMouseState( &x, &y); 
+                    camera.update(false,false,false,false,x-ax,y-ay,7); 
+                    ax=x; 
+                    ay=y;
+                    */ 
             }
-        }
         now = SDL_GetPerformanceCounter();
         deltaTime = (double)(now - last) / SDL_GetPerformanceFrequency();
         last = now;
@@ -146,9 +147,14 @@ void Window::winRun(){
         //Mat4f worVie;
         //shader.setMat4("worldToView" , worVie);
         Mat4f vieCli;
-        vieCli = Mat4f::perspective( toRadians(90.0) , (float)width/height , 0.1f, 100.0f);
+        vieCli = Mat4f::perspective( toRadians(45.0) , (float)width/height , 0.1f, 100.0f);
         shader.setMat4("viewToClip" , vieCli);
-        ob.draw();    
+
+        // NOTE FOR DEV: Draw function was updated to take the shder program's id in order to
+        // draw the object wireframe 
+            
+        ob.draw(shader.get_program_id());    
+        
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES,0,3);
         //all of the code below should be found in renderer class 
@@ -156,5 +162,5 @@ void Window::winRun(){
     SDL_GL_SwapWindow(win);
     }
 }
-}
+
 //should put a desctuctor 

@@ -8,11 +8,10 @@ class MD_Object{
     public:
         MD_Object();
         MD_Object(MD_Shape* _shape, Transform* _transform);
-        void draw();
+        void draw(unsigned int shaderID);
     private:
         MD_Shape* shape;
         Transform* transform;
-
 };
 
 #endif

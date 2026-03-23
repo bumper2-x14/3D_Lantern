@@ -38,6 +38,4 @@ class Window{
 
 
 
-
-
 #endif
