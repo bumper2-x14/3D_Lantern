@@ -44,10 +44,10 @@ class MD_Camera {
         static void regressionTest();
     
     private:
-        Vec3f cameraPos;
-        Vec3f cameraFront;
-        Vec3f cameraUp;
-        float yaw=-90;
+        Vec3f cameraPos=Vec3f(0,0,0);
+        Vec3f cameraFront=Vec3f(0,0,1);
+        Vec3f cameraUp=Vec3f(0,1,0);
+        float yaw=90;
         float pitch=0;
         float sensitivity=0.50;
         unsigned int idShader;

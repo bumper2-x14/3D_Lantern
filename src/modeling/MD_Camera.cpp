@@ -5,7 +5,7 @@
 
 //constructors
 MD_Camera::MD_Camera(){
-    cameraPos=Vec3f();
+    cameraPos=Vec3f(0.0,0.0,0.0);
     cameraFront=Vec3f( 0.0, 0.0, -1.0);
     cameraUp=Vec3f(0.0,1.0,0.0);
 }
@@ -74,7 +74,7 @@ void MD_Camera::update( bool w, bool s, bool a, bool d,
     }
 
     //to look around 
-    Vec3f direction;
+    Vec3f direction=cameraFront;
     yaw+= xoffset * sensitivity;
     pitch+= yoffset * sensitivity;
     direction.x = std::cos( toRadians( yaw)) * std::cos( toRadians( pitch));
@@ -87,15 +87,15 @@ void MD_Camera::update( bool w, bool s, bool a, bool d,
 //generates and puts the look at matrice in shader uniform
 void MD_Camera::setView()const{
     Mat4f viewMatrix= genLookAt();
-    int viewUniform= glGetUniformLocation( idShader, "view");
+    int viewUniform= glGetUniformLocation( idShader, "worldToView");
+    if(viewUniform == -1)
+        std::cout<<"uniform not found"<<std::endl;
     glUniformMatrix4fv( viewUniform, 1, GL_FALSE, viewMatrix.data());
 }
-
 
 void MD_Camera::regressionTest(){
     MD_Camera testCamera;
     testCamera.update( 1, 0, 0, 0, 0, 0, 30);
     assert(testCamera.cameraPos.z <0.0);
-    std::cout<<"All MD_Camera tests passed succesfully\n";
 }
 

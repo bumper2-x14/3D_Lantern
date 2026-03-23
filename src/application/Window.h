@@ -14,7 +14,7 @@ class Window{
         Window(const std::string &name, int _width, int _height);
         Window(const std::string &name, int _width, int _height,
                                             int _x, int _y);
-	    
+	    Window(const char* t , int x , int y);
         void winInitGl();
         void winRun();
         
