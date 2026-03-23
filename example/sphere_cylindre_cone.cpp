@@ -30,7 +30,7 @@ int main() {
     RT_Lambertian mat_cyl_right(Color(0.9, 0.5, 0.2));       
     RT_Dielectric mat_cyl_back (1.330); 
     RT_Lambertian mat_cone_left (Color(0.6, 0.2, 0.7));   
-    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.2);  
+    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.7);  
     RT_Lambertian mat_cone_back (Color(0.3, 0.6, 0.8));
 
     // Spheres
