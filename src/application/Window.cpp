@@ -94,7 +94,7 @@ void Window::winRun(){
         double deltaTime = 0;
         glEnable(GL_DEPTH_TEST);
         MD_Camera camera(0,0,-3,0,0,1);
-        MD_Shader shader("shader.vs","shader.fs");
+        MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
         Sphere sp(15,15);   
         MD_Object ob(&sp,nullptr);
         while(!stop){
