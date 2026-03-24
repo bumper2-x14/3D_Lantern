@@ -101,8 +101,8 @@ void Window::winRun(){
         MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
         
 
-        Sphere sp1(5,5);
-        Sphere sp(25,25);   
+        MD_Sphere sp1(5,5);
+        MD_Sphere sp(25,25);   
         Transform t1=Transform::translate(Vec3f(30.0,0,30.0)); 
         Transform t=Transform::translate(Vec3f(0,0,0));
         MD_Object ob(&sp,&t);

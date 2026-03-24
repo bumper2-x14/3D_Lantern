@@ -1,5 +1,5 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef MD_SPHERE_H
+#define MD_SPHERE_H
 
 #include <vector>
 
@@ -8,9 +8,9 @@
 #include "assets/vertex.h"
 
 
-class Sphere : public MD_Shape{
+class MD_Sphere : public MD_Shape{
    public : 
-      Sphere(float _longtitude_seg = 25, float _latitude_seg = 25);
+      MD_Sphere(float _longtitude_seg = 25, float _latitude_seg = 25);
       void buildShape() override;
       void applyTransform(Transform* transform) override;
       static void regressionTest();
