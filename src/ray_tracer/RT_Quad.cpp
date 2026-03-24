@@ -1,15 +1,17 @@
 #include "RT_Quad.h"
 #include <cmath>
 
+RT_Quad::RT_Quad() {}
+
 // Q + u + v constructor — preferred
 RT_Quad::RT_Quad(const Point3d& _Q, const Vec3d& _u, const Vec3d& _v,
                  RT_Material* _material)
     : Q(_Q), u(_u), v(_v), material(_material)
 {
     Vec3d n = cross(u, v);
-    normal   = normalize(n);
-    w        = n / dot(n, n);         // used for hit-point-in-quad test
-    D        = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    normal = normalize(n);
+    w = n / dot(n, n); // used for hit-point-in-quad test
+    D = dot(normal, Vec3d(Q.x, Q.y, Q.z));
 }
 
 

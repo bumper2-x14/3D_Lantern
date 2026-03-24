@@ -110,4 +110,6 @@ int main() {
     assert(file.good());
 
     std::cout << "clean_scene.ppm generated successfully\n";
+
+    return 0;
 }

@@ -5,6 +5,7 @@
 
 class RT_Quad : public RT_Object {
 public:
+    RT_Quad();
     // Q = corner point, u/v = edge vectors
     RT_Quad(const Point3d& _Q, const Vec3d& _u, const Vec3d& _v, RT_Material* _material);
 
