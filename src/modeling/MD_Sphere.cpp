@@ -26,12 +26,14 @@ void MD_Sphere::buildShape(){
             Vec3f p1(cos(alpha)  * cos(beta),  sin(alpha),   cos(alpha)  * sin(beta));
             Vec3f p2(cos(alpha2) * cos(beta2), sin(alpha2),  cos(alpha2) * sin(beta2));
             Vec3f p3(cos(alpha)  * cos(beta2), sin(alpha),   cos(alpha)  * sin(beta2));
-            
+
+            // Asigning normal values
             Vec3f n0 = p0;
             Vec3f n1 = p1;
             Vec3f n2 = p2;
             Vec3f n3 = p3;
 
+            // Asigning texteur
             Vec2f uv0(0.0f, 0.0f);
             Vec2f uv1(0.0f, 0.0f);
             Vec2f uv2(0.0f, 0.0f);
