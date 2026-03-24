@@ -96,7 +96,7 @@ void Window::winRun(){
         glEnable(GL_DEPTH_TEST);
         MD_Camera camera(0,0,-3,0,0,1);
         MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
-        Sphere sp(25,25);   
+        MD_Sphere sp(25,25);   
         MD_Object ob(&sp,nullptr);
         while(!stop){
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

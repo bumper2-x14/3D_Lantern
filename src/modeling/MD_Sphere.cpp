@@ -4,7 +4,7 @@
 #include "MD_Sphere.h"
 #include "assets/vertex.h"
 
-Sphere::Sphere(float _longtitude_seg , float _latitude_seg ) {
+MD_Sphere::MD_Sphere(float _longtitude_seg , float _latitude_seg ) {
     latitude_seg = _latitude_seg ;
     longitude_seg = _longtitude_seg ;
 
@@ -12,7 +12,7 @@ Sphere::Sphere(float _longtitude_seg , float _latitude_seg ) {
     mesh.setupMD_Mesh();
 }
 
-void Sphere::buildShape(){
+void MD_Sphere::buildShape(){
     
     float delta1 = M_PI /(2.0 * latitude_seg );
     float delta2 = (2 * M_PI) / longitude_seg;
@@ -57,7 +57,7 @@ void Sphere::buildShape(){
     }
 }
 
-void Sphere::applyTransform(Transform* transform){
+void MD_Sphere::applyTransform(Transform* transform){
     //for (int i=0 ; i < mesh.data->vertices.size() ; i++)
     for (auto& v : mesh.data->vertices){
         v.position = transform->mat * v.position;
@@ -65,8 +65,8 @@ void Sphere::applyTransform(Transform* transform){
     }
 }
 
-void Sphere::regressionTest(){
-    Sphere sphereTest(10, 10);
+void MD_Sphere::regressionTest(){
+    MD_Sphere sphereTest(10, 10);
 
     assert(sphereTest.getMesh().data != nullptr && "Mesh data is null");
 
