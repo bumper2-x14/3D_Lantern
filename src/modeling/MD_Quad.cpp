@@ -41,5 +41,5 @@ void MD_Quad::buildShape(){
 }
 
 void MD_Quad::applyTransform(Transform* transform){
-    mesh.data
+    mesh.data->vertices = 
 }
