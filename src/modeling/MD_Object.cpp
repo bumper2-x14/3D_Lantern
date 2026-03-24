@@ -17,6 +17,7 @@ void MD_Object::draw( MD_Shader& shader){
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0f, 1.0f);
    
+    shader.setMat4("localToWorld" , transform->mat);
     //glUniform1i(glGetUniformLocation(shaderID, "uWireframe"), 0);
     shader.setBool("uWireframe",0);
     glDrawElements(GL_TRIANGLES, (GLsizei)mesh.data->indices.size(), GL_UNSIGNED_INT, 0);
@@ -27,7 +28,6 @@ void MD_Object::draw( MD_Shader& shader){
     //glUniform1i(glGetUniformLocation(shaderID, "uWireframe"), 1);
     shader.setBool("uWireframe" , 1);
    
-    shader.setMat4("localToWorld" , transform->mat);
     glDrawElements(GL_TRIANGLES, (GLsizei)mesh.data->indices.size(), GL_UNSIGNED_INT, 0);
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

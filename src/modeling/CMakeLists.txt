@@ -4,6 +4,7 @@ add_library(modeling STATIC
     MD_Shader.cpp
     MD_Object.cpp
     MD_Sphere.cpp
+    MD_Quad.cpp
 )
 
 

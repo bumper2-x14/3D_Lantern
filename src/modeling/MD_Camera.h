@@ -35,8 +35,8 @@ class MD_Camera {
         void setShader(int _idShader);
 
         //change our camera object variable so that it moves around and looks around
-        void update( bool w ,bool s ,bool a ,bool d ,
-                        float xoffset ,float yoffset ,float speed );
+        void update( bool w, bool s, bool a, bool d, bool e, bool sh,
+                        float xoffset, float yoffset, float speed );
         
         //generates and puts the look at matrice in shader uniform
         void setView()const;

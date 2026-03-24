@@ -57,7 +57,7 @@ void MD_Camera::setShader(int _idShader){
 }
 
 //change our camera object variable so that it moves around and looks around
-void MD_Camera::update( bool w, bool s, bool a, bool d,
+void MD_Camera::update( bool w, bool s, bool a, bool d, bool e, bool sh ,
         float xoffset,float yoffset,float speed){
     //to move around
     if(w){
@@ -71,6 +71,12 @@ void MD_Camera::update( bool w, bool s, bool a, bool d,
     }
     if(a){
         cameraPos-=speed*normalize( cross( cameraFront, cameraUp));
+    }
+    if(e){
+        cameraPos += speed * cameraUp;
+    }
+    if(sh){
+        cameraPos -= speed * cameraUp;
     }
 
     //to look around 
@@ -96,7 +102,7 @@ void MD_Camera::setView()const{
 
 void MD_Camera::regressionTest(){
     MD_Camera testCamera;
-    testCamera.update( 1, 0, 0, 0, 0, 0, 30);
+    testCamera.update( 1, 0, 0, 0, 0, 0, 0, 0, 30);
     assert(testCamera.cameraPos.z <0.0);
 }
 

@@ -2,6 +2,7 @@
 #include "modeling/MD_Camera.h"
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Sphere.h"
+#include "modeling/MD_Quad.h"
 #include "modeling/MD_Object.h"
 #include "math/mat4.h"
 #include "math/vec3.h"
@@ -97,10 +98,13 @@ void Window::winRun(){
         MD_Sphere sp1(5,5);
         MD_Sphere sp(25,25);   
         Transform t1=Transform::translate(Vec3f(30.0,0,30.0)); 
-        Transform t=Transform::translate(Vec3f(0,0,0));
+        Transform t=Transform::translate(Vec3f(0,1,0));
+        Transform t_quad = Transform::translate(Vec3f(0,0,0));
         MD_Object ob(&sp,&t);
         MD_Object ob1(&sp1,&t1);
 
+        MD_Quad disque(4,4);
+        MD_Object disque_ob(&disque,&t_quad );
         
 
         while(!stop){
@@ -120,7 +124,7 @@ void Window::winRun(){
                         case SDL_MOUSEMOTION:
                             SDL_GetMouseState( &x, &y); 
                             if(e.motion.state & SDL_BUTTON_LMASK ){    
-                                camera.update(false,false,false,false,
+                                camera.update(false,false,false,false,false,false,
                                                     ax-x,ay-y,5); 
                             }
                             ax=x; 
@@ -144,7 +148,9 @@ void Window::winRun(){
                     keystate[SDL_SCANCODE_W],
                     keystate[SDL_SCANCODE_S], 
                     keystate[SDL_SCANCODE_A], 
-                    keystate[SDL_SCANCODE_D], 
+                    keystate[SDL_SCANCODE_D],
+                    keystate[SDL_SCANCODE_SPACE],
+                    keystate[SDL_SCANCODE_N], 
                     0,0,4*deltaTime);
 
         now = SDL_GetPerformanceCounter();
@@ -165,6 +171,9 @@ void Window::winRun(){
             
         ob.draw(shader);    
         ob1.draw(shader);
+
+        disque_ob.draw(shader);
+
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES,0,3);
         //all of the code below should be found in renderer class 
