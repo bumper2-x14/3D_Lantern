@@ -2,7 +2,6 @@
 #include <cmath>
 
 #include "MD_Sphere.h"
-#include "assets/vertex.h"
 
 MD_Sphere::MD_Sphere(float _longtitude_seg , float _latitude_seg ) {
     latitude_seg = _latitude_seg ;
