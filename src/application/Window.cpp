@@ -3,6 +3,7 @@
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Sphere.h"
 #include "modeling/MD_Quad.h"
+#include "modeling/MD_Cylinder.h"
 #include "modeling/MD_Object.h"
 #include "math/mat4.h"
 #include "math/vec3.h"
@@ -99,13 +100,20 @@ void Window::winRun(){
         MD_Sphere sp(25,25);   
         Transform t1=Transform::translate(Vec3f(30.0,0,30.0)); 
         Transform t=Transform::translate(Vec3f(0,1,0));
-        Transform t_quad = Transform::translate(Vec3f(0,0,0));
+        
         MD_Object ob(&sp,&t);
         MD_Object ob1(&sp1,&t1);
 
-        MD_Quad disque(4,4);
+        //Plane created
+        MD_Quad disque(10,10);
+        Transform t_quad = Transform::translate(Vec3f(0,0,0));
         MD_Object disque_ob(&disque,&t_quad );
         
+        //Cylinder 
+        MD_Cylinder cylinder(25);
+        Transform t_cylinder = Transform::translate( Vec3f(2.0, 2.0, 0.0) ) * Transform::scale( Vec3f(0.5, 2, 0.5) );
+        MD_Object cylinder_ob(&cylinder,&t_cylinder);
+
 
         while(!stop){
 
@@ -173,6 +181,8 @@ void Window::winRun(){
         ob1.draw(shader);
 
         disque_ob.draw(shader);
+
+        cylinder_ob.draw(shader);
 
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES,0,3);

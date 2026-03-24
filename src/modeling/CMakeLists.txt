@@ -5,6 +5,7 @@ add_library(modeling STATIC
     MD_Object.cpp
     MD_Sphere.cpp
     MD_Quad.cpp
+    MD_Cylinder.cpp
 )
 
 
