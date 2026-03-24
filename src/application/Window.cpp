@@ -3,7 +3,9 @@
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Sphere.h"
 #include "modeling/MD_Object.h"
-
+#include "math/mat4.h"
+#include "math/vec3.h"
+#include "math/transform.h"
 
 Window::Window(){
 
@@ -88,55 +90,69 @@ void Window::winInitGl(){
 }
 
 void Window::winRun(){
+        glViewport(0 ,0 , width*8/10, height*8/10) ;
         int x , y , ax , ay;
-        Uint64 now , last;
-        last = SDL_GetPerformanceCounter();
+        Uint64 now=0;
+        Uint64 last=0 ;
         SDL_Event e;
         double deltaTime = 0;
         glEnable(GL_DEPTH_TEST);
         MD_Camera camera(0,0,-3,0,0,1);
         MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
+        
+
+        Sphere sp1(5,5);
         Sphere sp(25,25);   
-        MD_Object ob(&sp,nullptr);
+        Transform t1=Transform::translate(Vec3f(30.0,0,30.0)); 
+        Transform t=Transform::translate(Vec3f(0,0,0));
+        MD_Object ob(&sp,&t);
+        MD_Object ob1(&sp1,&t1);
+
+        
+
         while(!stop){
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.apply();
+            glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
             while(SDL_PollEvent(&e)){
-                if(e.type == SDL_QUIT){
-                    stop = true;
+                    switch(e.type){
+                        case SDL_QUIT:
+                            stop = true;
+                            break;
+                        case SDL_KEYDOWN:
+                            if(e.key.keysym.sym == SDLK_ESCAPE)
+                                stop = true;
+                            break;
+                        case SDL_MOUSEMOTION:
+                            SDL_GetMouseState( &x, &y); 
+                            if(e.motion.state & SDL_BUTTON_LMASK ){    
+                                camera.update(false,false,false,false,
+                                                    ax-x,ay-y,5); 
+                            }
+                            ax=x; 
+                            ay=y;
+                            break;
+                    case SDL_WINDOWEVENT:
+                        if(e.window.event == SDL_WINDOWEVENT_RESIZED){
+                            int newWidth = e.window.data1;
+                            int newHeight = e.window.data2;
+                            width=newWidth;
+                            height=newHeight;
+                            glViewport(0,0,newWidth*8/10,newHeight*8/10);
+                        }
+                        break;
                 }
-                const Uint8* keystate = SDL_GetKeyboardState(NULL);
+        
+        }
+        const Uint8* keystate = SDL_GetKeyboardState(NULL);
+        camera.update(
+                    keystate[SDL_SCANCODE_W],
+                    keystate[SDL_SCANCODE_S], 
+                    keystate[SDL_SCANCODE_A], 
+                    keystate[SDL_SCANCODE_D], 
+                    0,0,4*deltaTime);
 
-                camera.update(
-                    keystate[SDL_SCANCODE_Z],
-                    keystate[SDL_SCANCODE_S],
-                    keystate[SDL_SCANCODE_Q],
-                    keystate[SDL_SCANCODE_D],
-                    0,0,
-                    5.0 * deltaTime
-                );
-                    /*
-                    if(e.key.keysym.sym == SDLK_z){
-                    camera.update(true,false,false,false,0,0,7*deltaTime);
-                    }
-                    if(e.key.keysym.sym == SDLK_s){
-                    camera.update(false,true,false,false,0,0,7*deltaTime);
-                    }
-                    if(e.key.keysym.sym == SDLK_q){
-                    camera.update(false,false,true,false,0,0,7*deltaTime);
-                    }
-                    if(e.key.keysym.sym == SDLK_d){
-                    camera.update(false,false,false,true,0,0,7*deltaTime);
-                    } */
-                    /*
-                    if(e.type == SDL_MOUSEMOTION ){
-                if(e.button.button == SDL_BUTTON_LEFT ){    
-                    SDL_GetMouseState( &x, &y); 
-                    camera.update(false,false,false,false,x-ax,y-ay,7); 
-                    ax=x; 
-                    ay=y;
-                    */ 
-            }
         now = SDL_GetPerformanceCounter();
         deltaTime = (double)(now - last) / SDL_GetPerformanceFrequency();
         last = now;
@@ -153,14 +169,16 @@ void Window::winRun(){
         // NOTE FOR DEV: Draw function was updated to take the shder program's id in order to
         // draw the object wireframe 
             
-        ob.draw(shader.get_program_id());    
-        
+        ob.draw(shader);    
+        ob1.draw(shader);
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES,0,3);
         //all of the code below should be found in renderer class 
         //glClear(GL_COLOR_BUFFER_BIT );
-    SDL_GL_SwapWindow(win);
+        SDL_GL_SwapWindow(win);
     }
 }
 
+
 //should put a desctuctor 
+

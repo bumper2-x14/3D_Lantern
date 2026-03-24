@@ -93,6 +93,7 @@ void MD_Camera::setView()const{
     glUniformMatrix4fv( viewUniform, 1, GL_FALSE, viewMatrix.data());
 }
 
+
 void MD_Camera::regressionTest(){
     MD_Camera testCamera;
     testCamera.update( 1, 0, 0, 0, 0, 0, 30);
