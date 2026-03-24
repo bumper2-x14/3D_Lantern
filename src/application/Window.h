@@ -1,6 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+#endif
+
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include <iostream>

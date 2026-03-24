@@ -13,9 +13,14 @@ Window::Window(){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                             SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifdef __APPLE__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    #endif
+
     win = SDL_CreateWindow( "window", 100, 100, 1920, 1080,
                 SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE |
                                             SDL_WINDOW_OPENGL );
+    
     width = 1920;
     height = 1080;
     //glViewport(0, 0, width, height);
@@ -26,6 +31,9 @@ Window::Window(const std::string& name){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                             SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifdef __APPLE__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    #endif
     win = SDL_CreateWindow(name.c_str(), 100, 100, 1920, 1080,
             SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE |
                                             SDL_WINDOW_OPENGL );
@@ -39,6 +47,9 @@ Window::Window(const std::string &name, int _width, int _height){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                             SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifdef __APPLE__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    #endif
     win = SDL_CreateWindow(name.c_str(), 100, 100, _width, _height,
                  SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     width = _width;
@@ -50,6 +61,9 @@ Window::Window(const char* t, int _width, int _height){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                             SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifdef __APPLE__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    #endif
     win = SDL_CreateWindow(t, 100, 100, _width, _height,
                  SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     width = _width;
@@ -63,6 +77,9 @@ Window::Window(const std::string &name, int _width, int _height, int _x, int _y)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                             SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifdef __APPLE__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    #endif
     win = SDL_CreateWindow(name.c_str(), _x, _y, _width, _height,
                 SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     width = _width;
