@@ -31,7 +31,8 @@ class Window{
              
 
     private:
-		SDL_Window* win=nullptr;
+		void sdlSetAttributes();
+        SDL_Window* win=nullptr;
         SDL_GLContext gl_context;
         int height;
         int width;
@@ -43,3 +44,4 @@ class Window{
 
 
 #endif
+

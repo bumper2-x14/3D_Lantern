@@ -1,13 +1,15 @@
-#ifndef MD_TEXTURE
-#define MD_TEXTURE 
+#ifndef TEXTURE_
+#define TEXTURE_
 
 #include <string.h>
-#include <glad/glad.h>
-#include "modeling/MD_Shader.h"
-#include "../external/stb_image.h"
-
-class MD_Texture{
+class Texture{
     public:
+        virtual void apply() = 0;
+
+                
+
+
+        /*
         MD_Texture(const std::string& src, MD_Shader);
         MD_Texture(const std::string& src, int _option_wrap);
         MD_Texture(const std::string& src, int _option_wrap,
@@ -21,5 +23,5 @@ class MD_Texture{
 };
 
 
-
+        */
 #endif
