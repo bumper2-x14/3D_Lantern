@@ -1,7 +1,7 @@
 #include "MD_Quad.h"
 
 
-MD_Quad::MD_Quad(float _width =1 , float _lenght = 1){
+MD_Quad::MD_Quad(float _width, float _lenght){
     width = _width;
     length = _lenght;
 
@@ -11,10 +11,13 @@ MD_Quad::MD_Quad(float _width =1 , float _lenght = 1){
 
 void MD_Quad::buildShape(){
     // Asigning position
-    Vec3f p0 (-1, 0, -1);
-    Vec3f p1 (-1, 0,  1);
-    Vec3f p2 ( 1, 0, -1);
-    Vec3f p3 ( 1, 0,  1);
+    float hw = width / 2.0f;
+    float hl = length / 2.0f;
+
+    Vec3f p0(-hw, 0, -hl);
+    Vec3f p1(-hw, 0,  hl);
+    Vec3f p2( hw, 0, -hl);
+    Vec3f p3( hw, 0,  hl);
 
     // Asigning normal value
     Vec3f n (0, 1, 0);
@@ -41,5 +44,8 @@ void MD_Quad::buildShape(){
 }
 
 void MD_Quad::applyTransform(Transform* transform){
-    mesh.data->vertices = 
+     for (auto& v : mesh.data->vertices){
+        v.position = transform->mat * v.position;
+        v.normal = transform->transformNormal(v.normal);
+     }
 }
