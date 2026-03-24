@@ -78,6 +78,16 @@ void MD_Camera::update( bool w, bool s, bool a, bool d, bool e, bool sh ,
     if(sh){
         cameraPos -= speed * cameraUp;
     }
+    
+    if(cameraPos.y<0){
+        cameraPos.y=0;
+    }
+    if(pitch>89){
+        pitch=89;
+    }
+    if(pitch<-89){
+        pitch=-89;
+    }
 
     //to look around 
     Vec3f direction=cameraFront;
