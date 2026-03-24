@@ -8,7 +8,7 @@
 #include "math/transform.h"
 
 Window::Window(){
-
+    SDL_Init(SDL_INIT_VIDEO); 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -27,6 +27,7 @@ Window::Window(){
 }
 
 Window::Window(const std::string& name){
+    SDL_Init(SDL_INIT_VIDEO); 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -43,6 +44,7 @@ Window::Window(const std::string& name){
 }
 
 Window::Window(const std::string &name, int _width, int _height){
+    SDL_Init(SDL_INIT_VIDEO); 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -57,6 +59,7 @@ Window::Window(const std::string &name, int _width, int _height){
     //glViewport(0, 0, width, height);
 }
 Window::Window(const char* t, int _width, int _height){
+    SDL_Init(SDL_INIT_VIDEO); 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -73,6 +76,7 @@ Window::Window(const char* t, int _width, int _height){
 
 
 Window::Window(const std::string &name, int _width, int _height, int _x, int _y){
+    SDL_Init(SDL_INIT_VIDEO); 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
