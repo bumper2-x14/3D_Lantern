@@ -51,12 +51,11 @@ bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
             closest.material = material;
             closest.setNormal(ray, outward_normal);
 
-            /*
+            
             double theta = std::atan2(p.z - apex.z, p.x - apex.x);
-            closest.u = (theta + M_PI) / (2.0 * M_PI);
-            closest.v = (py - y_min) / (y_max - y_min);
-            */
-    
+            closest.uv.x = (theta + M_PI) / (2.0 * M_PI);
+            closest.uv.y = (py - y_min) / (y_max - y_min);
+            
             range        = Intervald(t_interval.min, t);
             hit_anything = true;
         }

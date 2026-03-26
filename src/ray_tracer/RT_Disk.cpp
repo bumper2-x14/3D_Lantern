@@ -37,13 +37,11 @@ bool RT_Disk::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
     rec.material = material;
     rec.setNormal(ray, normal);
 
-    /*
     // UV: radial + angular
     double r   = std::sqrt(dist2) / radius;        // [0,1]
-    double phi = std::atan2(intersect_vec.y(), intersect_vec.x()); // [-pi,pi]
-    rec.u = (phi + M_PI) / (2.0 * M_PI);
-    rec.v = r;
-    */
-    
+    double phi = std::atan2(intersect_vec.y, intersect_vec.x); // [-pi,pi]
+    rec.uv.x = (phi + M_PI) / (2.0 * M_PI);
+    rec.uv.y = r;
+
     return true;
 }

@@ -10,6 +10,7 @@
 #include "ray_tracer/RT_Sphere.h"
 #include "ray_tracer/RT_Cylinder.h"
 #include "ray_tracer/RT_Cone.h"
+#include "assets/checker_texture.h"
 
 
 int main() {
@@ -25,7 +26,7 @@ int main() {
     RT_Lambertian mat_left  (Color(0.8, 0.3, 0.3));
     RT_Dielectric mat_right (1.490);
     RT_Metallic mat_small (Color(0.8, 0.8, 0.3), 0.6);
-    RT_Lambertian mat_ground(Color(0.7, 0.6, 0.5));
+    RT_Lambertian mat_ground(new CheckerTexture(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 10));
     RT_Metallic mat_cyl_left (Color(0.2, 0.8, 0.4), 0.1);  
     RT_Lambertian mat_cyl_right(Color(0.9, 0.5, 0.2));       
     RT_Dielectric mat_cyl_back (1.330); 

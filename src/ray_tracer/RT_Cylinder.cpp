@@ -47,10 +47,10 @@ bool RT_Cylinder::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_
 
             double theta = std::atan2(p.z - center.z,
                                       p.x - center.x);
-            /*
-            closest.u = (theta + M_PI) / (2.0 * M_PI);
-            closest.v = (py - y_min) / (y_max - y_min);
-            */
+            
+            closest.uv.x = (theta + M_PI) / (2.0 * M_PI);
+            closest.uv.y = (py - y_min) / (y_max - y_min);
+            
 
             range = Intervald(t_interval.min, t);
             hit_anything = true;

@@ -45,22 +45,21 @@ bool RT_Quad::rayIntersect(const Rayd& ray, const Intervald& t_interval,
         return false;
 
     // Check hit point is within the parallelogram
-    Point3d p    = ray.at(t);
-    Vec3d   hit  = p - Q;
-    double  alpha = dot(w, cross(hit, v));
-    double  beta  = dot(w, cross(u, hit));
+    Point3d p = ray.at(t);
+    Vec3d hit = p - Q;
+    double alpha = dot(w, cross(hit, v));
+    double beta = dot(w, cross(u, hit));
 
     if (alpha < 0 || alpha > 1 || beta < 0 || beta > 1)
         return false;   // outside quad bounds
 
-    rec.t        = t;
-    rec.p        = p;
+    rec.t = t;
+    rec.p = p;
     rec.material = material;
     rec.setNormal(ray, normal);
-    /*
-    rec.u        = alpha;
-    rec.v        = beta;
-    */
+    rec.uv.x = alpha;
+    rec.uv.y = beta;
+
     return true;
 }
 
