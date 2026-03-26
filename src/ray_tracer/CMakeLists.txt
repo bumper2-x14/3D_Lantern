@@ -17,4 +17,5 @@ target_include_directories(ray_tracer PUBLIC ${CMAKE_SOURCE_DIR}/src)
 
 target_link_libraries(ray_tracer PUBLIC
     math
+    assets
 )

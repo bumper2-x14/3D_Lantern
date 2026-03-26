@@ -1,7 +1,14 @@
 #include "RT_Lambertian.h"
 #include "RT_Record.h"
+#include "assets/color_texture.h"
 
-RT_Lambertian::RT_Lambertian(const Color& _albedo) : albedo(_albedo) {}
+RT_Lambertian::RT_Lambertian(const Color& _albedo) : tex(new ColorTexture(_albedo)) {}
+
+RT_Lambertian::RT_Lambertian(Texture* _tex) : tex(_tex) {} 
+
+RT_Lambertian::~RT_Lambertian() {
+    delete tex;
+}
 
 bool RT_Lambertian::rayScatter(const Rayd& ray_in, const RT_Record& rec, 
                                     Color& attenuation, Rayd& scattered_ray) const {
@@ -12,6 +19,6 @@ bool RT_Lambertian::rayScatter(const Rayd& ray_in, const RT_Record& rec,
     }
 
     scattered_ray = Rayd(rec.p, scatter_dir);
-    attenuation = albedo;
+    attenuation = tex->sample(rec.uv, rec.p);
     return true;
 }

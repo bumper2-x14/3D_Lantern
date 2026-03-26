@@ -2,7 +2,6 @@
 #define COLOR_H
 
 #include <iostream>
-#include <cstdint>
 #include <ostream>
 
 #include "vec3.h"
@@ -10,7 +9,7 @@
 
 
 struct RGB {
-    uint8_t r, g, b;
+    unsigned char r, g, b;
 };
 
 class Color {
@@ -93,9 +92,9 @@ class Color {
         RGB toRGB(float gamma = 2.2f) const {
             Color gcol = toGamma(gamma).clamp();
             return {
-                static_cast<uint8_t>(gcol.r * 255.0f),
-                static_cast<uint8_t>(gcol.g * 255.0f),
-                static_cast<uint8_t>(gcol.b * 255.0f)
+                static_cast<unsigned char>(gcol.r * 255.0f),
+                static_cast<unsigned char>(gcol.g * 255.0f),
+                static_cast<unsigned char>(gcol.b * 255.0f)
             };
         }            
 };
