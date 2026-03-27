@@ -28,6 +28,12 @@ bool RT_Sphere::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Re
     }
 
     rec.p = ray.at(root);
+
+    double theta = std::acos(-rec.p.y);
+    double phi   = std::atan2(-rec.p.z, rec.p.x) + M_PI;
+    rec.uv.x = phi   / (2.0 * M_PI);  // u in [0,1]
+    rec.uv.y = theta / M_PI;          // v in [0,1]
+
     rec.t = root;
     Vec3d out_normal = (rec.p - center) / radius;
     rec.setNormal(ray, out_normal); 
