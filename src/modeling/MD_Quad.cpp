@@ -10,10 +10,11 @@ MD_Quad::MD_Quad(float _width, float _lenght){
 }
 
 void MD_Quad::buildShape(){
-    // Asigning position
+    //width & length 
     float hw = width / 2.0f;
     float hl = length / 2.0f;
 
+    // Asigning position
     Vec3f p0(-hw, 0, -hl);
     Vec3f p1(-hw, 0,  hl);
     Vec3f p2( hw, 0, -hl);
@@ -22,7 +23,7 @@ void MD_Quad::buildShape(){
     // Asigning normal value
     Vec3f n (0, 1, 0);
 
-    // Asigning texteur
+    // Texture coordinates
     Vec2f uv0(0.0f, 0.0f);
     Vec2f uv1(0.0f, 0.0f);
     Vec2f uv2(0.0f, 0.0f);

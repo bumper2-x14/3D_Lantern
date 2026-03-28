@@ -2,7 +2,6 @@
 #define MD_CYLINDER_H
 
 #include "MD_Shape.h"
-#include "MD_Mesh.h"
 #include "assets/vertex.h"
 
 class MD_Cylinder : public MD_Shape{

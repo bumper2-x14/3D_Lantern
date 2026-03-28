@@ -4,6 +4,7 @@
 #include "modeling/MD_Sphere.h"
 #include "modeling/MD_Quad.h"
 #include "modeling/MD_Cylinder.h"
+#include "modeling/MD_Circle.h"
 #include "modeling/MD_Object.h"
 #include "math/mat4.h"
 #include "math/vec3.h"
@@ -114,6 +115,10 @@ void Window::winRun(){
         Transform t_cylinder = Transform::translate( Vec3f(2.0, 2.0, 0.0) ) * Transform::scale( Vec3f(0.5, 2, 0.5) );
         MD_Object cylinder_ob(&cylinder,&t_cylinder);
 
+        //Circle
+        MD_Circle circle(40);
+        Transform t_circle = Transform::translate(Vec3f(0.0, 4.0, 0.0));
+        MD_Object circle_ob(&circle, &t_circle);
 
         while(!stop){
 
@@ -183,6 +188,8 @@ void Window::winRun(){
         disque_ob.draw(shader);
 
         cylinder_ob.draw(shader);
+
+        circle_ob.draw(shader);
 
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES,0,3);

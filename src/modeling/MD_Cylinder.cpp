@@ -9,7 +9,7 @@ MD_Cylinder::MD_Cylinder(int _nb_seg){
 
 void MD_Cylinder::buildShape(){
     float step =( 2 * M_PI ) / nb_seg; 
-
+    
     for(int i = 0 ; i < nb_seg ; i++){
         float alpha = i * step;
         float alpha2 = (i+1) * step; 
