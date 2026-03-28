@@ -49,14 +49,13 @@ class Texture {
             std::vector<RGB> buffer(width * height);
             for (int i = 0; i < height; i++){
                 for (int j = 0; j < width; j++){
-                    Vec2d uv(double(i) / (width  - 1),  // u along width  (j)
-                            double(j) / (height - 1));  // v along height (i)
+                    Vec2d uv(double(j) / (width  - 1),  // u along width  (j)
+                            double(i) / (height - 1));  // v along height (i)
                     Point3d p = uvToWorldConverter(uv);
                     Color c = sample(uv, p);
-                    buffer[j * width + i] = c.toRGB();
+                    buffer[i * width + j] = c.toRGB();
                 }
             }
-
             return buffer;
         }
 };

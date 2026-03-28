@@ -53,6 +53,10 @@ class Point3 {
             return Vec3<T>(x - p.x, y - p.y, z - p.z);
         }
 
+        Point3<T> operator*(int s) const {
+            return Point3<T>(x*s, y*s, z*s);
+        }
+
         // COMPARISON
         bool operator==(const Point3<T>& p) const {
             return x == p.x && y == p.y && z == p.z;

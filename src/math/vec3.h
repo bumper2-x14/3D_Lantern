@@ -100,6 +100,11 @@ class Vec3 {
             auto s = 1e-8;
             return (std::abs(x) < s) && (std::abs(y) < s) && (std::abs(z) < s);
         }
+
+        static Vec3<T> random(T min_r, T max_r) {
+            return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
+
+        } 
 };
 
 using Vec3f = Vec3<float>;
@@ -144,7 +149,7 @@ T distance(const Vec3<T>& a, const Vec3<T>& b){
 }
 
 template <typename T>
-inline Vec3<T> random(T min_r, T max_r) {
+static inline Vec3<T> random(T min_r, T max_r) {
     return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
 } 
 

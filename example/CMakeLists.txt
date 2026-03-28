@@ -6,5 +6,9 @@ foreach(EXAMPLE_SRC ${EXAMPLE_SOURCES})
     target_compile_definitions(${EXAMPLE_NAME} PRIVATE
         EXAMPLE_OUTPUT_DIR="${CMAKE_SOURCE_DIR}/example/"
     )
+
+    target_compile_definitions(${EXAMPLE_NAME} PRIVATE
+        IMG_DIR="${CMAKE_SOURCE_DIR}/img/"
+    )
     target_link_libraries(${EXAMPLE_NAME} PRIVATE ray_tracer math)
 endforeach()
