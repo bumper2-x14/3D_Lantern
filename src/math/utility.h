@@ -21,8 +21,10 @@ inline void randomSeed(unsigned int seed) { std::srand(seed); }
 inline void randomSeedTime() { std::srand(static_cast<unsigned int>(std::time(nullptr))); }
 
 
-inline int randomInt(int min, int max){
-    return min + std::rand() % (max - min + 1);
+inline int randomInt(int min, int max) {
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<int> dist(min, max);
+    return dist(gen);
 }
 
 inline float randomFloat(float min, float max){

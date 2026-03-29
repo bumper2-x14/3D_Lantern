@@ -43,10 +43,19 @@ class Vec3 {
             return Vec3<T>(x * scalar, y * scalar, z * scalar);
         }
 
+
         Vec3<T>& operator*=(T scalar) {
             x *= scalar;
             y *= scalar;
             z *= scalar;
+
+            return *this;
+        }
+
+        Vec3<T>& operator*=(const Vec3<T>& v) {
+            x *= v.x;
+            y *= v.y;
+            z *= v.z;
 
             return *this;
         }

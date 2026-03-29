@@ -6,6 +6,7 @@
 
 #include "vec3.h"
 #include "vec4.h"
+#include "point3.h"
 
 
 template <typename T>
@@ -78,6 +79,14 @@ class Mat4 {
 
         Vec3<T> operator*(const Vec3<T>& v) const {
             return Vec3<T>(
+                (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z,
+                (*this)(1,0)*v.x + (*this)(1,1)*v.y + (*this)(1,2)*v.z,
+                (*this)(2,0)*v.x + (*this)(2,1)*v.y + (*this)(2,2)*v.z
+            );
+        }
+
+        Point3<T> operator*(const Point3<T>& v) const {
+            return Point3<T>(
                 (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z + (*this)(0,3),
                 (*this)(1,0)*v.x + (*this)(1,1)*v.y + (*this)(1,2)*v.z + (*this)(1,3),
                 (*this)(2,0)*v.x + (*this)(2,1)*v.y + (*this)(2,2)*v.z + (*this)(2,3)

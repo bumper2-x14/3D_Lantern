@@ -65,6 +65,8 @@ class Point3 {
         bool operator!=(const Point3<T>& p) const {
             return !(*this == p);
         }
+
+        explicit operator Vec3<T>() const { return Vec3<T>(x, y, z); }
 };
 
 using Point3f = Point3<float>;
