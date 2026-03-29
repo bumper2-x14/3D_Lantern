@@ -8,7 +8,13 @@ enum PerlinType {
     NOISE,
     TURBULENCE,
     MARBLE,
-    WOOD
+    WOOD,
+    WATER,
+    FIRE,
+    ICE,
+    TERRAIN,
+    WARPED,
+    STRIPES
 };
 
 class PerlinTexture : public Texture {

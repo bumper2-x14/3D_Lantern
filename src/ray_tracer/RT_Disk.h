@@ -10,6 +10,10 @@ public:
             double _radius, double _inner_radius,
             RT_Material* _material);
 
+    RT_Disk(RT_Material* _material);
+        
+    void setTransform(const TRSTransformd& _transform) override;
+
     bool rayIntersect(const Rayd& ray, const Intervald& t_interval,
                       RT_Record& rec) const override;
 

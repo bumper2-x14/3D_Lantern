@@ -16,7 +16,7 @@ Color PerlinTexture::sample(const Vec2d& uv, const Point3d& p) const {
         case MARBLE: {
                 return Color(1,1,1) * 0.5 *
                         (1 + sin(scaled_p.z + 10 * noise_gen.turbulence(scaled_p, 7)));
-            }
+        }
             
         case WOOD: {
                 double r = sqrt(scaled_p.x*scaled_p.x + scaled_p.z*scaled_p.z);
@@ -27,7 +27,57 @@ Color PerlinTexture::sample(const Vec2d& uv, const Point3d& p) const {
                 Color dark_grain (0.25, 0.12, 0.04);
                 Color light_wood (0.70, 0.45, 0.20);
                 return dark_grain + (light_wood - dark_grain) * val;
-            }
+        }
+        
+        case WATER: {
+                double wave = sin(scaled_p.x * 4.0 + 
+                      5.0 * noise_gen.turbulence(scaled_p, 5));
+                double val = 0.5 * (1 + wave);
+                return Color(0.1, 0.3, 0.6) * val;
+        }
+
+        case FIRE: {
+                double t = noise_gen.turbulence(scaled_p, 7);
+                double f = sin(scaled_p.z + 8.0 * t);
+                double val = 0.5 * (1 + f);
+
+                return Color(1.0, val * 0.5, 0.0);
+        }
+
+        case ICE: {
+                double t = noise_gen.turbulence(scaled_p, 10);
+                if (t > 0.6)
+                        return Color(1.0, 1.0, 1.0);
+                else
+                        return Color(0.6, 0.8, 1.0);
+        }
+
+        case TERRAIN: {
+                double h = noise_gen.turbulence(scaled_p, 7);
+
+                if (h < 0.3) return Color(0.2, 0.7, 0.3);   // grass
+                if (h < 0.7) return Color(0.5, 0.4, 0.2);   // dirt
+                return Color(1.0, 1.0, 1.0);               // snow
+        }
+
+        case WARPED: {
+                Point3d q = scaled_p + 0.5 * Vec3d(
+                        noise_gen.noise(scaled_p),
+                        noise_gen.noise(scaled_p + Vec3d(5,5,5)),
+                        noise_gen.noise(scaled_p + Vec3d(10,10,10))
+                );
+
+                double n = noise_gen.noise(q);
+                return Color(1,1,1) * 0.5 * (1 + n);
+        }
+
+        case STRIPES: {
+                double s = sin(scaled_p.x * 10.0);
+                double val = 0.5 * (1 + s);
+
+                return Color(val, val, val);
+        }
+
     }
 
     return Color(0.0, 0.0, 0.0);

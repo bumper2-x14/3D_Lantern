@@ -5,9 +5,7 @@
 
 class RT_Cylinder : public RT_Object {
 public:
-    RT_Cylinder(const Point3d& _center, double _radius,
-                double _y_min, double _y_max,
-                bool _capped, RT_Material* _material);
+    RT_Cylinder(bool _capped, RT_Material* _material);
 
     bool rayIntersect(const Rayd& ray, const Intervald& t_interval,
                       RT_Record& rec) const override;
@@ -15,9 +13,6 @@ public:
     static void regressionTest();
 
 private:
-    Point3d center;
-    double  radius;
-    double  y_min, y_max;
     bool    capped;           // include top/bottom disk caps
     RT_Material* material;
 };

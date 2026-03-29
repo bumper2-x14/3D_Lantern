@@ -48,18 +48,20 @@ template <typename T> class TRSTransform {
         mutable Mat4<T> mat_inv;
         mutable bool changed = true;
 
+        static constexpr T deg2rad(T d) { return d * T(M_PI) / T(180); }
+
         void recompute() const {
             if (!changed) return;
             mat = Mat4<T>::translation(trs.translation)
-                * Mat4<T>::rotationX(trs.rotation.x)
-                * Mat4<T>::rotationY(trs.rotation.y)
-                * Mat4<T>::rotationZ(trs.rotation.z)
+                * Mat4<T>::rotationX(deg2rad(trs.rotation.x))
+                * Mat4<T>::rotationY(deg2rad(trs.rotation.y))
+                * Mat4<T>::rotationZ(deg2rad(trs.rotation.z))
                 * Mat4<T>::scale(trs.scale);
 
             mat_inv = Mat4<T>::inverseScale(trs.scale)
-                    * Mat4<T>::rotationX(-trs.rotation.x)
-                    * Mat4<T>::rotationY(-trs.rotation.y)
-                    * Mat4<T>::rotationZ(-trs.rotation.z)
+                    * Mat4<T>::rotationX(deg2rad(-trs.rotation.x))
+                    * Mat4<T>::rotationY(deg2rad(-trs.rotation.y))
+                    * Mat4<T>::rotationZ(deg2rad(-trs.rotation.z))
                     * Mat4<T>::inverseTranslation(trs.translation);
 
             changed = false;

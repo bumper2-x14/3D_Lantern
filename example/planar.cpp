@@ -8,71 +8,71 @@
 #include "ray_tracer/RT_Sphere.h"
 #include "ray_tracer/RT_Quad.h"
 
+
 int main() {
-    // Camera pulled back, looking slightly down into the scene
     RT_Camera cam(
-        Point3d(0, 2, 5),    // eye: behind and above
-        Point3d(0, 0, 0),    // look-at: scene center
+        Point3d(0, 2, 5),
+        Point3d(0, 0, 0),
         Vec3d(0, 1, 0),
-        90.0, 0.0, 1.0       // fov, aperture, focus_dist
+        90.0, 0.0, 1.0
     );
 
     // Materials
-    RT_Lambertian mat_floor  (Color(0.8, 0.8, 0.8));  // grey floor
-    RT_Lambertian mat_back   (Color(0.4, 0.6, 0.9));  // blue-ish back wall
-    RT_Lambertian mat_left   (Color(0.8, 0.2, 0.2));  // red left wall
-    RT_Lambertian mat_right  (Color(0.2, 0.8, 0.2));  // green right wall
-    RT_Lambertian mat_sphere (Color(0.9, 0.7, 0.2));  // yellow sphere
-    RT_Metallic   mat_mirror (Color(1.0, 1.0, 1.0), 0.0); // perfect mirror
+    RT_Lambertian mat_floor  (Color(0.8, 0.8, 0.8));
+    RT_Lambertian mat_back   (Color(0.4, 0.6, 0.9));
+    RT_Lambertian mat_left   (Color(0.8, 0.2, 0.2));
+    RT_Lambertian mat_right  (Color(0.2, 0.8, 0.2));
+    RT_Lambertian mat_sphere (Color(0.9, 0.7, 0.2));
+    RT_Metallic   mat_mirror (Color(1.0, 1.0, 1.0), 0.0);
 
-    // Floor: flat quad at y = 0
-    RT_Quad floor(
-        Point3d(-3.0, 0.0, -4.0),  // origin corner
-        Vec3d(6.0, 0.0, 0.0),      // u: right
-        Vec3d(0.0, 0.0, 4.0),      // v: forward
-        &mat_floor
-    );
+    // Quads — canonical unit quad in XY plane, setTransform positions them
+    RT_Quad floor_q    (&mat_floor);
+    RT_Quad back_wall  (&mat_back);
+    RT_Quad left_wall  (&mat_left);
+    RT_Quad right_wall (&mat_right);
 
-    // Back wall at z = -4
-    RT_Quad back_wall(
-        Point3d(-3.0, 0.0, -4.0),
-        Vec3d(6.0, 0.0,  0.0),
-        Vec3d(0.0, 4.0,  0.0),
-        &mat_back
-    );
+    TRSTransformd t;
 
-    // Left wall at x = -3
-    RT_Quad left_wall(
-        Point3d(-3.0, 0.0,  0.0),
-        Vec3d(0.0, 0.0, -4.0),
-        Vec3d(0.0, 4.0,  0.0),
-        &mat_left
-    );
+    // Floor: flat at y=0, 6x4 units, centered at (0,0,-2)
+    // canonical quad is XY, rotate -90 around X to make it XZ
+    t.setTranslation({0.0,  0.0, -2.0});
+    t.setRotation   ({-90.0, 0.0, 0.0});
+    t.setScale      ({6.0,  4.0,  1.0});
+    floor_q.setTransform(t); t.reset();
 
-    // Right wall at x = 3
-    RT_Quad right_wall(
-        Point3d( 3.0, 0.0, -4.0),
-        Vec3d(0.0, 0.0,  4.0),
-        Vec3d(0.0, 4.0,  0.0),
-        &mat_right
-    );
+    // Back wall: at z=-4, 6x4 units
+    t.setTranslation({0.0, 2.0, -4.0});
+    t.setScale      ({6.0, 4.0,  1.0});
+    back_wall.setTransform(t); t.reset();
 
-    // A sphere sitting on the floor (center at y=0.5, radius=0.5)
-    RT_Sphere sphere(Point3d(0.0, 0.5, -2.0), 0.5, &mat_sphere);
+    // Left wall: at x=-3, 4x4 units, rotate 90 around Y
+    t.setTranslation({-3.0, 2.0, -2.0});
+    t.setRotation   ({0.0, 90.0, 0.0});
+    t.setScale      ({4.0, 4.0,  1.0});
+    left_wall.setTransform(t); t.reset();
 
-    // A small mirror sphere next to it
-    RT_Sphere mirror_sphere(Point3d(1.2, 0.4, -1.5), 0.4, &mat_mirror);
+    // Right wall: at x=3, rotate -90 around Y
+    t.setTranslation({3.0, 2.0, -2.0});
+    t.setRotation   ({0.0, -90.0, 0.0});
+    t.setScale      ({4.0, 4.0,   1.0});
+    right_wall.setTransform(t); t.reset();
 
-    // Build scene
+    // Spheres
+    RT_Sphere sphere       (&mat_sphere);
+    RT_Sphere mirror_sphere(&mat_mirror);
+
+    t.setTranslation({0.0, 0.5, -2.0}); t.setScale({0.5, 0.5, 0.5}); sphere       .setTransform(t); t.reset();
+    t.setTranslation({1.2, 0.4, -1.5}); t.setScale({0.4, 0.4, 0.4}); mirror_sphere.setTransform(t); t.reset();
+
+    // Scene
     RT_ObjectList scene;
-    scene.add(&floor);
+    scene.add(&floor_q);
     scene.add(&back_wall);
     scene.add(&left_wall);
     scene.add(&right_wall);
     scene.add(&sphere);
     scene.add(&mirror_sphere);
 
-    // Render
     RT_Renderer renderer(800, 16.0/9.0, 100, 50);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
@@ -83,4 +83,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "planar.ppm");
     assert(file.good());
     std::cout << "planar.ppm generated successfully\n";
+    return 0;
 }

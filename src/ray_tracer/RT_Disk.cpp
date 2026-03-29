@@ -9,6 +9,25 @@ RT_Disk::RT_Disk(const Point3d& _center, const Vec3d& _normal, double _radius,
                     D = dot(normal, Vec3d(center.x, center.y, center.z));
 }
 
+RT_Disk::RT_Disk(RT_Material* _material) : 
+    center(Point3d(0, 0, 0)), normal(Vec3d(0, 1, 0)), radius(1.0),
+    inner_radius(0.0), material(_material) {
+    
+        D = dot(normal, Vec3d(center.x, center.y, center.z));
+}
+
+void RT_Disk::setTransform(const TRSTransformd& _transform) {
+    RT_Object::setTransform(_transform);
+    const Mat4d& M = getMatrix();
+
+    center = M * center;                        // point — translation applies
+    normal = normalize(M * normal);             // direction — no translation
+    radius *= _transform.trs.scale.x;           // scale radius — assume uniform scale
+    inner_radius *= _transform.trs.scale.x;     // scale inner radius too
+
+    D = dot(normal, Vec3d(center.x, center.y, center.z));
+}
+
 
 bool RT_Disk::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     double denom = dot(normal, ray.getDirection());

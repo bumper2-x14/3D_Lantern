@@ -1,18 +1,17 @@
 #include "RT_Box.h"
 
-RT_Box::RT_Box(const Point3d& _min, const Point3d& _max, RT_Material* _material)
-    : box_min(_min), box_max(_max), material(_material)
+RT_Box::RT_Box(RT_Material* _material)
+    : material(_material)
 {
-    Vec3d dx(_max.x - _min.x, 0, 0);
-    Vec3d dy(0, _max.y - _min.y, 0);
-    Vec3d dz(0, 0, _max.z - _min.z);
+    // unit box from (-1,-1,-1) to (1,1,1)
+    Point3d pMMM(-1,-1,-1);
+    Point3d pXMM( 1,-1,-1);
+    Point3d pMXM(-1, 1,-1);
+    Point3d pMMX(-1,-1, 1);
+    Vec3d dx(2,0,0);
+    Vec3d dy(0,2,0);
+    Vec3d dz(0,0,2);
 
-    Point3d pMMM(_min.x, _min.y, _min.z);  // all min
-    Point3d pXMM(_max.x, _min.y, _min.z);  // x max
-    Point3d pMXM(_min.x, _max.y, _min.z);  // y max
-    Point3d pMMX(_min.x, _min.y, _max.z);  // z max
-
-    
     faces[0] = RT_Quad(pMMX, dx, dy, material);  // FRONT  (+Z)
     faces[1] = RT_Quad(pMMM, dy, dx, material);  // BACK   (-Z)
     faces[2] = RT_Quad(pMMM, dz, dy, material);  // LEFT   (-X)
@@ -20,6 +19,14 @@ RT_Box::RT_Box(const Point3d& _min, const Point3d& _max, RT_Material* _material)
     faces[4] = RT_Quad(pMXM, dz, dx, material);  // TOP    (+Y)
     faces[5] = RT_Quad(pMMM, dx, dz, material);  // BOTTOM (-Y)
     
+}
+
+
+void RT_Box::setTransform(const TRSTransformd& _transform) {
+    RT_Object::setTransform(_transform);
+    // propagate transform to each face
+    for (RT_Quad& face : faces)
+        face.setTransform(_transform);
 }
     
 

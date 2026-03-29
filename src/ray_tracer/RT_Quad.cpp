@@ -4,32 +4,45 @@
 RT_Quad::RT_Quad() {}
 
 // Q + u + v constructor — preferred
-RT_Quad::RT_Quad(const Point3d& _Q, const Vec3d& _u, const Vec3d& _v,
-                 RT_Material* _material)
-    : Q(_Q), u(_u), v(_v), material(_material)
+RT_Quad::RT_Quad(const Point3d& _Q, const Vec3d& _u, const Vec3d& _v, RT_Material* _material)
+    : Q0(_Q), u0(_u), v0(_v),  // add these
+      Q(_Q),  u(_u),  v(_v),
+      material(_material) {
+    Vec3d n = cross(u, v);
+    normal  = normalize(n);
+    w       = n / dot(n, n);
+    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+}
+
+RT_Quad::RT_Quad(RT_Material* _material) : 
+    Q0(Point3d(-0.5, -0.5, 0)),
+    u0(Vec3d(1, 0, 0)),
+    v0(Vec3d(0, 1, 0)),
+    Q (Point3d(-0.5, -0.5, 0)),
+    u (Vec3d(1, 0, 0)),
+    v (Vec3d(0, 1, 0)),
+    material(_material)
 {
     Vec3d n = cross(u, v);
-    normal = normalize(n);
-    w = n / dot(n, n); // used for hit-point-in-quad test
-    D = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    normal  = normalize(n);
+    w       = n / dot(n, n);
+    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
 }
 
 
-RT_Quad::RT_Quad(const Point3d& _point, const Vec3d& _normal,
-                 RT_Material* _material)
-    : Q(_point), material(_material)
-{
-    normal = normalize(_normal);
-    D      = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+void RT_Quad::setTransform(const TRSTransformd& _transform) {
+    RT_Object::setTransform(_transform);
+    const Mat4d& M = getMatrix();
+    // always transform from canonical values — not from previously transformed ones
+    Q = M * Q0;   // point — translation applies
+    u = M * u0;   // direction — no translation (Vec3 operator)
+    v = M * v0;   // direction — no translation (Vec3 operator)
 
-    // Build arbitrary u/v axes perpendicular to normal
-    // so the bounded rayIntersect still works
-    Vec3d up = std::fabs(normal.y) < 0.9 ? Vec3d(0,1,0) : Vec3d(1,0,0);
-    u = normalize(cross(up, normal)) * 1e6;  // effectively infinite quad
-    v = cross(normal, normalize(u))  * 1e6;
-    w = normalize(normal);
+    Vec3d n = cross(u, v);
+    normal  = normalize(n);
+    w       = n / dot(n, n);
+    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
 }
-
 
 bool RT_Quad::rayIntersect(const Rayd& ray, const Intervald& t_interval,
                            RT_Record& rec) const

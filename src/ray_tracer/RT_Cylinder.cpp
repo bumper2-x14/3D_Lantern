@@ -2,20 +2,19 @@
 #include "RT_Disk.h"
 #include <cmath>
 
-RT_Cylinder::RT_Cylinder(const Point3d& _center, double _radius, double _y_min, double _y_max,
-                bool _capped, RT_Material* _material) :
-                center(_center), radius(_radius), y_min(_y_min), y_max(_y_max), capped(_capped), material(_material)                               
-                {}
-
+RT_Cylinder::RT_Cylinder(bool _capped, RT_Material* _material) : capped(_capped), material(_material) {}
 
 bool RT_Cylinder::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
-    Vec3d oc = ray.getOrigin() - center;
+    Mat4d inv = getInverse();
+    Rayd local_ray = transformRay(ray, inv);
 
-    double dir_x = ray.getDirection().x;
-    double dir_z = ray.getDirection().z;
+    Vec3d oc = local_ray.getOrigin() - Point3d(0, 0, 0);
+
+    double dir_x = local_ray.getDirection().x;
+    double dir_z = local_ray.getDirection().z;
     double a = dir_x * dir_x + dir_z * dir_z;
     double b = 2.0 * (oc.x * dir_x + oc.z * dir_z);
-    double c = oc.x * oc.x + oc.z * oc.z - radius * radius;
+    double c = oc.x * oc.x + oc.z * oc.z - 1.0;
 
     double discriminant = b * b - 4.0* a * c;
     bool   hit_anything = false;
@@ -29,28 +28,22 @@ bool RT_Cylinder::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_
             double t = (-b + sign * sqrt_d) / (2.0 * a);
             if (!range.contains(t)) continue;
 
-            Point3d p  = ray.at(t);
-            double  py = p.y - center.y;  // local Y
+            Point3d localP = local_ray.at(t);
 
-            if (py < y_min || py > y_max) continue;
+            if (localP.y < -1.0 || localP.y > 1.0) continue;
 
-            // Outward normal points radially from the axis
-            Vec3d outward_normal(
-                (p.x - center.x) / radius,
-                0.0,
-                (p.z - center.z) / radius);
+            // radial normal in object space
+            Vec3d local_normal(localP.x, 0.0, localP.z);
+            Vec3d world_normal = transformNormal(local_normal, inv);
 
             closest.t = t;
-            closest.p = p;
+            closest.p = getMatrix() * localP;;
             closest.material = material;
-            closest.setNormal(ray, outward_normal);
+            closest.setNormal(ray, world_normal);
 
-            double theta = std::atan2(p.z - center.z,
-                                      p.x - center.x);
-            
-            closest.uv.x = (theta + M_PI) / (2.0 * M_PI);
-            closest.uv.y = (py - y_min) / (y_max - y_min);
-            
+            double theta     = std::atan2(localP.z, localP.x);
+            closest.uv.x     = (theta + M_PI) / (2.0 * M_PI);
+            closest.uv.y     = (localP.y + 1.0) / 2.0;  // remap [-1,1] to [0,1]
 
             range = Intervald(t_interval.min, t);
             hit_anything = true;
@@ -59,13 +52,16 @@ bool RT_Cylinder::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_
 
     // End caps
     if (capped) {
-        for (double cap_y : {y_min, y_max}) {
-            Vec3d cap_normal(0, cap_y < 0 ? -1.0 : 1.0, 0);
-            Point3d cap_center(center.x, center.y + cap_y, center.z);
-            RT_Disk cap(cap_center, cap_normal, radius, 0.0, material);
+            for (double cap_y : {-1.0, 1.0}) {
+            Vec3d   cap_normal(0, cap_y < 0 ? -1.0 : 1.0, 0);
+            Point3d cap_center(0, cap_y, 0);
 
+            RT_Disk cap(cap_center, cap_normal, 1.0, 0.0, material);
             RT_Record cap_rec;
-            if (cap.rayIntersect(ray, range, cap_rec)) {
+            if (cap.rayIntersect(local_ray, range, cap_rec)) {  // local_ray ✓
+                Point3d localP = local_ray.at(cap_rec.t);
+                cap_rec.p = getMatrix() * localP;
+                cap_rec.normal = transformNormal(cap_rec.normal, inv);
                 range = Intervald(t_interval.min, cap_rec.t);
                 closest = cap_rec;
                 hit_anything = true;

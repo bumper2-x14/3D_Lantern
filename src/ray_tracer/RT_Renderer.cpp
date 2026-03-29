@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <iomanip>
 
 #include "RT_Renderer.h"
 #include "math/utility.h"
@@ -52,6 +53,9 @@ void RT_Renderer::render() {
 
     camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel);
 
+    int total = img_height * img_width;
+    int done  = 0;
+
     for (int j = 0; j < img_height; j++){
         for (int i = 0; i < img_width; i++){
             Color pix_color(0.0, 0.0 ,0.0);
@@ -62,8 +66,15 @@ void RT_Renderer::render() {
                 }
             }
             img_buffer[j * img_width + i] = sample_scale * pix_color;
+            done++;
         }
+        std::cout << "\rRendering: " 
+                  << std::fixed << std::setprecision(1)
+                  << (100.0 * done / total) << "% "
+                  << "(" << done << "/" << total << " px)"
+                  << std::flush;
     }
+        std::cout << "\nDone.\n";
 }
 
 void RT_Renderer::writePPM(const std::string& path) const {

@@ -2,23 +2,21 @@
 #include "RT_Disk.h"
 
 
-RT_Cone::RT_Cone(const Point3d& _apex, double _half_angle, double _y_min, double _y_max,
-                    bool _capped, RT_Material* _material) :
-    apex(_apex), half_angle(_half_angle),
-    y_min(_y_min), y_max(_y_max),
-    capped(_capped), material(_material) {}
+RT_Cone::RT_Cone(bool _capped, RT_Material* _material) : capped(_capped), material(_material) {}
 
 
 bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
-    double k  = std::tan(half_angle);
-    double k2 = k * k;
+    Mat4d inv      = getInverse();
+    Rayd local_ray = transformRay(ray, inv);
 
-    Vec3d oc = ray.getOrigin() - apex;
-    Vec3d d  = ray.getDirection();
+    // unit cone: apex=(0,0,0), k=tan(45)=1, y=-1 to 0
+    // equation: x^2 + z^2 - y^2 = 0
+    Vec3d oc = local_ray.getOrigin() - Point3d(0, 0, 0);
+    Vec3d d  = local_ray.getDirection();
 
-    double a = d.x*d.x + d.z*d.z - k2 * d.y*d.y;
-    double b = 2.0 * (oc.x*d.x + oc.z*d.z - k2 * oc.y*d.y);
-    double c = oc.x*oc.x + oc.z*oc.z - k2 * oc.y*oc.y;
+    double a = d.x*d.x + d.z*d.z - d.y*d.y;
+    double b = 2.0 * (oc.x*d.x + oc.z*d.z - oc.y*d.y);
+    double c = oc.x*oc.x + oc.z*oc.z - oc.y*oc.y;
 
     double discriminant = b*b - 4.0*a*c;
     bool   hit_anything = false;
@@ -32,47 +30,42 @@ bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
             double t = (-b + sign * sqrt_d) / (2.0 * a);
             if (!range.contains(t)) continue;
 
-            Point3d p  = ray.at(t);
-            double  py = p.y - apex.y;   // local Y from apex
-
-            if (py < y_min || py > y_max) continue;
+            Point3d localP = local_ray.at(t);
+            if (localP.y < -1.0 || localP.y > 0.0) continue;  // y=-1 to 0
 
             // Gradient of the cone implicit: normal has a Y component = -k^2 * py
-            double r = std::sqrt((p.x-apex.x)*(p.x-apex.x)
-                               + (p.z-apex.z)*(p.z-apex.z));
-            Vec3d outward_normal(
-                (p.x - apex.x) / r,
-                -k * std::cos(half_angle),
-                (p.z - apex.z) / r);
-            outward_normal = normalize(outward_normal);
+            double r = std::sqrt(localP.x*localP.x + localP.z*localP.z);
+            if (r < 1e-10) continue;
 
-            closest.t        = t;
-            closest.p        = p;
+            // cone normal in object space
+            Vec3d local_normal(localP.x / r, -localP.y / r, localP.z / r);
+            local_normal = normalize(local_normal); 
+
+            closest.t = t;
+            closest.p = getMatrix() * localP;
             closest.material = material;
-            closest.setNormal(ray, outward_normal);
+            closest.setNormal(ray, transformNormal(local_normal, inv));
 
-            
-            double theta = std::atan2(p.z - apex.z, p.x - apex.x);
+            double theta = std::atan2(localP.z, localP.x);
             closest.uv.x = (theta + M_PI) / (2.0 * M_PI);
-            closest.uv.y = (py - y_min) / (y_max - y_min);
-            
-            range        = Intervald(t_interval.min, t);
+            closest.uv.y = (localP.y + 1.0);  // remap [-1,0] to [0,1]
+
+            range = Intervald(t_interval.min, t);
             hit_anything = true;
         }
     }
 
     // Base cap
     if (capped) {
-        double cap_y  = y_max;   // base is at y_max from apex
-        double cap_r  = std::fabs(cap_y) * k;
-        Point3d cap_center(apex.x, apex.y + cap_y, apex.z);
-        Vec3d   cap_normal(0, cap_y >= 0 ? 1.0 : -1.0, 0);
-        RT_Disk cap(cap_center, cap_normal, cap_r, 0.0, material);
-
+        RT_Disk cap(Point3d(0, -1, 0), Vec3d(0, -1, 0), 1.0, 0.0, material);
         RT_Record cap_rec;
-        if (cap.rayIntersect(ray, range, cap_rec)) {
-            closest      = cap_rec;
-            hit_anything = true;
+        if (cap.rayIntersect(local_ray, range, cap_rec)) {
+            Point3d localP   = local_ray.at(cap_rec.t);
+            cap_rec.p        = getMatrix() * localP;
+            cap_rec.normal   = transformNormal(cap_rec.normal, inv);
+            range            = Intervald(t_interval.min, cap_rec.t);
+            closest          = cap_rec;
+            hit_anything     = true;
         }
     }
 
