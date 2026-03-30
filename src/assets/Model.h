@@ -1,22 +1,21 @@
-#ifndef MD_MODEL_H
-#define MD_MODEL_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include <string>
 #include <vector>
 
 #include "mesh_data.h"
 
-class MD_Model{
+class Model{
     public:
     
-        MD_Model(const std::string& path);
-        void draw(MD_Shader& shader);
+        Model(const std::string& path);
 
     private:
         std::vector<MeshData> meshes;
 
         void loadModel(std::string path);
-        MD_Mesh loadOBJ(std::string path);
+        MeshData loadOBJ(std::string path);
        
 };
 
