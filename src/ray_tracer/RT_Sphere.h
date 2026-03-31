@@ -9,6 +9,9 @@ class RT_Sphere : public RT_Object {
     public:
         RT_Sphere(RT_Material* _material);
         // TODO: Moving sphere constructor
+
+        void setTransform(const TRSTransformd& t) override;
+
         bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const override;
 
 

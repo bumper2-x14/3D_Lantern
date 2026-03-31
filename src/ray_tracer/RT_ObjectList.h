@@ -7,20 +7,19 @@
 
 class RT_ObjectList : public RT_Object {
     public:
+        std::vector<RT_Object*> objects;
+
         RT_ObjectList() = default;
         RT_ObjectList(RT_Object* object);
 
         void add(RT_Object* object);
         void clear();
         bool empty() const;
-        int size() const;
+        size_t size() const;
 
         bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const override;  
 
-        static void regressionTest();
-
-    private:
-        std::vector<RT_Object*> objects;
+        static void regressionTest(); 
 };
 
 #endif

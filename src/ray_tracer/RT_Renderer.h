@@ -7,6 +7,8 @@
 #include "RT_Camera.h"
 #include "RT_ObjectList.h"
 #include "math/color.h"
+#include "RT_BVH.h"
+
 
 class RT_Renderer {
     public:
@@ -37,7 +39,7 @@ class RT_Renderer {
         int sqrt_spp;
         double sample_scale;
 
-        Color traceRay(const Rayd& ray, int recursive_depth) const; 
+        Color traceRay(const Rayd& ray, int recursive_depth, RT_Object* accel) const; 
 
 };
 

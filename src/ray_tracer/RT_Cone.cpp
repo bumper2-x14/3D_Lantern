@@ -4,6 +4,10 @@
 
 RT_Cone::RT_Cone(bool _capped, RT_Material* _material) : capped(_capped), material(_material) {}
 
+void RT_Cone::setTransform(const TRSTransformd& t) {
+    RT_Object::setTransform(t);
+    setBoundingBox(computeBBox(BoundingBoxd(Point3d(-1,-1,-1), Point3d(1,0,1))));
+}
 
 bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     Mat4d inv      = getInverse();
@@ -37,9 +41,7 @@ bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
             double r = std::sqrt(localP.x*localP.x + localP.z*localP.z);
             if (r < 1e-10) continue;
 
-            // cone normal in object space
-            Vec3d local_normal(localP.x / r, -localP.y / r, localP.z / r);
-            local_normal = normalize(local_normal); 
+            Vec3d local_normal = normalize(Vec3d(localP.x, localP.y, localP.z)); 
 
             closest.t = t;
             closest.p = getMatrix() * localP;
@@ -60,12 +62,12 @@ bool RT_Cone::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
         RT_Disk cap(Point3d(0, -1, 0), Vec3d(0, -1, 0), 1.0, 0.0, material);
         RT_Record cap_rec;
         if (cap.rayIntersect(local_ray, range, cap_rec)) {
-            Point3d localP   = local_ray.at(cap_rec.t);
-            cap_rec.p        = getMatrix() * localP;
-            cap_rec.normal   = transformNormal(cap_rec.normal, inv);
-            range            = Intervald(t_interval.min, cap_rec.t);
-            closest          = cap_rec;
-            hit_anything     = true;
+            Point3d localP = local_ray.at(cap_rec.t);
+            cap_rec.p = getMatrix() * localP;
+            cap_rec.setNormal(ray, transformNormal(cap_rec.normal, inv));
+            range = Intervald(t_interval.min, cap_rec.t);
+            closest = cap_rec;
+            hit_anything = true;
         }
     }
 

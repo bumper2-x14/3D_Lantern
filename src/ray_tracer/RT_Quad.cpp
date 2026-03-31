@@ -39,9 +39,20 @@ void RT_Quad::setTransform(const TRSTransformd& _transform) {
     v = M * v0;   // direction — no translation (Vec3 operator)
 
     Vec3d n = cross(u, v);
-    normal  = normalize(n);
-    w       = n / dot(n, n);
-    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    normal = normalize(n);
+    w = n / dot(n, n);
+    D = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    
+    // 4 corners of the quad — no hardcoding needed
+    Point3d c0 = Q;
+    Point3d c1 = Q + u;
+    Point3d c2 = Q + v;
+    Point3d c3 = Q + u + v;
+
+    setBoundingBox(BoundingBoxd(
+        Point3d(std::min({c0.x, c1.x, c2.x, c3.x}), std::min({c0.y, c1.y, c2.y, c3.y}), std::min({c0.z, c1.z, c2.z, c3.z})),
+        Point3d(std::max({c0.x, c1.x, c2.x, c3.x}), std::max({c0.y, c1.y, c2.y, c3.y}), std::max({c0.z, c1.z, c2.z, c3.z}))
+    ));
 }
 
 bool RT_Quad::rayIntersect(const Rayd& ray, const Intervald& t_interval,

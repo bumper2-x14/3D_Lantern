@@ -26,6 +26,17 @@ void RT_Disk::setTransform(const TRSTransformd& _transform) {
     inner_radius *= _transform.trs.scale.x;     // scale inner radius too
 
     D = dot(normal, Vec3d(center.x, center.y, center.z));
+
+    // bbox of a disk — extent along each axis depends on normal direction
+    // for a disk with arbitrary normal n and radius r:
+    // half extent on axis i = r * sqrt(1 - n[i]^2)
+    double ex = radius * std::sqrt(1.0 - normal.x * normal.x);
+    double ey = radius * std::sqrt(1.0 - normal.y * normal.y);
+    double ez = radius * std::sqrt(1.0 - normal.z * normal.z);
+    setBoundingBox(BoundingBoxd(
+        Point3d(center.x - ex, center.y - ey, center.z - ez),
+        Point3d(center.x + ex, center.y + ey, center.z + ez)
+    ));
 }
 
 

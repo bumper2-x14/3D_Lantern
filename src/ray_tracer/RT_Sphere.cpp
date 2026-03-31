@@ -4,6 +4,11 @@
 
 RT_Sphere::RT_Sphere(RT_Material* _material): material(_material) {}
 
+void RT_Sphere::setTransform(const TRSTransformd& t) {
+    RT_Object::setTransform(t);
+    setBoundingBox(computeBBox(BoundingBoxd(Point3d(-1,-1,-1), Point3d(1,1,1))));
+}
+
 bool RT_Sphere::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     Mat4d inv = getInverse();
     Rayd local_ray = transformRay(ray, inv);

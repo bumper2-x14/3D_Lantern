@@ -19,7 +19,7 @@ int main() {
         Point3d(0, 0,  1),
         Point3d(0, 0, -1),
         Vec3d(0, 3, 0),
-        90.0, 0.0, 10.0
+        60.0, 0.0, 10.0
     );
 
     // Materials
@@ -32,7 +32,7 @@ int main() {
     RT_Lambertian mat_cyl_right (new ImageTexture(IMG_DIR "texture-background.jpg"));
     RT_Lambertian mat_cyl_left_back (new PerlinTexture(WOOD, 30));
     RT_Lambertian mat_cone_left (new PerlinTexture(TURBULENCE, 5));
-    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.7);
+    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.0);
 
     // Spheres
     RT_Sphere sphere_center(&mat_center);

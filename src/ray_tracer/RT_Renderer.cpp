@@ -4,6 +4,7 @@
 
 #include "RT_Renderer.h"
 #include "math/utility.h"
+#include "RT_BVH.h"
 
 RT_Renderer::RT_Renderer(int _width, double _aspect_ratio, int _samples_per_pixel, int _depth):
     camera(nullptr), scene(nullptr), background(Color(0,0,0)),img_width(_width), 
@@ -30,16 +31,16 @@ void RT_Renderer::setScene(RT_ObjectList* _scene) { scene = _scene; }
 
 void RT_Renderer::setBackground(const Color& _background) { background = _background; }
 
-Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth) const {
+Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* accel) const {
     if (recursive_depth <= 0)
         return Color(0, 0, 0);
 
     RT_Record rec;
-    if (scene->rayIntersect(ray, Intervald(0.001, infinity<double>), rec)) {
+    if (accel->rayIntersect(ray, Intervald(0.001, infinity<double>), rec)) {
         Color attenuation;
         Rayd scattered;
         if (rec.material && rec.material->rayScatter(ray, rec, attenuation, scattered))
-            return attenuation * traceRay(scattered, recursive_depth - 1);
+            return attenuation * traceRay(scattered, recursive_depth - 1, accel);
         return Color(0, 0, 0);
     }
     return background;
@@ -51,7 +52,8 @@ void RT_Renderer::render() {
         return;
     }
 
-    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel);
+    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
+    RT_Object* accelerated = new BVHNode(*scene);
 
     int total = img_height * img_width;
     int done  = 0;
@@ -62,7 +64,7 @@ void RT_Renderer::render() {
             for (int inner_j = 0; inner_j < sqrt_spp; inner_j++){
                 for (int inner_i = 0; inner_i < sqrt_spp; inner_i++){
                     Rayd ray = camera->generateRay(i, j, inner_i, inner_j);
-                    pix_color += traceRay(ray, depth);
+                    pix_color += traceRay(ray, depth, accelerated);
                 }
             }
             img_buffer[j * img_width + i] = sample_scale * pix_color;
