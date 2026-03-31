@@ -6,6 +6,7 @@ add_library(assets STATIC
     image_texture.cpp
     perlin.cpp
     perlin_texture.cpp
+    model.cpp
 )
 
 target_include_directories(assets PUBLIC ${CMAKE_SOURCE_DIR}/src)
