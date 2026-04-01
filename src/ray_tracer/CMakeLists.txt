@@ -11,7 +11,9 @@ add_library(ray_tracer STATIC
     RT_Lambertian.cpp
     RT_Metallic.cpp
     RT_Dielectric.cpp
+    RT_Isotropic.cpp
     RT_BVH.cpp
+    RT_Medium.cpp
 )
 
 target_include_directories(ray_tracer PUBLIC ${CMAKE_SOURCE_DIR}/src)

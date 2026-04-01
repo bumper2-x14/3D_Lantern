@@ -10,6 +10,7 @@
 #include "ray_tracer/RT_Cylinder.h"
 #include "ray_tracer/RT_Cone.h"
 #include "assets/perlin_texture.h"
+#include "ray_tracer/RT_Medium.h"
 
 int main() {
     RT_Camera cam(
@@ -58,6 +59,14 @@ int main() {
     t.setTranslation({-1.0, 0.5, -1.5}); t.setScale({0.365, 1.0, 0.365}); cone1.setTransform(t); t.reset();
     t.setTranslation({ 1.0, 0.5, -1.5}); t.setScale({0.365, 1.0, 0.365}); cone2.setTransform(t); t.reset();
 
+    RT_Sphere smoke_boundary(&mat_ground); 
+    TRSTransformd t_smoke;
+
+    t_smoke.setTranslation({0.0, 0.0, -2.0});
+    t_smoke.setScale({10.0, 10.0, 10.0});
+    smoke_boundary.setTransform(t_smoke);
+    RT_Medium smoke(&smoke_boundary, 0.3, Color(0.7, 0.7, 0.7));
+
     // Scene
     RT_ObjectList scene;
     scene.add(&ground);
@@ -70,6 +79,7 @@ int main() {
     scene.add(&cyl2);
     scene.add(&cone1);
     scene.add(&cone2);
+    scene.add(&smoke);
 
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);

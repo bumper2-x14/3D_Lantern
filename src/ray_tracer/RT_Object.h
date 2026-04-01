@@ -21,8 +21,11 @@ class RT_Object {
         BoundingBoxd getBoundingBox() const {
             return bbox;
         }
-    
-    protected:
+
+        TRSTransformd getTransform() const {
+            return tr;
+        }
+
         const Mat4d& getMatrix() const {
             return tr.getMatrix();
         }
@@ -30,7 +33,8 @@ class RT_Object {
         const Mat4d& getInverse() const {
             return tr.getInverse();
         }
-
+    
+    protected:
         Rayd transformRay(const Rayd& ray, const Mat4d& inv) const {
             Vec3d localDir = inv * ray.getDirection();
             double scale = localDir.length();       // capture scale factor
@@ -45,7 +49,6 @@ class RT_Object {
         void setBoundingBox(const BoundingBoxd& _bbox) {
             bbox = _bbox;
         }
-
 
         BoundingBoxd computeBBox (const BoundingBoxd& local_box) const {
             const Mat4d& M = getMatrix();
