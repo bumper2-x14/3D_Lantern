@@ -25,9 +25,9 @@ void MD_Quad::buildShape(){
 
     // Texture coordinates
     Vec2f uv0(0.0f, 0.0f);
-    Vec2f uv1(0.0f, 0.0f);
-    Vec2f uv2(0.0f, 0.0f);
-    Vec2f uv3(0.0f, 0.0f);
+    Vec2f uv1(1.0f, 0.0f);
+    Vec2f uv2(0.0f, 1.0f);
+    Vec2f uv3(1.0f, 1.0f);
 
     mesh.data->vertices.push_back(Vertex(p0, n, uv0));   
     mesh.data->vertices.push_back(Vertex(p1, n, uv1));   
