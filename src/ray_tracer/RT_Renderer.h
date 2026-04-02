@@ -6,12 +6,15 @@
 
 #include "RT_Camera.h"
 #include "RT_ObjectList.h"
+#include "RT_Light.h"
 #include "math/color.h"
 #include "RT_BVH.h"
 
 
 class RT_Renderer {
     public:
+        std::vector<RT_Light*> p_lights;
+        
         RT_Renderer(int _img_width, double _aspect_ratio, int _samples_per_pixel, int _depth);
         ~RT_Renderer();
 

@@ -12,6 +12,7 @@
 #include "ray_tracer/RT_Cylinder.h"
 #include "ray_tracer/RT_Cone.h"
 #include "ray_tracer/RT_Quad.h"
+#include "ray_tracer/RT_PointLight.h"
 
 int main() {
     RT_Camera cam(
@@ -70,6 +71,8 @@ int main() {
     RT_Cone cone(true, &red_mat);
     t.setTranslation({2.0, 0.5, -2.0}); t.setScale({0.546, 1.0, 0.546}); cone.setTransform(t); t.reset();
 
+    RT_PointLight light1(Point3d(-2.0, 2.0, 3.0), Color(1.0, 1.0, 1.0), 1.0);
+
     // Scene
     RT_ObjectList scene;
     scene.add(&ground);
@@ -80,11 +83,13 @@ int main() {
     scene.add(&sphere_right);
     scene.add(&cylinder);
     scene.add(&cone);
+    
 
     RT_Renderer renderer(800, 16.0/9.0, 50, 10);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
-    renderer.setBackground(Color(0.5, 0.7, 1.0));
+    renderer.p_lights.push_back(&light1);
+    renderer.setBackground(Color(0.0, 0.0, 0.0));
     renderer.render();
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "mirror.ppm");
 

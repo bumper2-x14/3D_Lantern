@@ -14,6 +14,8 @@ add_library(ray_tracer STATIC
     RT_Isotropic.cpp
     RT_BVH.cpp
     RT_Medium.cpp
+    RT_PointLight.cpp
+    RT_DirectionalLight.cpp
 )
 
 target_include_directories(ray_tracer PUBLIC ${CMAKE_SOURCE_DIR}/src)

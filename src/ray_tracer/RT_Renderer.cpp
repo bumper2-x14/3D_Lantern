@@ -36,14 +36,51 @@ Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* acc
         return Color(0, 0, 0);
 
     RT_Record rec;
-    if (accel->rayIntersect(ray, Intervald(0.001, infinity<double>), rec)) {
-        Color attenuation;
-        Rayd scattered;
-        if (rec.material && rec.material->rayScatter(ray, rec, attenuation, scattered))
-            return attenuation * traceRay(scattered, recursive_depth - 1, accel);
-        return Color(0, 0, 0);
+    if (!accel->rayIntersect(ray, Intervald(0.001, infinity<double>), rec))
+        return background;
+
+    Color attenuation;
+    Rayd  scattered;
+    if (!rec.material || !rec.material->rayScatter(ray, rec, attenuation, scattered))
+        return Color(0, 0, 0);  // hit something that doesn't scatter — return black
+
+    // direct lighting from point lights
+    Color direct(0, 0, 0);
+    for (const auto& light : p_lights) {
+        switch (light->type) {
+            case POINTLIGHT: {
+                Vec3d to_light = light->position - rec.p;
+                double dist = to_light.length();
+                Vec3d light_dir = normalize(to_light);
+
+                RT_Record shadow_rec;
+                bool in_shadow = accel->rayIntersect(Rayd(rec.p, light_dir), Intervald(0.001, dist - 0.001),shadow_rec);
+                if (!in_shadow) {
+                    double cos_theta = std::max(0.0, dot(rec.normal, light_dir));
+                    direct += attenuation * light->radiate(dist) * cos_theta;
+                }
+                break;
+            }
+            
+            case DIRECTIONALLIGHT: {
+                // Shadow ray shoots infinitely far in the light direction
+                // so dist is infinity — any hit blocks the light
+                RT_Record shadow_rec;
+                bool in_shadow = accel->rayIntersect(
+                    Rayd(rec.p, light->direction),
+                    Intervald(0.001, infinity<double>), shadow_rec);
+
+                if (!in_shadow) {
+                    double cos_theta = std::max(0.0, dot(rec.normal, light->direction));
+                    direct += attenuation * light->radiate() * cos_theta;
+                }
+            }
+        }
     }
-    return background;
+    // indirect bounce
+    Color indirect = attenuation * traceRay(scattered, recursive_depth - 1, accel);
+
+    return direct + indirect;
 }
 
 void RT_Renderer::render() {

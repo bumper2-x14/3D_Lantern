@@ -11,6 +11,7 @@
 #include "ray_tracer/RT_Cone.h"
 #include "assets/perlin_texture.h"
 #include "ray_tracer/RT_Medium.h"
+#include "ray_tracer/RT_DirectionalLight.h"
 
 int main() {
     RT_Camera cam(
@@ -65,7 +66,14 @@ int main() {
     t_smoke.setTranslation({0.0, 0.0, -2.0});
     t_smoke.setScale({10.0, 10.0, 10.0});
     smoke_boundary.setTransform(t_smoke);
-    RT_Medium smoke(&smoke_boundary, 0.3, Color(0.7, 0.7, 0.7));
+    RT_Medium smoke(&smoke_boundary, 0.7, Color(1.0, 1.0, 1.0));
+
+    // Light
+    RT_DirectionalLight light(
+        normalize(Vec3d(-5.0, 5.0, -1.0)),   // direction
+        Color(1.0, 1.0, 1.0),      // white light
+        1.5                        // intensity
+    );
 
     // Scene
     RT_ObjectList scene;
@@ -79,12 +87,13 @@ int main() {
     scene.add(&cyl2);
     scene.add(&cone1);
     scene.add(&cone2);
-    scene.add(&smoke);
+    //scene.add(&smoke);
 
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
-    renderer.setBackground(Color(0.5, 0.7, 1.0));
+    renderer.p_lights.push_back(&light);
+    renderer.setBackground(Color(0.0, 0.0, 0.0));
     renderer.render();
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "perlin_scene.ppm");
 
