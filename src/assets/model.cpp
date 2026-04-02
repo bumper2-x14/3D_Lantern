@@ -1,27 +1,27 @@
 #include "model.h"
 
+Model::Model(){};
+
 Model::Model(const std::string& path){
     loadModel(path);
 }
 
 bool Model::loadModel(const std::string& path){
-    // clear previous data
-    meshes.clear();
+    if(! loadOBJ(path)) return false;
 
-    // temp mesh
-    MeshData mesh;
-    if(! loadOBJ(path, mesh)) return false;
-
-    meshes.push_back(mesh);
     return true;
 }
 
 // return private data member (mesh) 
-const std::vector<MeshData>& Model::getMeshes() const {
-    return meshes;
+const MeshData& Model::getMesh() const {
+    return mesh;
 }
 
-bool Model::loadOBJ(const std::string& path, MeshData& outMeshes){
+MeshData& Model::getMesh() {
+    return mesh;
+}
+
+bool Model::loadOBJ(const std::string& path){
     std::ifstream file(path);
 
     // testing the opening file
@@ -29,8 +29,11 @@ bool Model::loadOBJ(const std::string& path, MeshData& outMeshes){
         std::cout<<"Error: cannot open OBJ file: "<< path <<std::endl;
         return false; 
     }
-
+    
     std::vector<Vec3f> positions;
+    std::vector<Vec3f> normals;
+    std::vector<Vec2f> uvs;
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -42,28 +45,52 @@ bool Model::loadOBJ(const std::string& path, MeshData& outMeshes){
         if (type == "v"){
             float x,y,z;
             file >> x  >> y >> z;
-            positions.push_back(Vec3f(x, y, z));
+            positions.push_back(Vec3f(x, y, z));        
         }
 
-        // loading indices
+        // normals
+        else if( type == "vn"){
+            float xn, yn, zn;
+            file >> xn >> yn >> zn;
+            normals.push_back(Vec3f(xn, yn, zn));
+        }
+
+        // texture
+        else if( type == "vt"){
+            float u, v;
+            file >> u >> v;
+            uvs.push_back(Vec2f(u, v));
+        }
+
+        // loading indices (ex: f 1/2/3)
         else if(type == "f"){
-            int i, j, k;
-            file >> i >> j >> k;
+            int vIndice1, vIndice2, vIndice3;
+            int tIndice1, tIndice2, tIndice3;
+            int nIndice1, nIndice2, nIndice3;
+            char slash;
+
+            file >> vIndice1 >> slash >> tIndice1 >> slash >> nIndice1
+                 >> vIndice2 >> slash >> tIndice2 >> slash >> nIndice2
+                 >> vIndice3 >> slash >> tIndice3 >> slash >> nIndice3;
             
-            Vec3f p1 = positions[i - 1];
-            Vec3f p2 = positions[j - 1];
-            Vec3f p3 = positions[k - 1];
+            Vec3f p1 = positions[vIndice1 - 1];
+            Vec3f p2 = positions[vIndice2 - 1];
+            Vec3f p3 = positions[vIndice3 - 1];
 
-            // normals
-            Vec3f edge1 = p2 - p1;
-            Vec3f edge2 = p3 - p1;
-            Vec3f normal = normalize(cross(edge1, edge2));
+            Vec3f n1 = normals[nIndice1 - 1];
+            Vec3f n2 = normals[nIndice2 - 1];
+            Vec3f n3 = normals[nIndice3 - 1];
 
+            Vec2f uv1 = uvs[tIndice1 - 1];
+            Vec2f uv2 = uvs[tIndice2 - 1];
+            Vec2f uv3 = uvs[tIndice3 - 1];
+
+
+            Vertex v1(p1, n1, uv1);
+            Vertex v2(p2, n2, uv2);
+            Vertex v3(p3, n3, uv3);
+            
             // add vertices and indices
-            Vertex v1(p1, normal, Vec2f(0, 0));
-            Vertex v2(p2, normal, Vec2f(0, 0));
-            Vertex v3(p3, normal, Vec2f(0, 0));
-
             vertices.push_back(v1);
             indices.push_back((unsigned int)vertices.size() - 1);
 
@@ -74,6 +101,7 @@ bool Model::loadOBJ(const std::string& path, MeshData& outMeshes){
             indices.push_back((unsigned int)vertices.size() - 1);
 
         }
+        
     }
 
     if (vertices.empty()) {
@@ -81,27 +109,24 @@ bool Model::loadOBJ(const std::string& path, MeshData& outMeshes){
         return false;
     }
 
-    outMeshes = MeshData(vertices, indices);
+    mesh = MeshData(vertices, indices);
     return true;
 
  }
 
 void Model::regressionTest(){
 
-    // load valid file
+    // loading file
     Model model("test.obj");
 
-    const std::vector<MeshData>& meshes = model.getMeshes();
-
-    // at least one mesh
-    assert(meshes.size() >= 1);
+    MeshData meshTest = model.getMesh();
 
     // mesh should contain data
-    assert(!meshes[0].vertices.empty());
-    assert(!meshes[0].indices.empty());
+    assert(!meshTest.vertices.empty());
+    assert(!meshTest.indices.empty());
 
     // triangle -> 3 vertices
-    assert(meshes[0].vertices.size() == 3);
+    assert(meshTest.vertices.size() == 3);
 
     std::cout << "Model regression test passed"<<std::endl;
 }

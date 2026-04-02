@@ -11,16 +11,17 @@
 
 class Model{
     public:
-    
+        Model();
         Model(const std::string& path);
         bool loadModel(const std::string& path);
-        const std::vector<MeshData>& getMeshes() const ;
+        const MeshData& getMesh() const ;
+        MeshData& getMesh();
         static void regressionTest();
 
     private:
-        std::vector<MeshData> meshes;
+        MeshData mesh;
 
-        bool loadOBJ(const std::string& path, MeshData& outMeshes);
+        bool loadOBJ(const std::string& path);
        
 };
 
