@@ -68,7 +68,7 @@ bool Model::loadOBJ(const std::string& path){
             int tIndice1, tIndice2, tIndice3;
             int nIndice1, nIndice2, nIndice3;
             char slash;
-
+            
             file >> vIndice1 >> slash >> tIndice1 >> slash >> nIndice1
                  >> vIndice2 >> slash >> tIndice2 >> slash >> nIndice2
                  >> vIndice3 >> slash >> tIndice3 >> slash >> nIndice3;
@@ -99,6 +99,7 @@ bool Model::loadOBJ(const std::string& path){
 
             vertices.push_back(v3);
             indices.push_back((unsigned int)vertices.size() - 1);
+
 
         }
         
