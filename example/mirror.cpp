@@ -90,7 +90,7 @@ int main() {
     renderer.setScene(&scene);
     renderer.p_lights.push_back(&light1);
     renderer.setBackground(Color(0.0, 0.0, 0.0));
-    renderer.render();
+    renderer.render(true);
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "mirror.ppm");
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "mirror.ppm");

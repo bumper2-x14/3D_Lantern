@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_compile_definitions(
+    EXAMPLE_OUTPUT_DIR="${CMAKE_SOURCE_DIR}/example/"
+    IMG_DIR="${CMAKE_SOURCE_DIR}/img/"
+    RESOURCE_DIR="${CMAKE_SOURCE_DIR}/resources/"
+    SHADER_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+)
+
 # Enabled for code execution and memory testing
 enable_testing()  
 

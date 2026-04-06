@@ -148,7 +148,8 @@ inline Vec3<T> cross(const Vec3<T>& v1, const Vec3<T>& v2){
 template <typename T>
 inline Vec3<T> normalize(const Vec3<T>& v) {
     T len = v.length();
-    assert (len != 0);
+    //assert (len != 0);
+    if (len == 0) return Vec3<T>(0, 1, 0);
     return v / len;
 }
 

@@ -1,133 +1,147 @@
 #include "model.h"
+#include "tiny_obj_loader.h"
 
-Model::Model(){};
+Model::Model() {}
 
 Model::Model(const std::string& path){
     loadModel(path);
 }
 
-bool Model::loadModel(const std::string& path){
-    if(! loadOBJ(path)) return false;
+Model::~Model() {
+    if (mesh != nullptr) 
+        delete mesh;
+}
 
+Model::Model(Model&& other) noexcept
+    : mesh(other.mesh) {
+    other.mesh = nullptr;
+}
+
+Model& Model::operator=(Model&& other) noexcept {
+    if (this != &other) {
+        delete mesh;           // free current mesh
+        mesh = other.mesh;     // steal the pointer
+        other.mesh = nullptr;  
+    }
+    return *this;
+}
+
+bool Model::loadModel(const std::string& path){
+    if(!loadOBJ(path)) return false;
     return true;
 }
 
 // return private data member (mesh) 
 const MeshData& Model::getMesh() const {
-    return mesh;
+    assert(mesh != nullptr && "getMesh() called before loading OBJ");
+    return *mesh;
 }
 
 MeshData& Model::getMesh() {
-    return mesh;
+    assert(mesh != nullptr && "getMesh() called before loading OBJ");
+    return *mesh;
 }
 
 bool Model::loadOBJ(const std::string& path){
-    std::ifstream file(path);
-
-    // testing the opening file
-    if (!file.is_open()) {
-        std::cout<<"Error: cannot open OBJ file: "<< path <<std::endl;
-        return false; 
-    }
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn, err;
     
-    std::vector<Vec3f> positions;
-    std::vector<Vec3f> normals;
-    std::vector<Vec2f> uvs;
+    bool ok = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
+
+    if (!warn.empty()) std::cout << "OBJ warning: " << warn << std::endl;
+    if (!err.empty())  std::cerr << "OBJ error: "   << err  << std::endl;
+    if (!ok) return false;
 
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
-    std::string type;
+    for (const auto& shape : shapes) {
+        for (const auto& idx : shape.mesh.indices) {
 
-    // read file tokens
-    while(file >> type){
-        // vertex positin
-        if (type == "v"){
-            float x,y,z;
-            file >> x  >> y >> z;
-            positions.push_back(Vec3f(x, y, z));        
+            Vec3f pos(
+                attrib.vertices[3 * idx.vertex_index + 0],
+                attrib.vertices[3 * idx.vertex_index + 1],
+                attrib.vertices[3 * idx.vertex_index + 2]
+            );
+
+            Vec3f normal(0, 0, 0);
+            if (idx.normal_index >= 0) {
+                normal = Vec3f(
+                    attrib.normals[3 * idx.normal_index + 0],
+                    attrib.normals[3 * idx.normal_index + 1],
+                    attrib.normals[3 * idx.normal_index + 2]
+                );
+            }
+
+            Vec2f uv(0, 0);
+            if (idx.texcoord_index >= 0) {
+                uv = Vec2f(
+                    attrib.texcoords[2 * idx.texcoord_index + 0],
+                    attrib.texcoords[2 * idx.texcoord_index + 1]
+                );
+            }
+
+            vertices.push_back(Vertex(pos, normal, uv));
+            indices.push_back((unsigned int)indices.size());
         }
-
-        // normals
-        else if( type == "vn"){
-            float xn, yn, zn;
-            file >> xn >> yn >> zn;
-            normals.push_back(Vec3f(xn, yn, zn));
-        }
-
-        // texture
-        else if( type == "vt"){
-            float u, v;
-            file >> u >> v;
-            uvs.push_back(Vec2f(u, v));
-        }
-
-        // loading indices (ex: f 1/2/3)
-        else if(type == "f"){
-            int vIndice1, vIndice2, vIndice3;
-            int tIndice1, tIndice2, tIndice3;
-            int nIndice1, nIndice2, nIndice3;
-            char slash;
-            
-            file >> vIndice1 >> slash >> tIndice1 >> slash >> nIndice1
-                 >> vIndice2 >> slash >> tIndice2 >> slash >> nIndice2
-                 >> vIndice3 >> slash >> tIndice3 >> slash >> nIndice3;
-            
-            Vec3f p1 = positions[vIndice1 - 1];
-            Vec3f p2 = positions[vIndice2 - 1];
-            Vec3f p3 = positions[vIndice3 - 1];
-
-            Vec3f n1 = normals[nIndice1 - 1];
-            Vec3f n2 = normals[nIndice2 - 1];
-            Vec3f n3 = normals[nIndice3 - 1];
-
-            Vec2f uv1 = uvs[tIndice1 - 1];
-            Vec2f uv2 = uvs[tIndice2 - 1];
-            Vec2f uv3 = uvs[tIndice3 - 1];
-
-
-            Vertex v1(p1, n1, uv1);
-            Vertex v2(p2, n2, uv2);
-            Vertex v3(p3, n3, uv3);
-            
-            // add vertices and indices
-            vertices.push_back(v1);
-            indices.push_back((unsigned int)vertices.size() - 1);
-
-            vertices.push_back(v2);
-            indices.push_back((unsigned int)vertices.size() - 1);
-
-            vertices.push_back(v3);
-            indices.push_back((unsigned int)vertices.size() - 1);
-
-
-        }
-        
     }
 
     if (vertices.empty()) {
-        std::cout << "Error: OBJ file contains no vertices ." ;
+        std::cerr << "Error: no geometry found in " << path << std::endl;
         return false;
     }
 
-    mesh = MeshData(vertices, indices);
+    delete mesh;
+    mesh = new MeshData(vertices, indices);
     return true;
 
- }
+}
 
-void Model::regressionTest(){
+void Model::regressionTest() {
+    const std::string validPath   = std::string(RESOURCE_DIR) + "teapot.obj";
+    const std::string invalidPath = "nonexistent.obj";
 
-    // loading file
-    Model model("test.obj");
+    // --- Test 1: default constructor, no mesh ---
+    Model empty;
+    assert(!empty.hasMesh() && "Default model should have no mesh");
 
-    MeshData meshTest = model.getMesh();
+    // --- Test 2: loading a valid OBJ ---
+    Model model(validPath);
+    assert(model.hasMesh() && "Model should have mesh after loading");
+    const MeshData& mesh = model.getMesh();
+    assert(!mesh.vertices.empty() && "Mesh should have vertices");
+    assert(!mesh.indices.empty()  && "Mesh should have indices");
+    assert(mesh.vertices.size() % 3 == 0 && "Vertices should be in triangles");
+    assert(mesh.indices.size() == mesh.vertices.size() && "Indices should match vertices");
 
-    // mesh should contain data
-    assert(!meshTest.vertices.empty());
-    assert(!meshTest.indices.empty());
+    // --- Test 3: loading an invalid path ---
+    Model bad;
+    bool loaded = bad.loadModel(invalidPath);
+    assert(!loaded        && "Loading invalid path should return false");
+    assert(!bad.hasMesh() && "Failed load should leave mesh null");
 
-    // triangle -> 3 vertices
-    assert(meshTest.vertices.size() == 3);
+    // --- Test 4: move constructor ---
+    Model moved = std::move(model);
+    assert( moved.hasMesh() && "Moved-to model should own the mesh");
+    assert(!model.hasMesh() && "Moved-from model should have no mesh");
 
-    std::cout << "Model regression test passed"<<std::endl;
+    // --- Test 5: move assignment ---
+    Model assigned;
+    assigned = std::move(moved);
+    assert( assigned.hasMesh() && "Assigned-to model should own the mesh");
+    assert(!moved.hasMesh()    && "Assigned-from model should have no mesh");
+
+    // --- Test 6: self-assignment guard ---
+    assigned = std::move(assigned);
+    assert(assigned.hasMesh() && "Self-assignment should leave mesh intact");
+
+    // --- Test 7: reload OBJ on same model ---
+    Model reloaded(validPath);
+    bool reloadOk = reloaded.loadModel(validPath);
+    assert(reloadOk           && "Reloading OBJ should succeed");
+    assert(reloaded.hasMesh() && "Reloaded model should still have mesh");
+
+    std::cout << "All Model regression tests passed" << std::endl;
 }

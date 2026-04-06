@@ -22,6 +22,10 @@ class RT_Object {
             return bbox;
         }
 
+        BoundingBoxd& getBoundingBox() {
+            return bbox;
+        }
+
         TRSTransformd getTransform() const {
             return tr;
         }

@@ -15,7 +15,6 @@ class BVHNode : public RT_Object {
 
         bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const override;
     private:
-        BoundingBoxd bbox;
         RT_Object* left;
         RT_Object* right;
 

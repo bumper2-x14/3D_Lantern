@@ -2,20 +2,22 @@
 
 #include "RT_BVH.h"
 
-BVHNode::BVHNode() : bbox(BoundingBoxd::empty), left(nullptr), right(nullptr) {}
+BVHNode::BVHNode() : left(nullptr), right(nullptr) {
+    setBoundingBox(BoundingBoxd::empty);
+}
 
 BVHNode::BVHNode(RT_ObjectList& _objects) : BVHNode(_objects.objects, 0, _objects.size()) {}
 
 BVHNode::BVHNode(RT_ObjectList* _objects) : BVHNode(_objects->objects, 0, _objects->size()) {}
 
 BVHNode::BVHNode(std::vector<RT_Object*>& _objects, size_t start, size_t end) {
-    bbox = BoundingBoxd::empty;
-    
+    BoundingBoxd box = BoundingBoxd::empty;
     for (size_t i = start; i < end; i++){
-        bbox = BoundingBoxd(bbox, _objects[i]->getBoundingBox());
+        box = BoundingBoxd(box, _objects[i]->getBoundingBox());
     }
+    setBoundingBox(box);
 
-    int ax = bbox.longestAxis();
+    int ax = box.longestAxis();
     auto lambdaCmp = (ax == 0) ? compareBox_x :
                      (ax == 1) ? compareBox_y  :
                                  compareBox_z;
@@ -36,18 +38,19 @@ BVHNode::BVHNode(std::vector<RT_Object*>& _objects, size_t start, size_t end) {
 }
 
 BVHNode::~BVHNode() {
+    // only delete children that are BVHNodes, not leaf RT_Objects we don't own
     if (left == right) {
-        delete left;
+        // span == 1 case, we don't own this
     } else {
-        delete left;
-        delete right;
+        if (dynamic_cast<BVHNode*>(left))  delete left;
+        if (dynamic_cast<BVHNode*>(right)) delete right;
     }
     left = right = nullptr;
 }
 
 bool BVHNode::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     Intervald t = t_interval;
-    if (!bbox.rayIntersect(ray, t)) {
+    if (!getBoundingBox().rayIntersect(ray, t)) {
         return false;
     }
 
