@@ -1,5 +1,6 @@
 #include "model.h"
 #include "tiny_obj_loader.h"
+#include <unordered_map>
 
 Model::Model() {}
 
@@ -42,49 +43,91 @@ MeshData& Model::getMesh() {
     return *mesh;
 }
 
-bool Model::loadOBJ(const std::string& path){
+
+bool Model::loadOBJ(const std::string& path) {
+    std::string dir = path.substr(0, path.find_last_of("/\\") + 1);
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
-    
-    bool ok = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
-
+    bool ok = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), dir.c_str());
     if (!warn.empty()) std::cout << "OBJ warning: " << warn << std::endl;
     if (!err.empty())  std::cerr << "OBJ error: "   << err  << std::endl;
     if (!ok) return false;
 
+    bool has_normals = !attrib.normals.empty();
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+    std::unordered_map<uint64_t, unsigned int> index_map;
 
     for (const auto& shape : shapes) {
         for (const auto& idx : shape.mesh.indices) {
+            uint64_t key = ((uint64_t)(unsigned int)idx.vertex_index << 32)
+                         | (unsigned int)(idx.texcoord_index < 0 ? 0 : idx.texcoord_index);
 
-            Vec3f pos(
-                attrib.vertices[3 * idx.vertex_index + 0],
-                attrib.vertices[3 * idx.vertex_index + 1],
-                attrib.vertices[3 * idx.vertex_index + 2]
-            );
-
-            Vec3f normal(0, 0, 0);
-            if (idx.normal_index >= 0) {
-                normal = Vec3f(
-                    attrib.normals[3 * idx.normal_index + 0],
-                    attrib.normals[3 * idx.normal_index + 1],
-                    attrib.normals[3 * idx.normal_index + 2]
+            auto it = index_map.find(key);
+            if (it == index_map.end()) {
+                Vec3f pos(
+                    attrib.vertices[3 * idx.vertex_index + 0],
+                    attrib.vertices[3 * idx.vertex_index + 1],
+                    attrib.vertices[3 * idx.vertex_index + 2]
                 );
-            }
+                Vec3f normal(0, 0, 0);
+                if (has_normals && idx.normal_index >= 0)
+                    normal = Vec3f(
+                        attrib.normals[3 * idx.normal_index + 0],
+                        attrib.normals[3 * idx.normal_index + 1],
+                        attrib.normals[3 * idx.normal_index + 2]
+                    );
+                Vec2f uv(0, 0);
+                if (idx.texcoord_index >= 0)
+                    uv = Vec2f(
+                        attrib.texcoords[2 * idx.texcoord_index + 0],
+                        attrib.texcoords[2 * idx.texcoord_index + 1]
+                    );
 
-            Vec2f uv(0, 0);
-            if (idx.texcoord_index >= 0) {
-                uv = Vec2f(
-                    attrib.texcoords[2 * idx.texcoord_index + 0],
-                    attrib.texcoords[2 * idx.texcoord_index + 1]
-                );
+                unsigned int new_idx = (unsigned int)vertices.size();
+                vertices.push_back(Vertex(pos, normal, uv));
+                index_map[key] = new_idx;
+                indices.push_back(new_idx);
+            } else {
+                indices.push_back(it->second);
             }
+        }
+    }
 
-            vertices.push_back(Vertex(pos, normal, uv));
-            indices.push_back((unsigned int)indices.size());
+    // compute and accumulate face normals only if OBJ had none
+    if (!has_normals) {
+        for (size_t i = 0; i + 2 < indices.size(); i += 3) {
+            Vertex& a = vertices[indices[i + 0]];
+            Vertex& b = vertices[indices[i + 1]];
+            Vertex& c = vertices[indices[i + 2]];
+
+            Vec3f e1(b.position.x - a.position.x,
+                     b.position.y - a.position.y,
+                     b.position.z - a.position.z);
+            Vec3f e2(c.position.x - a.position.x,
+                     c.position.y - a.position.y,
+                     c.position.z - a.position.z);
+            Vec3f fn(e1.y*e2.z - e1.z*e2.y,
+                     e1.z*e2.x - e1.x*e2.z,
+                     e1.x*e2.y - e1.y*e2.x);
+
+            a.normal.x += fn.x; a.normal.y += fn.y; a.normal.z += fn.z;
+            b.normal.x += fn.x; b.normal.y += fn.y; b.normal.z += fn.z;
+            c.normal.x += fn.x; c.normal.y += fn.y; c.normal.z += fn.z;
+        }
+
+        for (auto& v : vertices) {
+            float len = std::sqrt(v.normal.x*v.normal.x +
+                                  v.normal.y*v.normal.y +
+                                  v.normal.z*v.normal.z);
+            if (len > 1e-8f) {
+                v.normal.x /= len;
+                v.normal.y /= len;
+                v.normal.z /= len;
+            }
         }
     }
 
@@ -96,7 +139,6 @@ bool Model::loadOBJ(const std::string& path){
     delete mesh;
     mesh = new MeshData(vertices, indices);
     return true;
-
 }
 
 void Model::regressionTest() {
