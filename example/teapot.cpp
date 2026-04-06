@@ -22,7 +22,7 @@ int main() {
 
     // --- Materials ---
     RT_Lambertian mat_ground(Color(0.4, 0.4, 0.4));
-    RT_Metallic mat_teapot(Color(0.8, 0.6, 0.2), 0.1);
+    RT_Metallic mat_teapot(Color(0.8, 0.6, 0.2), 0.0);
 
     // --- Ground ---
     RT_Sphere ground(&mat_ground);
@@ -34,18 +34,24 @@ int main() {
     // --- Teapot ---
     Model teapotModel(std::string(RESOURCE_DIR) + "teapot.obj");
     RT_Mesh teapot(teapotModel.getMesh(), &mat_teapot);
-    t.setTranslation({-0.34, 2.05, 0.053});
+    t.setTranslation({-0.34, 1.05, 0.053});
     t.setScale({0.05, 0.05, 0.05});
     teapot.setTransform(t); t.reset();
 
     // --- Light ---
-    /*
-    RT_PointLight light(
-        Point3d(-7.0, 5.0, 0.0),
+    
+    RT_PointLight light1(
+        Point3d(-4.0, 5.0, 2.0),
         Color(1.0, 1.0, 1.0),
-        1.5
+        1.7
     );
-    */
+
+    RT_PointLight light2(
+        Point3d(1.0, 5.0, 0.0),
+        Color(1.0, 1.0, 1.0),
+        1.2
+    );
+    
 
     // --- Scene ---
     RT_ObjectList scene;
@@ -56,9 +62,10 @@ int main() {
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
-    renderer.setBackground(Color(0.5, 0.7, 1.0));
-    //renderer.p_lights.push_back(&light);
-    renderer.render();
+    renderer.setBackground(Color(0.0, 0.0, 0.0));
+    renderer.p_lights.push_back(&light1);
+    renderer.p_lights.push_back(&light2);
+    renderer.render(true);
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "teapot.ppm");
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "teapot.ppm");

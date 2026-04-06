@@ -26,8 +26,8 @@ int main() {
 
     // ── materials ────────────────────────────────────────────────────────────
     RT_Metallic  mirror_mat  (Color(1.00, 1.00, 1.00), 0.00); // perfect mirror
-    RT_Metallic  tinted_left (Color(0.85, 0.95, 1.00), 0.02); // cool blue tint
-    RT_Metallic  tinted_right(Color(1.00, 0.90, 0.85), 0.02); // warm red tint
+    RT_Metallic  tinted_left (Color(0.85, 0.95, 1.00), 0.0); // cool blue tint
+    RT_Metallic  tinted_right(Color(1.00, 0.90, 0.85), 0.0); // warm red tint
     RT_Lambertian floor_mat  (Color(0.60, 0.60, 0.60)); // matte grey floor
     RT_Lambertian ceil_mat   (Color(0.80, 0.80, 0.80)); // lighter ceiling
 
@@ -108,8 +108,8 @@ int main() {
     // ── lights ────────────────────────────────────────────────────────────────
 
     // Main overhead light — near ceiling centre
-    RT_PointLight light_main(Point3d( 0.0,  8.5, -1.0),
-                             Color(1.0, 1.0, 1.0), 0.8);
+    RT_PointLight light_main(Point3d(0.0, 2.5, -1.0),
+                             Color(1.0, 1.0, 1.0), 0.05);
 
 
     // ── scene ─────────────────────────────────────────────────────────────────

@@ -137,6 +137,17 @@ void RT_Renderer::multiThreadRender() {
 
     int total = img_height * img_width;
     std::atomic<int> done {0};
+    std::atomic<bool>finished{false};
+
+    std::thread prog_monitor([&]() {
+        while (!finished.load(std::memory_order_relaxed)) {
+            int d = done.load(std::memory_order_relaxed);
+            std::cout << "\rRendering: " << std::fixed << std::setprecision(1)
+                      << (100.0 * d / total) << "%" << std::flush;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        std::cout << "\rRendering: 100.0%\nDone.\n";
+    });
     
     for (int t = 0; t < thread_count; t++){
         int start_y = t * row_per_thread;
@@ -149,7 +160,10 @@ void RT_Renderer::multiThreadRender() {
         th.join();
     }
 
-    std::cout << "\nDone.\n";
+    finished.store(true);
+    prog_monitor.join();
+
+    delete accelerated;
 }
 
 void RT_Renderer::renderWorker(int start_y, int end_y, RT_Object* accel, std::atomic<int>& done) {

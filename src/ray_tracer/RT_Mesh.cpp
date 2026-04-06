@@ -39,19 +39,7 @@ void RT_Mesh::setTransform(const TRSTransformd& t) {
         list.add(&tri);
 
     delete bvh;
-    bvh = new BVHNode(list);
-    std::cerr << "Root BVH bbox: x[" << bvh->getBoundingBox().x.min 
-          << ", " << bvh->getBoundingBox().x.max << "]" << std::endl;
-setBoundingBox(bvh->getBoundingBox());
-std::cerr << "Mesh bbox: x[" << getBoundingBox().x.min 
-          << ", " << getBoundingBox().x.max << "]" << std::endl;
-
-          std::cerr << "Root BVH bbox: "
-          << "x[" << bvh->getBoundingBox().x.min << ", " << bvh->getBoundingBox().x.max << "] "
-          << "y[" << bvh->getBoundingBox().y.min << ", " << bvh->getBoundingBox().y.max << "] "
-          << "z[" << bvh->getBoundingBox().z.min << ", " << bvh->getBoundingBox().z.max << "]"
-          << std::endl;
-     
+    bvh = new BVHNode(list); 
     setBoundingBox(bvh->getBoundingBox());
 }
 
@@ -59,34 +47,3 @@ bool RT_Mesh::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Reco
     if (!bvh) return false;
     return bvh->rayIntersect(ray, t_interval, rec);
 }
-
-/*
-void RT_Mesh::setTransform(const TRSTransformd& t) {
-    if (triangles.empty()) return;
-    RT_Object::setTransform(t);
-    for (auto& tri : triangles)
-        tri.setTransform(t);
-
-    BoundingBoxd box = triangles[0].getBoundingBox();
-    for (size_t i = 1; i < triangles.size(); i++)
-        box = BoundingBoxd(box, triangles[i].getBoundingBox());
-
-    setBoundingBox(box);
-}
-
-
-bool RT_Mesh::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
-    bool hit = false;
-    double closest = t_interval.max;
-    RT_Record tmp;
-
-    for (const auto& tri : triangles) {
-        if (tri.rayIntersect(ray, Intervald(t_interval.min, closest), tmp)) {
-            closest = tmp.t;
-            hit = true;
-            rec = tmp;
-        }
-    }
-    return hit;
-}
-*/
