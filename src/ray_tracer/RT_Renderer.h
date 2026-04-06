@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <fstream>
+#include <thread>
 
 #include "RT_Camera.h"
+#include "RT_Object.h"
 #include "RT_ObjectList.h"
 #include "RT_Light.h"
 #include "math/color.h"
@@ -24,7 +26,7 @@ class RT_Renderer {
         void setBackground(const Color& bg);
 
         // rendering
-        void render();
+        void render(bool threaded = false);
         void writePPM(const std::string& path) const;
 
         static void regressionTest();
@@ -43,6 +45,9 @@ class RT_Renderer {
         double sample_scale;
 
         Color traceRay(const Rayd& ray, int recursive_depth, RT_Object* accel) const; 
+        void singleThreadRender();
+        void multiThreadRender();
+        void renderWorker(int start_y, int end_y, RT_Object* accel, std::atomic<int>& done);
 
 };
 

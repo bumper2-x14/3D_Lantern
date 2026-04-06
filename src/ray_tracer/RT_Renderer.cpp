@@ -83,7 +83,7 @@ Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* acc
     return direct + indirect;
 }
 
-void RT_Renderer::render() {
+void RT_Renderer::singleThreadRender() {
     if (!camera || !scene) {
         std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
         return;
@@ -93,7 +93,7 @@ void RT_Renderer::render() {
     RT_Object* accelerated = new BVHNode(*scene);
 
     int total = img_height * img_width;
-    int done  = 0;
+    int done = 0;
 
     for (int j = 0; j < img_height; j++){
         for (int i = 0; i < img_width; i++){
@@ -113,7 +113,68 @@ void RT_Renderer::render() {
                   << "(" << done << "/" << total << " px)"
                   << std::flush;
     }
-        std::cout << "\nDone.\n";
+        
+    std::cout << "\nDone.\n";
+}
+
+// in case a memory leak is detected it sould be from accelerated
+void RT_Renderer::multiThreadRender() {
+    if (!camera || !scene) {
+        std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
+        return;
+    }
+
+    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
+    RT_Object* accelerated = new BVHNode(*scene);
+
+    int thread_count = std::thread::hardware_concurrency();
+
+    if (thread_count == 0) thread_count = 1;
+
+    std::vector<std::thread> threads;
+    int row_per_thread = img_height / thread_count;
+    std::clog<<"Rendering with "<< thread_count <<" threads...\n";
+
+    int total = img_height * img_width;
+    std::atomic<int> done {0};
+    
+    for (int t = 0; t < thread_count; t++){
+        int start_y = t * row_per_thread;
+        int end_y = (t == thread_count-1) ? img_height : start_y + row_per_thread;
+
+        threads.emplace_back(&RT_Renderer::renderWorker, this, start_y, end_y, accelerated, std::ref(done));
+    }
+    
+    for (auto& th : threads) {
+        th.join();
+    }
+
+    std::cout << "\nDone.\n";
+}
+
+void RT_Renderer::renderWorker(int start_y, int end_y, RT_Object* accel, std::atomic<int>& done) {
+    for (int j = start_y; j < end_y; j++){
+        for (int i = 0; i < img_width; i++){
+            Color pix_color (0.0, 0.0, 0.0);
+            for (int inner_j = 0; inner_j < sqrt_spp; inner_j++){
+                for (int inner_i = 0; inner_i < sqrt_spp; inner_i++){
+                    Rayd ray = camera->generateRay(i, j, inner_i, inner_j);
+                    pix_color += traceRay(ray, depth, accel);
+                }
+            }
+            img_buffer[j * img_width + i] = sample_scale * pix_color;
+            done++;
+        }
+    }
+}
+
+void RT_Renderer::render(bool threaded) {
+    if (!threaded){
+        singleThreadRender();
+    }
+    else {
+        multiThreadRender();
+    }
 }
 
 void RT_Renderer::writePPM(const std::string& path) const {
