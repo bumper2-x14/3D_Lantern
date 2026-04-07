@@ -68,7 +68,3 @@ void MD_Object::draw(MD_Shader& shader){
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     */
-
-
-
-
