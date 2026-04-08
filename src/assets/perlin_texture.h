@@ -14,7 +14,8 @@ enum PerlinType {
     ICE,
     TERRAIN,
     WARPED,
-    STRIPES
+    STRIPES,
+    CLOUD
 };
 
 class PerlinTexture : public Texture {

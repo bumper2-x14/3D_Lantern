@@ -11,7 +11,7 @@ void RT_ObjectList::add(RT_Object* object) {
 
 void RT_ObjectList::clear() { objects.clear(); }      
 bool RT_ObjectList::empty() const { return objects.empty(); }     
-int RT_ObjectList::size() const { return objects.size(); }
+size_t RT_ObjectList::size() const { return objects.size(); }
 
         
 bool RT_ObjectList::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {

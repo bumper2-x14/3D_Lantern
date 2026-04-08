@@ -6,6 +6,7 @@ add_library(assets STATIC
     image_texture.cpp
     perlin.cpp
     perlin_texture.cpp
+    model.cpp
 )
 
 target_include_directories(assets PUBLIC ${CMAKE_SOURCE_DIR}/src)
@@ -13,4 +14,5 @@ target_include_directories(assets PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(assets PUBLIC
     math
     stb_image
+    tinyobjloader
 )

@@ -10,6 +10,7 @@
 #include "ray_tracer/RT_Sphere.h"
 #include "ray_tracer/RT_Cylinder.h"
 #include "ray_tracer/RT_Cone.h"
+#include "ray_tracer/RT_PointLight.h"
 #include "assets/checker_texture.h"
 #include "assets/image_texture.h"
 #include "assets/perlin_texture.h"
@@ -19,7 +20,7 @@ int main() {
         Point3d(0, 0,  1),
         Point3d(0, 0, -1),
         Vec3d(0, 3, 0),
-        90.0, 0.0, 10.0
+        60.0, 0.0, 10.0
     );
 
     // Materials
@@ -32,7 +33,7 @@ int main() {
     RT_Lambertian mat_cyl_right (new ImageTexture(IMG_DIR "texture-background.jpg"));
     RT_Lambertian mat_cyl_left_back (new PerlinTexture(WOOD, 30));
     RT_Lambertian mat_cone_left (new PerlinTexture(TURBULENCE, 5));
-    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.7);
+    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.0);
 
     // Spheres
     RT_Sphere sphere_center(&mat_center);
@@ -62,6 +63,13 @@ int main() {
     t.setTranslation({-1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_left .setTransform(t); t.reset();
     t.setTranslation({ 1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_right.setTransform(t); t.reset();
 
+    // light
+    RT_PointLight light(
+        Point3d(-5.0, 5.0, -1.0),
+        Color(1.0, 1.0, 1.0),
+        2.5
+    );
+
     // Scene
     RT_ObjectList scene2;
     scene2.add(&sphere_ground);
@@ -78,7 +86,8 @@ int main() {
     RT_Renderer renderer3(800, 16.0/9.0, 100, 20);
     renderer3.setCamera(&cam);
     renderer3.setScene(&scene2);
-    renderer3.setBackground(Color(0.5, 0.7, 1.0));
+    renderer3.setBackground(Color(0.0, 0.0, 0.0));
+    renderer3.p_lights.push_back(&light);
     renderer3.render();
     renderer3.writePPM(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
 

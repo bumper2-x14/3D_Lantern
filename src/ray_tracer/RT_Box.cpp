@@ -27,6 +27,8 @@ void RT_Box::setTransform(const TRSTransformd& _transform) {
     // propagate transform to each face
     for (RT_Quad& face : faces)
         face.setTransform(_transform);
+    
+    setBoundingBox(computeBBox(BoundingBoxd(Point3d(-1,-1,-1), Point3d(1,1,1))));
 }
     
 

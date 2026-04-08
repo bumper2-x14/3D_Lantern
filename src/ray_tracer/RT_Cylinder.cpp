@@ -4,6 +4,11 @@
 
 RT_Cylinder::RT_Cylinder(bool _capped, RT_Material* _material) : capped(_capped), material(_material) {}
 
+void RT_Cylinder::setTransform(const TRSTransformd& t) {
+    RT_Object::setTransform(t);
+    setBoundingBox(computeBBox(BoundingBoxd(Point3d(-1,-1,-1), Point3d(1,1,1))));
+}
+
 bool RT_Cylinder::rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const {
     Mat4d inv = getInverse();
     Rayd local_ray = transformRay(ray, inv);

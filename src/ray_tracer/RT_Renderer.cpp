@@ -4,6 +4,7 @@
 
 #include "RT_Renderer.h"
 #include "math/utility.h"
+#include "RT_BVH.h"
 
 RT_Renderer::RT_Renderer(int _width, double _aspect_ratio, int _samples_per_pixel, int _depth):
     camera(nullptr), scene(nullptr), background(Color(0,0,0)),img_width(_width), 
@@ -30,31 +31,69 @@ void RT_Renderer::setScene(RT_ObjectList* _scene) { scene = _scene; }
 
 void RT_Renderer::setBackground(const Color& _background) { background = _background; }
 
-Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth) const {
+Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* accel) const {
     if (recursive_depth <= 0)
         return Color(0, 0, 0);
 
     RT_Record rec;
-    if (scene->rayIntersect(ray, Intervald(0.001, infinity<double>), rec)) {
-        Color attenuation;
-        Rayd scattered;
-        if (rec.material && rec.material->rayScatter(ray, rec, attenuation, scattered))
-            return attenuation * traceRay(scattered, recursive_depth - 1);
-        return Color(0, 0, 0);
+    if (!accel->rayIntersect(ray, Intervald(0.001, infinity<double>), rec))
+        return background;
+
+    Color attenuation;
+    Rayd  scattered;
+    if (!rec.material || !rec.material->rayScatter(ray, rec, attenuation, scattered))
+        return Color(0, 0, 0);  // hit something that doesn't scatter — return black
+
+    // direct lighting from point lights
+    Color direct(0, 0, 0);
+    for (const auto& light : p_lights) {
+        switch (light->type) {
+            case POINTLIGHT: {
+                Vec3d to_light = light->position - rec.p;
+                double dist = to_light.length();
+                Vec3d light_dir = normalize(to_light);
+
+                RT_Record shadow_rec;
+                bool in_shadow = accel->rayIntersect(Rayd(rec.p, light_dir), Intervald(0.001, dist - 0.001),shadow_rec);
+                if (!in_shadow) {
+                    double cos_theta = std::max(0.0, dot(rec.normal, light_dir));
+                    direct += attenuation * light->radiate(dist) * cos_theta;
+                }
+                break;
+            }
+            
+            case DIRECTIONALLIGHT: {
+                // Shadow ray shoots infinitely far in the light direction
+                // so dist is infinity — any hit blocks the light
+                RT_Record shadow_rec;
+                bool in_shadow = accel->rayIntersect(
+                    Rayd(rec.p, light->direction),
+                    Intervald(0.001, infinity<double>), shadow_rec);
+
+                if (!in_shadow) {
+                    double cos_theta = std::max(0.0, dot(rec.normal, light->direction));
+                    direct += attenuation * light->radiate() * cos_theta;
+                }
+            }
+        }
     }
-    return background;
+    // indirect bounce
+    Color indirect = attenuation * traceRay(scattered, recursive_depth - 1, accel);
+
+    return direct + indirect;
 }
 
-void RT_Renderer::render() {
+void RT_Renderer::singleThreadRender() {
     if (!camera || !scene) {
         std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
         return;
     }
 
-    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel);
+    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
+    RT_Object* accelerated = new BVHNode(*scene);
 
     int total = img_height * img_width;
-    int done  = 0;
+    int done = 0;
 
     for (int j = 0; j < img_height; j++){
         for (int i = 0; i < img_width; i++){
@@ -62,7 +101,7 @@ void RT_Renderer::render() {
             for (int inner_j = 0; inner_j < sqrt_spp; inner_j++){
                 for (int inner_i = 0; inner_i < sqrt_spp; inner_i++){
                     Rayd ray = camera->generateRay(i, j, inner_i, inner_j);
-                    pix_color += traceRay(ray, depth);
+                    pix_color += traceRay(ray, depth, accelerated);
                 }
             }
             img_buffer[j * img_width + i] = sample_scale * pix_color;
@@ -74,7 +113,82 @@ void RT_Renderer::render() {
                   << "(" << done << "/" << total << " px)"
                   << std::flush;
     }
-        std::cout << "\nDone.\n";
+        
+    std::cout << "\nDone.\n";
+}
+
+// in case a memory leak is detected it sould be from accelerated
+void RT_Renderer::multiThreadRender() {
+    if (!camera || !scene) {
+        std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
+        return;
+    }
+
+    camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
+    RT_Object* accelerated = new BVHNode(*scene);
+
+    int thread_count = std::thread::hardware_concurrency();
+
+    if (thread_count == 0) thread_count = 1;
+
+    std::vector<std::thread> threads;
+    int row_per_thread = img_height / thread_count;
+    std::clog<<"Rendering with "<< thread_count <<" threads...\n";
+
+    int total = img_height * img_width;
+    std::atomic<int> done {0};
+    std::atomic<bool>finished{false};
+
+    std::thread prog_monitor([&]() {
+        while (!finished.load(std::memory_order_relaxed)) {
+            int d = done.load(std::memory_order_relaxed);
+            std::cout << "\rRendering: " << std::fixed << std::setprecision(1)
+                      << (100.0 * d / total) << "%" << std::flush;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        std::cout << "\rRendering: 100.0%\nDone.\n";
+    });
+    
+    for (int t = 0; t < thread_count; t++){
+        int start_y = t * row_per_thread;
+        int end_y = (t == thread_count-1) ? img_height : start_y + row_per_thread;
+
+        threads.emplace_back(&RT_Renderer::renderWorker, this, start_y, end_y, accelerated, std::ref(done));
+    }
+    
+    for (auto& th : threads) {
+        th.join();
+    }
+
+    finished.store(true);
+    prog_monitor.join();
+
+    delete accelerated;
+}
+
+void RT_Renderer::renderWorker(int start_y, int end_y, RT_Object* accel, std::atomic<int>& done) {
+    for (int j = start_y; j < end_y; j++){
+        for (int i = 0; i < img_width; i++){
+            Color pix_color (0.0, 0.0, 0.0);
+            for (int inner_j = 0; inner_j < sqrt_spp; inner_j++){
+                for (int inner_i = 0; inner_i < sqrt_spp; inner_i++){
+                    Rayd ray = camera->generateRay(i, j, inner_i, inner_j);
+                    pix_color += traceRay(ray, depth, accel);
+                }
+            }
+            img_buffer[j * img_width + i] = sample_scale * pix_color;
+            done++;
+        }
+    }
+}
+
+void RT_Renderer::render(bool threaded) {
+    if (!threaded){
+        singleThreadRender();
+    }
+    else {
+        multiThreadRender();
+    }
 }
 
 void RT_Renderer::writePPM(const std::string& path) const {

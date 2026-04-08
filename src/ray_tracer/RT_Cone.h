@@ -7,8 +7,9 @@ class RT_Cone : public RT_Object {
     public:
         RT_Cone(bool _capped, RT_Material* _material);
 
-        bool rayIntersect(const Rayd& ray, const Intervald& t_interval,
-                          RT_Record& rec) const override;
+        void setTransform(const TRSTransformd& t) override;
+
+        bool rayIntersect(const Rayd& ray, const Intervald& t_interval, RT_Record& rec) const override;
 
         static void regressionTest();
 
