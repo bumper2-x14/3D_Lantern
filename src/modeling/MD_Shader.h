@@ -14,32 +14,29 @@
 class MD_Shader {
 public:
     //complie shader
-  MD_Shader(const std::string &vertex_path, const std::string &fragment_path);
+    MD_Shader(const std::string &vertex_path, 
+                        const std::string &fragment_path);
     //use program shader
-  void apply();
+    void apply();
     //puting values in unifrom 
-  void setFloat(const std::string &name, float value) const;
-  void setInt(const std::string &name, int value) const;
-  // note for developer: when using glGetUniformLocation for setBool, value
-  // should be casted to int
-  
-  
-  void setBool(const std::string &name, bool value) const;
-  void setVec2(const std::string &name, const Vec2f &value);
-  void setVec3(const std::string &name, const Vec3f &value);
-  void setMat4(const std::string &name, const Mat4f &value);
+    void setFloat(const std::string &name, float value) const;
+    void setInt(const std::string &name, int value) const;
+    void setBool(const std::string &name, bool value) const;
+    void setVec2(const std::string &name, const Vec2f &value);
+    void setVec3(const std::string &name, const Vec3f &value);
+    void setMat4(const std::string &name, const Mat4f &value);
     
-  //getter
-  unsigned int get_program_id()const;
+    //getter
+    unsigned int get_program_id()const;
 
-  //test
-  static void regression_test();
+    //test
+    static void regression_test();
     
   
 private:
 
   
-  unsigned int program_id=0;
+    unsigned int program_id=0;
 };
 
 #endif

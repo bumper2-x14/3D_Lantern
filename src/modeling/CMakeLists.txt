@@ -7,6 +7,8 @@ add_library(modeling STATIC
     MD_Quad.cpp
     MD_Cylinder.cpp
     MD_Circle.cpp
+    MD_Renderer.cpp
+    MD_Texture.cpp
 )
 
 

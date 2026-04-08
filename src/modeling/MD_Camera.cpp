@@ -36,6 +36,10 @@ MD_Camera::MD_Camera(const Vec3f& _cameraPos, float dx, float dy, float dz){
     cameraUp=Vec3f( 0.0, 1.0, 0.0);
 }
 
+Vec3f MD_Camera::getCameraPos(){
+    return cameraPos;; 
+}
+
 
 float MD_Camera::getSensitivity()const{
     return sensitivity;
@@ -61,10 +65,12 @@ void MD_Camera::update( bool w, bool s, bool a, bool d, bool e, bool sh ,
         float xoffset,float yoffset,float speed){
     //to move around
     if(w){
-        cameraPos+=speed*cameraFront;
+        //cameraPos+=speed*cameraFront;
+        cameraPos+=speed*normalize(Vec3f(cameraFront.x+0.1,0.0,cameraFront.z+0.1));
     }
     if(s){
-        cameraPos-=speed*cameraFront;
+        //cameraPos-=speed*cameraFront;
+        cameraPos-=speed*normalize(Vec3f(cameraFront.x+0.1,0.0,cameraFront.z+0.1));
     }
     if(d){
         cameraPos+=speed*normalize( cross( cameraFront, cameraUp));
@@ -96,7 +102,7 @@ void MD_Camera::update( bool w, bool s, bool a, bool d, bool e, bool sh ,
     direction.x = std::cos( toRadians( yaw)) * std::cos( toRadians( pitch));
     direction.y = std::sin( toRadians( pitch));
     direction.z = std::sin( toRadians( yaw)) * std::cos( toRadians( pitch));
-
+    
     cameraFront=normalize(direction);
 }
 

@@ -9,6 +9,9 @@
 #include "math/mat4.h"
 #include "math/vec3.h"
 #include "math/transform.h"
+#include "modeling/MD_Renderer.h"
+#include "modeling/MD_Material.h"
+#include "modeling/MD_Texture.h"
 
 void Window::sdlSetAttributes(){
     SDL_Init(SDL_INIT_VIDEO); 
@@ -87,43 +90,80 @@ void Window::winInitGl(){
 
 void Window::winRun(){
         glViewport(0 ,0 , width*8/10, height*8/10) ;
+        
         int x , y , ax , ay;
+        
         Uint64 now=0;
-        Uint64 last=0 ;
-        SDL_Event e;
+        Uint64 last=0;
         double deltaTime = 0;
+        
+        SDL_Event e;
+        
         glEnable(GL_DEPTH_TEST);
+        
         MD_Camera camera(0,0,-3,0,0,1);
-        MD_Shader shader("../../../shaders/shader.vs","../../../shaders/shader.fs");
-        
 
+        MD_Shader shader("../../../shaders/light_Shaders.vs"
+                                ,"../../../shaders/light_Shaders.fs");
+        
+        MD_Renderer renderer;
+
+
+        MD_Texture texture("random.png");
+        texture.init();
+        texture.load_Image();
+    
+        MD_Texture texture2("coolJoshHomme.jfif");
+        texture2.init();
+        texture2.load_Image();
+
+        
+        
         MD_Sphere sp1(5,5);
-        MD_Sphere sp(25,25);   
-        Transform t1=Transform::translate(Vec3f(30.0,0,30.0)); 
-        Transform t=Transform::translate(Vec3f(0,1,0));
-        
-        MD_Object ob(&sp,&t);
+        Transform t1=Transform::translate(Vec3f(30.0,0,30.0));  
         MD_Object ob1(&sp1,&t1);
+        renderer.addObject(&ob1);
 
-        //Plane created
+        MD_Sphere sp(25,25);    
+        Transform t=Transform::translate(Vec3f(0,1,0));
+        MD_Object ob(&sp,&t);
+        renderer.addObject(&ob);
+
+
+        //Plane created  
         MD_Quad disque(10,10);
         Transform t_quad = Transform::translate(Vec3f(0,0,0));
-        MD_Object disque_ob(&disque,&t_quad );
+        MD_Object disque_ob(&disque,&t_quad, &texture);
+        renderer.addObject(&disque_ob);
+
+
+        MD_Quad disque1(10,10);
+        Transform t_quad1 = Transform::translate(Vec3f(0,6,0));
+        MD_Object disque_ob1(&disque1,&t_quad1, &texture2);
+        renderer.addObject(&disque_ob1);
         
-        //Cylinder 
+
+        //Cylinder
         MD_Cylinder cylinder(25);
-        Transform t_cylinder = Transform::translate( Vec3f(2.0, 2.0, 0.0) ) * Transform::scale( Vec3f(0.5, 2, 0.5) );
+        Transform t_cylinder = Transform::translate( 
+                    Vec3f(2.0, 2.0, 0.0) ) *
+                            Transform::scale( Vec3f(0.5, 2, 0.5) );
         MD_Object cylinder_ob(&cylinder,&t_cylinder);
+        renderer.addObject(&cylinder_ob);
 
         //Circle
         MD_Circle circle(40);
-        Transform t_circle = Transform::translate(Vec3f(0.0, 4.0, 0.0));
+        Transform t_circle = Transform::translate(
+                                    Vec3f(0.0, 4.0, 0.0));
         MD_Object circle_ob(&circle, &t_circle);
-
+        renderer.addObject(&circle_ob);
+        
+        
         while(!stop){
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.apply();
+            
             glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
             while(SDL_PollEvent(&e)){
                     switch(e.type){
@@ -155,7 +195,6 @@ void Window::winRun(){
                 }
         
         }
-
         const Uint8* keystate = SDL_GetKeyboardState(NULL);
         camera.update(
                     keystate[SDL_SCANCODE_W],
@@ -170,35 +209,33 @@ void Window::winRun(){
         deltaTime = (double)(now - last) / SDL_GetPerformanceFrequency();
         last = now;
         camera.setShader(shader.get_program_id());
-        Mat4f locWor;
-        shader.setMat4("localToWorld" , locWor);
+        //Mat4f locWor;
+        //shader.setMat4("localToWorld" , locWor);
         camera.setView();
         //Mat4f worVie;
         //shader.setMat4("worldToView" , worVie);
+        
         Mat4f vieCli;
-        vieCli = Mat4f::perspective( toRadians(45.0) , (float)width/height , 0.1f, 100.0f);
+        vieCli = Mat4f::perspective( toRadians(45.0) ,
+                                (float)width/height , 0.1f, 100.0f);
         shader.setMat4("viewToClip" , vieCli);
+        
+        shader.setVec3("view_Pos", camera.getCameraPos());
+        shader.setInt("nb_Light_Pos", 1);
+        shader.setFloat("ambient", 0.5);
 
-        // NOTE FOR DEV: Draw function was updated to take the shder program's id in order to
-        // draw the object wireframe 
-            
-        ob.draw(shader);    
-        ob1.draw(shader);
 
-        disque_ob.draw(shader);
-
-        cylinder_ob.draw(shader);
-
-        circle_ob.draw(shader);
-
-        //glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES,0,3);
-        //all of the code below should be found in renderer class 
-        //glClear(GL_COLOR_BUFFER_BIT );
+        shader.setVec3("light_Positions[0]" ,
+                                    Vec3f(20.0, 1.0, 1.0));
+        shader.setVec3("light_Colors[0]",
+                                    Vec3f(1.0, 0.0, 1.0) );
+        shader.setFloat("ambient" , 0.5);
+        shader.setInt("spec", 64);
+        
+        renderer.render(shader);
         SDL_GL_SwapWindow(win);
     }
 }
+    
 
-
-//should put a desctuctor 
 

@@ -71,6 +71,12 @@ bool MD_Mesh::setupMD_Mesh(){
                              sizeof(Vertex),
                              (void*)offsetof(Vertex, normal));
 
+    //uv normals 
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                             sizeof(Vertex),
+                             (void*)offsetof(Vertex, uv));
+
     if (glGetError() != GL_NO_ERROR)
         return false;  
 

@@ -16,8 +16,8 @@ void MD_Quad::buildShape(){
 
     // Asigning position
     Vec3f p0(-hw, 0, -hl);
-    Vec3f p1(-hw, 0,  hl);
-    Vec3f p2( hw, 0, -hl);
+    Vec3f p1( hw, 0, -hl);
+    Vec3f p2(-hw, 0,  hl);
     Vec3f p3( hw, 0,  hl);
 
     // Asigning normal value
@@ -25,9 +25,9 @@ void MD_Quad::buildShape(){
 
     // Texture coordinates
     Vec2f uv0(0.0f, 0.0f);
-    Vec2f uv1(0.0f, 0.0f);
-    Vec2f uv2(0.0f, 0.0f);
-    Vec2f uv3(0.0f, 0.0f);
+    Vec2f uv1(1.0f, 0.0f);
+    Vec2f uv2(0.0f, 1.0f);
+    Vec2f uv3(1.0f, 1.0f);
 
     mesh.data->vertices.push_back(Vertex(p0, n, uv0));   
     mesh.data->vertices.push_back(Vertex(p1, n, uv1));   
@@ -41,7 +41,6 @@ void MD_Quad::buildShape(){
     mesh.data->indices.push_back(2);
     mesh.data->indices.push_back(1);
     mesh.data->indices.push_back(3);
-
 }
 
 void MD_Quad::applyTransform(Transform* transform){

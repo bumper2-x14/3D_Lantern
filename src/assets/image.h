@@ -9,7 +9,7 @@ class Image {
         int width;
         int height;
         int channels;
-        unsigned char* data;
+        unsigned char* data = nullptr;
 
         // Constructors and destructor
         Image() = default;
