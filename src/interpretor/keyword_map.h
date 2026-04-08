@@ -169,4 +169,105 @@ inline IdentType convertToIdentType(const std::string& s) {
     return it != m.end() ? it->second : IdentType::UNKNOWN;
 }
 
+
+//================================================================//
+
+
+inline std::string logString(BlockType v) {
+    switch (v) {
+        case BlockType::SETTING:  return "SETTING";
+        case BlockType::CAMERA:   return "CAMERA";
+        case BlockType::MATERIAL: return "MATERIAL";
+        case BlockType::TEXTURE:  return "TEXTURE";
+        case BlockType::OBJECT:   return "OBJECT";
+        case BlockType::LIGHT:    return "LIGHT";
+        default:                  return "UNKNOWN";
+    }
+}
+
+inline std::string logString(ObjectType v) {
+    switch (v) {
+        case ObjectType::SPHERE:   return "SPHERE";
+        case ObjectType::CYLINDER: return "CYLINDER";
+        case ObjectType::CONE:     return "CONE";
+        case ObjectType::BOX:      return "BOX";
+        case ObjectType::QUAD:     return "QUAD";
+        case ObjectType::DISK:     return "DISK";
+        case ObjectType::MESH:     return "MESH";
+        default:                   return "UNKNOWN";
+    }
+}
+
+inline std::string logString(TextureType v) {
+    switch (v) {
+        case TextureType::SOLIDCOLOR: return "SOLIDCOLOR";
+        case TextureType::IMAGE:      return "IMAGE";
+        case TextureType::CHECKER:    return "CHECKER";
+        case TextureType::PERLIN:     return "PERLIN";
+        default:                      return "UNKNOWN";
+    }
+}
+
+inline std::string logString(MaterialType v) {
+    switch (v) {
+        case MaterialType::LAMBERTIAN: return "LAMBERTIAN";
+        case MaterialType::METALLIC:   return "METALLIC";
+        case MaterialType::DIELECTRIC: return "DIELECTRIC";
+        case MaterialType::ISOTROPIC:  return "ISOTROPIC";
+        case MaterialType::EMISSIVE:   return "EMISSIVE";
+        default:                       return "UNKNOWN";
+    }
+}
+
+inline std::string logString(LightType v) {
+    switch (v) {
+        case LightType::POINT:       return "POINT";
+        case LightType::DIRECTIONAL: return "DIRECTIONAL";
+        default:                     return "UNKNOWN";
+    }
+}
+
+inline std::string logString(IdentType v) {
+    switch (v) {
+        case IdentType::TYPE:           return "TYPE";
+        case IdentType::NAME:           return "NAME";
+        case IdentType::FILE:           return "FILE";
+        case IdentType::WIDTH:          return "WIDTH";
+        case IdentType::HEIGHT:         return "HEIGHT";
+        case IdentType::SAMPLES:        return "SAMPLES";
+        case IdentType::DEPTH:          return "DEPTH";
+        case IdentType::ASPECT_RATIO:   return "ASPECT_RATIO";
+        case IdentType::BACKGROUND:     return "BACKGROUND";
+        case IdentType::POSITION:       return "POSITION";
+        case IdentType::LOOKAT:         return "LOOKAT";
+        case IdentType::UP_VIEW:        return "UP_VIEW";
+        case IdentType::VFOV:           return "VFOV";
+        case IdentType::DEFOCUS_ANGLE:  return "DEFOCUS_ANGLE";
+        case IdentType::FOCUS_DISTANCE: return "FOCUS_DISTANCE";
+        case IdentType::COLOR:          return "COLOR";
+        case IdentType::EVEN:           return "EVEN";
+        case IdentType::ODD:            return "ODD";
+        case IdentType::SCALE:          return "SCALE";
+        case IdentType::TEXTURE_REF:    return "TEXTURE_REF";
+        case IdentType::FUZZ:           return "FUZZ";
+        case IdentType::IOR:            return "IOR";
+        case IdentType::INTENSITY:      return "INTENSITY";
+        case IdentType::SHAPE:          return "SHAPE";
+        case IdentType::MATERIAL_REF:   return "MATERIAL_REF";
+        case IdentType::RADIUS:         return "RADIUS";
+        case IdentType::Y_MIN:          return "Y_MIN";
+        case IdentType::Y_MAX:          return "Y_MAX";
+        case IdentType::CAPPED:         return "CAPPED";
+        case IdentType::MIN:            return "MIN";
+        case IdentType::MAX:            return "MAX";
+        case IdentType::NORMAL:         return "NORMAL";
+        case IdentType::MAJOR_RADIUS:   return "MAJOR_RADIUS";
+        case IdentType::MINOR_RADIUS:   return "MINOR_RADIUS";
+        case IdentType::TRANSLATE:      return "TRANSLATE";
+        case IdentType::ROTATE:         return "ROTATE";
+        case IdentType::DIRECTION:      return "DIRECTION";
+        default:                        return "UNKNOWN";
+    }
+}
+
 #endif

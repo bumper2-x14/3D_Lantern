@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include <stdexcept>
+#include <iomanip>
 #include <variant>
 #include "keyword_map.h"
 
@@ -19,6 +20,7 @@ enum class TokenType {
     NONE,
     KEYWORD,
     STRING,
+    IDENTIFIER,
     NUMBER,
     BOOLEAN,
     LBRACE,
@@ -141,8 +143,11 @@ inline Token makeKeywordToken(const std::string& _word, int _line) {
     LightType l = convertToLightType(_word);
     if (l != LightType::UNKNOWN) { tk.key = l;  return tk; }
 
-    tk.key = convertToIdentType(_word);
-    return tk;
+    IdentType id = convertToIdentType(_word);
+    if (id != IdentType::UNKNOWN) { tk.key = id; return tk; }
+
+    // Truly unrecognized unquoted word — user-defined name
+    return Token(TokenType::IDENTIFIER, _word, _line);
 }
 
 inline Token makeToken(const std::string& word, int line) {
@@ -158,8 +163,9 @@ inline Token makeToken(const std::string& word, int line) {
     if (word == "true" || word == "false")
         return makeBooleanToken(word, line);
 
-    bool isNumber = !word.empty() &&
-                    (std::isdigit(word[0]) || word[0] == '-' || word[0] == '+');
+    bool isNumber = word.size() > 1 &&  // rejects bare "-" or "+"
+                (std::isdigit(word[0]) || word[0] == '-' || word[0] == '+') &&
+                std::isdigit(word[1]);  // second char must be a digit
 
     if (isNumber) {
         char* end = nullptr;
@@ -169,8 +175,41 @@ inline Token makeToken(const std::string& word, int line) {
             return makeNumberToken(word, line);
         }
     }
-
     return makeKeywordToken(word, line);
+}
+
+inline std::string logString(TokenType t) {
+    switch (t) {
+        case TokenType::NONE:       return "NONE";
+        case TokenType::KEYWORD:    return "KEYWORD";
+        case TokenType::IDENTIFIER: return "IDENTIFIER";
+        case TokenType::STRING:     return "STRING";
+        case TokenType::NUMBER:     return "NUMBER";
+        case TokenType::BOOLEAN:    return "BOOLEAN";
+        case TokenType::LBRACE:     return "LBRACE";
+        case TokenType::RBRACE:     return "RBRACE";
+        case TokenType::END:        return "END";
+        default:                    return "???";
+    }
+}
+
+inline std::string logString(const KeywordType& k) {
+    return std::visit([](auto&& v) -> std::string {
+        using T = std::decay_t<decltype(v)>;
+        if constexpr (std::is_same_v<T, std::monostate>) return "-";
+        else return logString(v);  // delegates to keyword_map.h logString overloads
+    }, k);
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Token& t) {
+    os << "[line " << std::setw(3) << t.line << "] "
+       << std::setw(12) << std::left << logString(t.type)
+       << " raw: " << std::setw(20) << std::left << ("'" + t.raw + "'");
+
+    if (t.type == TokenType::KEYWORD)
+        os << " key: " << logString(t.key);
+
+    return os;
 }
 
 #endif
