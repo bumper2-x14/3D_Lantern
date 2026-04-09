@@ -1,0 +1,117 @@
+setting {
+    width 800
+    height 600
+    samples 100
+    depth 20
+    aspect_ratio 1.7778
+    background 0.1 0.1 0.1
+}
+
+camera {
+    position 0.0 2.0 -5.0
+    lookat 0.0 0.0 0.0
+    up_view 0.0 1.0 0.0
+    vfov 45.0
+    defocus_angle 0.05
+    focus_distance 10.0
+}
+
+texture {
+    name checker_floor
+    type checker
+    even 0.9 0.9 0.9
+    odd  0.2 0.2 0.2
+    scale 5.0
+}
+
+texture {
+    name earth_map
+    type image
+    file "textures/earth.png"
+}
+
+material {
+    name ground_mat
+    type lambertian
+    texture checker_floor
+}
+
+material {
+    name glass_mat
+    type dielectric
+    ior 1.5
+}
+
+material {
+    name metal_mat
+    type metallic
+    color 0.8 0.6 0.2
+    fuzz 0.1
+}
+
+material {
+    name light_mat
+    type emissive
+    color 1.0 1.0 1.0
+    intensity 5.0
+}
+
+object {
+    name floor
+    type quad
+    material ground_mat
+    position 0.0 0.0 0.0
+    normal 0.0 1.0 0.0
+    translate 0.0 -1.0 0.0
+}
+
+object {
+    name glass_sphere
+    type sphere
+    material glass_mat
+    radius 1.0
+    translate -2.0 0.0 0.0
+}
+
+object {
+    name metal_sphere
+    type sphere
+    material metal_mat
+    radius 1.0
+    translate 2.0 0.0 0.0
+}
+
+object {
+    name my_cylinder
+    type cylinder
+    material metal_mat
+    radius 0.5
+    y_min 0.0
+    y_max 2.0
+    capped true
+    translate 0.0 0.0 2.0
+}
+
+object {
+    name mesh_obj
+    type mesh
+    material glass_mat
+    file "meshes/bunny.obj"
+    translate 0.0 0.0 0.0
+    rotate 0.0 45.0 0.0
+    scale 1.0 1.0 1.0
+}
+
+light {
+    type point
+    position 0.0 5.0 0.0
+    intensity 3.0
+    color 1.0 1.0 1.0
+}
+
+light {
+    type directional
+    direction -1.0 -1.0 -1.0
+    intensity 1.0
+    color 0.9 0.9 1.0
+}

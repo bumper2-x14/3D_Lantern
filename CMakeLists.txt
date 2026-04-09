@@ -11,6 +11,7 @@ add_compile_definitions(
     IMG_DIR="${CMAKE_SOURCE_DIR}/img/"
     RESOURCE_DIR="${CMAKE_SOURCE_DIR}/resources/"
     SHADER_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+    ROOT_DIR="${CMAKE_SOURCE_DIR}/"
 )
 
 # Enabled for code execution and memory testing

@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include "lexer.h"
 
 Lexer::Lexer(const std::string& _path) : src_path(_path) {}

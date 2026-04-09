@@ -163,9 +163,9 @@ inline Token makeToken(const std::string& word, int line) {
     if (word == "true" || word == "false")
         return makeBooleanToken(word, line);
 
-    bool isNumber = word.size() > 1 &&  // rejects bare "-" or "+"
-                (std::isdigit(word[0]) || word[0] == '-' || word[0] == '+') &&
-                std::isdigit(word[1]);  // second char must be a digit
+   bool isNumber = !word.empty() &&
+                (std::isdigit(word[0]) ||
+                ((word[0] == '-' || word[0] == '+') && word.size() > 1));
 
     if (isNumber) {
         char* end = nullptr;
