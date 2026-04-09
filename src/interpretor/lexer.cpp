@@ -1,7 +1,12 @@
 #include <fstream>
 #include "lexer.h"
 
-Lexer::Lexer(const std::string& _path) : src_path(_path) {}
+Lexer::Lexer(const std::string& _path) : src_path(_path) {
+    int dot = src_path.rfind('.');
+    if (dot == std::string::npos || src_path.substr(dot) != ".lnt") {
+        throw std::runtime_error("Lexer: invalid file extension, expected '.lnt' -> " + src_path);
+    }
+}
 
 const std::vector<Token>& Lexer::getTokens() const {
     return tokens;
@@ -20,25 +25,35 @@ void Lexer::tokenize() {
     // Define a lambda function in charge of creating tokens
     auto generator = [&]() {
         if (!word.empty()){
-            tokens.push_back(makeToken(word, line));
+            tokens.push_back(makeToken(word, line));// Handle left brace
             word.clear();
         }
     };
 
     while(file.get(c)) {
         if(c == '\n') {
+            // Handle end of line
             generator();
             ++line;
         }
+        else if(c == '#'){
+            // Handle comments
+            generator();
+            while (file.get(c) && c != '\n');
+            ++line;
+        }
         else if(c == '{') {
+            // Handle left brace
             generator();
             tokens.push_back(makeLBraceToken(line));
         }
         else if(c == '}') {
+            // Handle right brace
             generator();
             tokens.push_back(makeRBraceToken(line));
         } 
         else if(std::isspace(c)) {
+            // Handle spaces and tabs
             generator();
         }
         else {
