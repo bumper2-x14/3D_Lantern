@@ -13,7 +13,7 @@ enum class ObjectType {
 };
 
 enum class TextureType {
-    SOLIDCOLOR, IMAGE, CHECKER, PERLIN, UNKNOWN
+    SOLIDCOLOR, IMAGE, CHECKER, NOISE, TURBULENCE, MARBLE, WOOD, WARPED, UNKNOWN
 };
 
 enum class MaterialType {
@@ -98,7 +98,11 @@ inline TextureType convertToTextureType(const std::string& s) {
         { "solidcolor", TextureType::SOLIDCOLOR },
         { "image",      TextureType::IMAGE      },
         { "checker",    TextureType::CHECKER    },
-        { "perlin",     TextureType::PERLIN     }
+        { "noise",      TextureType::NOISE      },
+        { "noise",      TextureType::TURBULENCE },
+        { "noise",      TextureType::MARBLE     },
+        { "noise",      TextureType::WOOD       },
+        { "noise",      TextureType::WARPED     }
     };
     auto it = m.find(s);
     return it != m.end() ? it->second : TextureType::UNKNOWN;
@@ -203,7 +207,11 @@ inline std::string logString(TextureType v) {
         case TextureType::SOLIDCOLOR: return "SOLIDCOLOR";
         case TextureType::IMAGE:      return "IMAGE";
         case TextureType::CHECKER:    return "CHECKER";
-        case TextureType::PERLIN:     return "PERLIN";
+        case TextureType::NOISE:      return "NOISE";
+        case TextureType::TURBULENCE: return "TURBULENCE";
+        case TextureType::MARBLE:     return "MARBLE";
+        case TextureType::WARPED:     return "WARPED";
+        case TextureType::WOOD:       return "WOOD";
         default:                      return "UNKNOWN";
     }
 }

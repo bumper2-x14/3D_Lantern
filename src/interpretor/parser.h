@@ -67,6 +67,9 @@ class Parser {
         /// @brief Reads three consecutive NUMBER tokens and returns them as a Vec3d.
         Vec3d parseVec3();
 
+        /// @brief Reads three consecutive NUMBER tokens and returns them as a Point3dd.
+        Point3d parsePoint3();
+
         /// @brief Reads a single NUMBER token and returns its value as a double.
         double parseNumber();
 
