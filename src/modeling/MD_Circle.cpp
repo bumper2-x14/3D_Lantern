@@ -27,9 +27,9 @@ void MD_Disk::buildShape(){
         Vec3f p2(cos(alpha2), 0, sin(alpha2));
 
         // Texture coordinates
-        Vec2f uv0(0.0f, 0.0f);
-        Vec2f uv1(0.0f, 0.0f);
-        Vec2f uv2(0.0f, 0.0f);
+        Vec2f uv0(0.5 * cos( alpha)+0.5,0.5 * sin(alpha )+0.5);
+        Vec2f uv1(0.5f, 0.5f);
+        Vec2f uv2(0.5 * cos( alpha2)+0.5,0.5 * sin(alpha2)+0.5);
 
         // First vertex index
         unsigned int start = mesh->data->vertices.size();

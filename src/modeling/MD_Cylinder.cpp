@@ -27,11 +27,14 @@ void MD_Cylinder::buildShape(){
         Vec3f n2( cos(alpha2), 0, sin(alpha2) );
         Vec3f n3( cos(alpha2), 0, sin(alpha2) );
 
+        float ux0 = (float)i / nb_seg;
+        float ux1 = (float)(i+1)/nb_seg;
+
         // Asigning texteur
-        Vec2f uv0(0.0f, 0.0f);
-        Vec2f uv1(0.0f, 0.0f);
-        Vec2f uv2(0.0f, 0.0f);
-        Vec2f uv3(0.0f, 0.0f);
+        Vec2f uv0(ux0, 1.0f);
+        Vec2f uv1(ux0, 0.0f);
+        Vec2f uv2(ux1, 1.0f);
+        Vec2f uv3(ux1, 0.0f);
 
         unsigned int start = mesh->data->vertices.size();
 

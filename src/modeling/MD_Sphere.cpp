@@ -35,11 +35,17 @@ void MD_Sphere::buildShape(){
             Vec3f n2 = p2;
             Vec3f n3 = p3;
 
+            float ux0 = (float)beta / (2.0 * M_PI);
+            float ux1 = (float)beta2 / (2.0 * M_PI);
+
+            float vx0 = (float)(M_PI/2 + alpha ) / M_PI;
+            float vx1 = (float)(M_PI/2 + alpha2) / M_PI;
+
             // Asigning texteur
-            Vec2f uv0(0.0f, 0.0f);
-            Vec2f uv1(0.0f, 0.0f);
-            Vec2f uv2(0.0f, 0.0f);
-            Vec2f uv3(0.0f, 0.0f);
+            Vec2f uv0(ux0, vx1);
+            Vec2f uv1(ux0, vx0);
+            Vec2f uv2(ux1, vx1);
+            Vec2f uv3(ux1, vx0);
 
             unsigned int start = mesh->data->vertices.size();
 
