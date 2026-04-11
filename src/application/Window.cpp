@@ -1,3 +1,8 @@
+/*
+    DEV NOTE:
+    To many unnecessary headers for this class
+*/
+
 #include "Window.h"
 #include "modeling/MD_Camera.h"
 #include "modeling/MD_Shader.h"
@@ -24,6 +29,12 @@ void Window::sdlSetAttributes(){
     #endif
 }
 
+
+/*
+    DEV NOTE:
+    window creation with uncheked and non portable parameters
+    are dangerous for a default constructor 
+*/
 Window::Window(){
     sdlSetAttributes();
     win = SDL_CreateWindow( "window", 100, 100, 1920, 1080,
@@ -33,6 +44,10 @@ Window::Window(){
     height = 1080;
 }
 
+/*  
+    DEV NOTE:
+    Too many redundant constructors
+*/
 
 Window::Window(const std::string& name){
     sdlSetAttributes();
@@ -87,6 +102,15 @@ void Window::winInitGl(){
     }    
 }
 
+
+/*
+    DEV NOTE:
+    Abominable code
+    TODO: winRun() does too much — split into buildScene / handleEvents / updateCamera / renderFrame
+    BUG:  deltaTime is 0 on frame 1 (initialize last before the loop)
+    BUG:  ax, ay uninitialized on first mouse drag — call SDL_GetMouseState(&ax,&ay) before loop
+    TODO: glClearColor called every frame needlessly — move before loop
+*/
 
 void Window::winRun(){
         glViewport(0 ,0 , width*8/10, height*8/10) ;
