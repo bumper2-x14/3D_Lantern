@@ -28,15 +28,14 @@ class Model{
         const MeshData& getMesh() const ;
         MeshData& getMesh();
 
+        static MeshData loadOBJ(const std::string& path, bool& success);
+
         bool hasMesh() const { return mesh != nullptr; }
         
         static void regressionTest();
 
     private:
-        MeshData* mesh = nullptr;
-
-        bool loadOBJ(const std::string& path);
-       
+        MeshData* mesh = nullptr;      
 };
 
 #endif 
