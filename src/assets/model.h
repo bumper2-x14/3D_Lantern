@@ -27,6 +27,8 @@ class Model{
         bool loadModel(const std::string& path);
         const MeshData& getMesh() const ;
         MeshData& getMesh();
+        
+        const std::string& getName() const { return name; }
 
         static MeshData loadOBJ(const std::string& path, bool& success);
 
@@ -35,7 +37,10 @@ class Model{
         static void regressionTest();
 
     private:
-        MeshData* mesh = nullptr;      
+        MeshData* mesh = nullptr;
+        std::string name;
+
+        bool loadOBJ(const std::string& path);       
 };
 
 #endif 
