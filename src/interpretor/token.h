@@ -51,7 +51,7 @@ struct Token {
     T getKeyword() const {
         const T* v = std::get_if<T>(&key);
         if (!v)
-            throw std::runtime_error("Token '" + raw + "' is not the expected keyword type");
+            throw std::runtime_error("LINE : " + std::to_string(line) + " -- Token '" + raw + "' is not the expected keyword type");
         return *v;
     }
 
@@ -64,7 +64,7 @@ struct Token {
 
     double getNumber() const {
         if (type != TokenType::NUMBER)
-            throw std::runtime_error("Expected number, got '" + raw + "'");
+            throw std::runtime_error("LINE: " + std::to_string(line) + " -- Expected number, got '" + raw + "'");
         return std::stod(raw);
     }
 
@@ -74,7 +74,7 @@ struct Token {
 
     bool getBool() const {
         if (type != TokenType::BOOLEAN)
-            throw std::runtime_error("Expected boolean, got '" + raw + "'");
+            throw std::runtime_error("LINE : " + std::to_string(line) + " --Expected boolean, got '" + raw + "'");
         return raw == "true";
     }
 
@@ -84,7 +84,7 @@ struct Token {
 
     const std::string& getString() const {
         if (type != TokenType::STRING)
-            throw std::runtime_error("Expected string, got '" + raw + "'");
+            throw std::runtime_error("LINE : " + std::to_string(line) + " --Expected string, got '" + raw + "'");
         return raw;
     }
 
