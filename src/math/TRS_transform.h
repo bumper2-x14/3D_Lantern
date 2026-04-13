@@ -1,14 +1,8 @@
 #ifndef TRS_TRANSFORM_H
 #define TRS_TRANSFORM_H
 
+#include "TRS_data.h"
 #include "mat4.h"
-
-
-template <typename T> struct TRSData {
-    Vec3<T> translation = {0, 0, 0};
-    Vec3<T> scale       = {1, 1, 1};
-    Vec3<T> rotation    = {0, 0, 0};  // euler angles per axis, degrees
-};
 
 
 template <typename T> class TRSTransform {
@@ -71,7 +65,5 @@ template <typename T> class TRSTransform {
 
 using TRSTransformf = TRSTransform<float>; 
 using TRSTransformd = TRSTransform<double>;
-using TRSDataf = TRSData<float>;
-using TRSDatad = TRSData<double>;
 
 #endif

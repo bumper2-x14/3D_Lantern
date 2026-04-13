@@ -3,8 +3,9 @@
 MD_Cylinder::MD_Cylinder(int _nb_seg){
     nb_seg = _nb_seg;
 
+    mesh = new MD_Mesh;
     buildShape();
-    mesh.setupMD_Mesh();
+    mesh->setupMD_Mesh();
 }
 
 void MD_Cylinder::buildShape(){
@@ -26,32 +27,35 @@ void MD_Cylinder::buildShape(){
         Vec3f n2( cos(alpha2), 0, sin(alpha2) );
         Vec3f n3( cos(alpha2), 0, sin(alpha2) );
 
+        float ux0 = (float)i / nb_seg;
+        float ux1 = (float)(i+1)/nb_seg;
+
         // Asigning texteur
-        Vec2f uv0(0.0f, 0.0f);
-        Vec2f uv1(0.0f, 0.0f);
-        Vec2f uv2(0.0f, 0.0f);
-        Vec2f uv3(0.0f, 0.0f);
+        Vec2f uv0(ux0, 1.0f);
+        Vec2f uv1(ux0, 0.0f);
+        Vec2f uv2(ux1, 1.0f);
+        Vec2f uv3(ux1, 0.0f);
 
-        unsigned int start = mesh.data->vertices.size();
+        unsigned int start = mesh->data->vertices.size();
 
-        mesh.data->vertices.push_back(Vertex(p0, n0, uv0));   
-        mesh.data->vertices.push_back(Vertex(p1, n1, uv1));   
-        mesh.data->vertices.push_back(Vertex(p2, n2, uv2));   
-        mesh.data->vertices.push_back(Vertex(p3, n3, uv3));
+        mesh->data->vertices.push_back(Vertex(p0, n0, uv0));   
+        mesh->data->vertices.push_back(Vertex(p1, n1, uv1));   
+        mesh->data->vertices.push_back(Vertex(p2, n2, uv2));   
+        mesh->data->vertices.push_back(Vertex(p3, n3, uv3));
 
-        mesh.data->indices.push_back(start + 0); 
-        mesh.data->indices.push_back(start + 1);
-        mesh.data->indices.push_back(start + 2);
+        mesh->data->indices.push_back(start + 0); 
+        mesh->data->indices.push_back(start + 1);
+        mesh->data->indices.push_back(start + 2);
 
-        mesh.data->indices.push_back(start + 2);
-        mesh.data->indices.push_back(start + 1);
-        mesh.data->indices.push_back(start + 3);
+        mesh->data->indices.push_back(start + 2);
+        mesh->data->indices.push_back(start + 1);
+        mesh->data->indices.push_back(start + 3);
 
     }
 }
 
  void MD_Cylinder::applyTransform(Transform* transform) {
-    for (auto& v : mesh.data->vertices){
+    for (auto& v : mesh->data->vertices){
             v.position = transform->mat * v.position;
             v.normal = transform->transformNormal(v.normal);
         }

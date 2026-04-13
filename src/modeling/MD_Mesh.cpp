@@ -10,6 +10,11 @@ MD_Mesh::MD_Mesh() {
     data = new MeshData;
 }
 
+void MD_Mesh::setData(const MeshData& newData){
+    delete data;
+    data = new MeshData(newData);
+}
+
 MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices,
                      const std::vector<unsigned int>& _indice){
     data = new MeshData;

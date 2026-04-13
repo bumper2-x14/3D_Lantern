@@ -7,6 +7,11 @@ MD_Texture::MD_Texture(const std::string& src){
 
 }
 
+
+/*
+DEV NOTE:
+No clear def of _option_wrap, use an enum instead
+*/
 void MD_Texture::init(int _option_wrap){
     glBindTexture(GL_TEXTURE_2D, texture_Id);
     switch(_option_wrap){
@@ -70,6 +75,9 @@ void MD_Texture::init(int _option_wrap){
            }  
 }
 
+/*
+naming -> loadImage
+*/
 void MD_Texture::load_Image(){
     glBindTexture(GL_TEXTURE_2D, texture_Id);
     glTexImage2D(GL_TEXTURE_2D,

@@ -5,8 +5,9 @@ MD_Quad::MD_Quad(float _width, float _lenght){
     width = _width;
     length = _lenght;
 
+    mesh = new MD_Mesh;
     buildShape();
-    mesh.setupMD_Mesh();
+    mesh->setupMD_Mesh();
 }
 
 void MD_Quad::buildShape(){
@@ -29,22 +30,23 @@ void MD_Quad::buildShape(){
     Vec2f uv2(0.0f, 1.0f);
     Vec2f uv3(1.0f, 1.0f);
 
-    mesh.data->vertices.push_back(Vertex(p0, n, uv0));   
-    mesh.data->vertices.push_back(Vertex(p1, n, uv1));   
-    mesh.data->vertices.push_back(Vertex(p2, n, uv2));   
-    mesh.data->vertices.push_back(Vertex(p3, n, uv3));
+    mesh->data->vertices.push_back(Vertex(p0, n, uv0));   
+    mesh->data->vertices.push_back(Vertex(p1, n, uv1));   
+    mesh->data->vertices.push_back(Vertex(p2, n, uv2));   
+    mesh->data->vertices.push_back(Vertex(p3, n, uv3));
 
-    mesh.data->indices.push_back(0); 
-    mesh.data->indices.push_back(1);
-    mesh.data->indices.push_back(2);
+    mesh->data->indices.push_back(0); 
+    mesh->data->indices.push_back(1);
+    mesh->data->indices.push_back(2);
 
-    mesh.data->indices.push_back(2);
-    mesh.data->indices.push_back(1);
-    mesh.data->indices.push_back(3);
+    mesh->data->indices.push_back(2);
+    mesh->data->indices.push_back(1);
+    mesh->data->indices.push_back(3);
+
 }
 
 void MD_Quad::applyTransform(Transform* transform){
-     for (auto& v : mesh.data->vertices){
+     for (auto& v : mesh->data->vertices){
         v.position = transform->mat * v.position;
         v.normal = transform->transformNormal(v.normal);
      }

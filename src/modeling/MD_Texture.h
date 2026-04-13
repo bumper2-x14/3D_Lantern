@@ -12,7 +12,15 @@ class MD_Texture:public MD_Material{
     public:
         MD_Texture(const std::string& src);
         void init(int _option_wrap = 0);
+
+        /*
+        naming -> loadImage
+        */
         void load_Image();
+
+        /*
+        getter methods should be const both in header and cpp
+        */
         int getTextureId();       
         //add u and v on a VBO 
         //using our shaders for drawing

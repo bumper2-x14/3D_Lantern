@@ -1,12 +1,12 @@
-#ifndef MD_CIRCLE_H
-#define MD_CIRCLE_H
+#ifndef MD_DISK_H
+#define MD_DISK_H
 
 #include "MD_Shape.h"
 #include "assets/vertex.h"
 
-class MD_Circle : public MD_Shape{
+class MD_Disk : public MD_Shape{
     public:
-        MD_Circle(int _nb_seg = 25);
+        MD_Disk(int _nb_seg = 25);
         void buildShape() override;
         void applyTransform(Transform* transform) override;
 

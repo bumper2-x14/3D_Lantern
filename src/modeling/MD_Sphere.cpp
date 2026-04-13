@@ -3,12 +3,14 @@
 
 #include "MD_Sphere.h"
 
-MD_Sphere::MD_Sphere(float _longtitude_seg , float _latitude_seg ) {
-    latitude_seg = _latitude_seg ;
-    longitude_seg = _longtitude_seg ;
+MD_Sphere::MD_Sphere(float _longtitude_seg , float _latitude_seg ) : 
+        latitude_seg ( _latitude_seg), longitude_seg(_longtitude_seg )  {
 
+    type = ShapeType::SPHERE;
+
+    mesh = new MD_Mesh;
     buildShape();
-    mesh.setupMD_Mesh();
+    mesh->setupMD_Mesh();
 }
 
 void MD_Sphere::buildShape(){
@@ -33,34 +35,40 @@ void MD_Sphere::buildShape(){
             Vec3f n2 = p2;
             Vec3f n3 = p3;
 
+            float ux0 = (float)beta / (2.0 * M_PI);
+            float ux1 = (float)beta2 / (2.0 * M_PI);
+
+            float vx0 = (float)(M_PI/2 + alpha ) / M_PI;
+            float vx1 = (float)(M_PI/2 + alpha2) / M_PI;
+
             // Asigning texteur
-            Vec2f uv0(0.0f, 0.0f);
-            Vec2f uv1(0.0f, 0.0f);
-            Vec2f uv2(0.0f, 0.0f);
-            Vec2f uv3(0.0f, 0.0f);
+            Vec2f uv0(ux0, vx1);
+            Vec2f uv1(ux0, vx0);
+            Vec2f uv2(ux1, vx1);
+            Vec2f uv3(ux1, vx0);
 
-            unsigned int start = mesh.data->vertices.size();
+            unsigned int start = mesh->data->vertices.size();
 
-            mesh.data->vertices.push_back(Vertex(p0, n0, uv0));   
-            mesh.data->vertices.push_back(Vertex(p1, n1, uv1));   
-            mesh.data->vertices.push_back(Vertex(p2, n2, uv2));   
-            mesh.data->vertices.push_back(Vertex(p3, n3, uv3));   
+            mesh->data->vertices.push_back(Vertex(p0, n0, uv0));   
+            mesh->data->vertices.push_back(Vertex(p1, n1, uv1));   
+            mesh->data->vertices.push_back(Vertex(p2, n2, uv2));   
+            mesh->data->vertices.push_back(Vertex(p3, n3, uv3));   
 
-            mesh.data->indices.push_back(start + 0); 
-            mesh.data->indices.push_back(start + 2);
-            mesh.data->indices.push_back(start + 1);
+            mesh->data->indices.push_back(start + 0); 
+            mesh->data->indices.push_back(start + 2);
+            mesh->data->indices.push_back(start + 1);
 
-            mesh.data->indices.push_back(start + 1);
-            mesh.data->indices.push_back(start + 2);
-            mesh.data->indices.push_back(start + 3);
+            mesh->data->indices.push_back(start + 1);
+            mesh->data->indices.push_back(start + 2);
+            mesh->data->indices.push_back(start + 3);
 
         }
     }
 }
 
 void MD_Sphere::applyTransform(Transform* transform){
-    //for (int i=0 ; i < mesh.data->vertices.size() ; i++)
-    for (auto& v : mesh.data->vertices){
+    //for (int i=0 ; i < mesh->data->vertices.size() ; i++)
+    for (auto& v : mesh->data->vertices){
         v.position = transform->mat * v.position;
         v.normal = transform->transformNormal(v.normal);
     }
@@ -69,12 +77,15 @@ void MD_Sphere::applyTransform(Transform* transform){
 void MD_Sphere::regressionTest(){
     MD_Sphere sphereTest(10, 10);
 
-    assert(sphereTest.getMesh().data != nullptr && "Mesh data is null");
+    const MD_Mesh* mesh = sphereTest.getMesh();
 
-    assert(!sphereTest.getMesh().data->indices.empty() && "Indices list is empty");
-    assert(!sphereTest.getMesh().data->vertices.empty() && "Vertex list is empty");
+    assert(mesh != nullptr && "Mesh is null");
+    assert(mesh->data != nullptr && "Mesh data is null");
+
+    assert(!mesh->data->indices.empty() && "Indices list is empty");
+    assert(!mesh->data->vertices.empty() && "Vertex list is empty");
     
-    const Vertex vInitial = sphereTest.mesh.data->vertices[0];
+    const Vertex vInitial = sphereTest.mesh->data->vertices[0];
     float len = std::sqrt(
                     vInitial.position.x * vInitial.position.x +
                     vInitial.position.y * vInitial.position.y +
@@ -84,9 +95,11 @@ void MD_Sphere::regressionTest(){
 
     Transform tr = Transform::translate(Vec3f(1.0f, 0.0f, 0.0f));
     sphereTest.applyTransform(&tr);
-    Vertex vAfter = sphereTest.mesh.data->vertices[0];
+    Vertex vAfter = sphereTest.mesh->data->vertices[0];
     assert(std::abs(vAfter.position.x - (vInitial.position.x + 1.0f)) < 0.001f &&
        "Translation on X axis failed");
+
+    std::cout << "MD_Sphere regression test passed\n";   
 
 }
 
