@@ -22,9 +22,14 @@ class MD_Renderer{
         
         MD_Camera& setCameraMain();
         MD_Camera& setCameraRt();
+
+        std::vector<MD_Object*>& getObjects() {
+            return objects;
+        }
         
 
         void render(MD_Shader& shader);
+
         
     private:
         std::vector<MD_Object*> objects;

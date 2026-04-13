@@ -14,8 +14,8 @@ void MD_Object::draw(MD_Shader& shader) {
 
     // GPU builds the matrix in the vertex shader from these three uniforms
     shader.setVec3("uTranslation", trs.translation);
-    shader.setVec3("uRotation",    trs.rotation);
-    shader.setVec3("uScale",       trs.scale);
+    shader.setVec3("uRotation", trs.rotation);
+    shader.setVec3("uScale", trs.scale);
 
     if (material) {
         MD_Texture* texture = dynamic_cast<MD_Texture*>(material);

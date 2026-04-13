@@ -53,7 +53,7 @@ mat4 buildTRS() {
         uTranslation.x, uTranslation.y, uTranslation.z, 1
     );
 
-    return T * Rx * Ry * Rz * S;
+    return T * Rz * Ry * Rx * S;
 }
 
 void main() {

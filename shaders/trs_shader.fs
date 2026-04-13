@@ -18,6 +18,8 @@ uniform int   uSpec;
 
 uniform sampler2D texture0;
 
+uniform bool uSelected;
+
 void main() {
     vec3 N = normalize(Norm);
     // in view space the camera is always at the origin
@@ -37,5 +39,11 @@ void main() {
     }
 
     vec4 texColor = texture(texture0, Tex);
-    Color = vec4(texColor.rgb * result, texColor.a);
+    vec3 color = texColor.rgb * result;
+
+    if (uSelected) {
+        color *= vec3(1.3, 1.3, 0.6);
+    }
+
+    Color = vec4(color, texColor.a);
 }
