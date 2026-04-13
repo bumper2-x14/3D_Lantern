@@ -10,8 +10,8 @@ MD_Object::MD_Object(MD_Shape* _shape, Transform* _transform,
 
 void MD_Object::draw(MD_Shader& shader){
    
-    const MD_Mesh& mesh = shape->getMesh();
-    glBindVertexArray(mesh.VAO);
+    const MD_Mesh* mesh = shape->getMesh();
+    glBindVertexArray(mesh->VAO);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glEnable(GL_POLYGON_OFFSET_FILL);
@@ -39,7 +39,7 @@ void MD_Object::draw(MD_Shader& shader){
             glBindTexture(GL_TEXTURE_2D, texture->getTextureId());
         }
     }
-    glDrawElements(GL_TRIANGLES, (GLsizei)mesh.data->indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (GLsizei)mesh->data->indices.size(), GL_UNSIGNED_INT, 0);
 } 
     //glDrawArrays(GL_TRIANGLES, 0, mesh.data->vertices.size()); 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

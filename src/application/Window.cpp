@@ -176,7 +176,7 @@ void Window::winRun(){
         renderer.addObject(&cylinder_ob);
 
         //Circle
-        MD_Circle circle(40);
+        MD_Disk circle(40);
         Transform t_circle = Transform::translate(
                                     Vec3f(0.0, 4.0, 0.0));
         MD_Object circle_ob(&circle, &t_circle);
