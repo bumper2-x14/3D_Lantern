@@ -2,27 +2,25 @@
 #define MD_OBJECT_H
 
 #include "MD_Shape.h"
-#include "math/transform.h"
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Material.h"
 #include "modeling/MD_Texture.h"
+#include "math/TRS_data.h"
 
 class MD_Object{
     public:
-        /*
-        MD_Object();
-        */
-       MD_Object(MD_Shape* _shape = nullptr, 
-                            Transform* _transform = nullptr,
-                                        MD_Material* _material = nullptr );
-        void draw(MD_Shader& shader);
+        TRSDataf trs; 
+
+        MD_Object(MD_Shape* shape = nullptr, MD_Material* material = nullptr,
+                    const TRSDataf& trs_data = {});
+        
+       void draw(MD_Shader& shader);
 
         
     private:
         Vec3f* lightColor; 
         MD_Shape* shape;
         MD_Material* material;
-        Transform* transform;
 };
 
 #endif

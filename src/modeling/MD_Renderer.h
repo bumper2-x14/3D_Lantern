@@ -30,6 +30,7 @@ class MD_Renderer{
         std::vector<MD_Object*> objects;
         MD_Camera camera_Main;
         MD_Camera camera_Rt;
+        MD_Quad   groundShape;
         MD_Object ground ;
 };
 
