@@ -10,7 +10,7 @@ class MD_Light{
     public: 
        
         MD_Light();
-        MD_Light(const Vec3f _Pos,const Vec3f _lightColor);
+        MD_Light(const Vec3f _Pos, const Vec3f _lightColor);
         MD_Light(const Vec3f& _lightColor);
         
         void drawLightSource(MD_Shader& shader);
