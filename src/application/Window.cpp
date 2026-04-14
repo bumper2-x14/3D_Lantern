@@ -100,8 +100,8 @@ void Window::winRun() {
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
 
     // ── shader ────────────────────────────────────────────────────────────
-    MD_Shader shader(SHADER_DIR "trs_shader.vs",
-                     SHADER_DIR "trs_shader.fs");
+    MD_Shader shader(SHADER_DIR "light_Shaders.vs",
+                     SHADER_DIR "light_Shaders.fs");
 
     // ── textures ──────────────────────────────────────────────────────────
     MD_Texture texture(IMG_DIR "bluePng.png");

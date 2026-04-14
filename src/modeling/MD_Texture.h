@@ -4,30 +4,29 @@
 #include <string.h>
 #include <glad/glad.h>
 #include "modeling/MD_Shader.h"
-#include "assets/image.h"
+#include "assets/texture.h"
 #include "glad/glad.h"
 #include "MD_Material.h"
 
-class MD_Texture:public MD_Material{
+class MD_Texture{
     public:
         MD_Texture(const std::string& src);
         void init(int _option_wrap = 0);
 
-        /*
-        naming -> loadImage
-        */
-        void load_Image();
+        void loadImage();
 
         /*
         getter methods should be const both in header and cpp
         */
-        int getTextureId();       
+        int getTextureId()const;       
         //add u and v on a VBO 
         //using our shaders for drawing
     private:
-        //unsigned char* image_Data=nullptr;
         unsigned int texture_Id=0;
-        Image data ;
+
+        Texture* texture;
+        //unsigned char* image_Data = nullptr;
+
 };
 
 

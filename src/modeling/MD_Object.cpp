@@ -19,11 +19,13 @@ void MD_Object::draw(MD_Shader& shader) {
 
     // to be fixed
     if (material) {
-        MD_Texture* texture = dynamic_cast<MD_Texture*>(material);
-        if (texture) {
+        if (material->texture){
             glActiveTexture(GL_TEXTURE0);
             shader.setInt("texture0", 0);
             glBindTexture(GL_TEXTURE_2D, texture->getTextureId());
+        }
+        else{
+          // shader.set 
         }
     }
 
