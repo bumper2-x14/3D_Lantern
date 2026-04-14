@@ -21,7 +21,20 @@ MD_Material::MD_Material(Texture* _texture){
             
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                                                     GL_LINEAR);
-	
+	//to be updated for multiple textures
+	glBindTexture(GL_TEXTURE_2D, texture_Id);
+    	glTexImage2D(GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                data.width,
+                data.height,
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                data.data
+                );
+    	glGenerateMipmap(GL_TEXTURE_2D);
+
 }
 
 MD_Material::MD_Material(Vec3f* _ambient, 

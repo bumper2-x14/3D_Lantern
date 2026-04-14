@@ -104,11 +104,11 @@ void Window::winRun() {
                      SHADER_DIR "trs_shader.fs");
 
     // ── textures ──────────────────────────────────────────────────────────
-    MD_Texture texture(IMG_DIR "texture-background.jpg");
+    MD_Texture texture(IMG_DIR "bluePng.png");
     texture.init();
     texture.load_Image();
 
-    MD_Texture texture2(IMG_DIR "cracked_tx.jpg");
+    MD_Texture texture2(IMG_DIR "coolJoshHomme.jfif");
     texture2.init();
     texture2.load_Image();
 
