@@ -14,10 +14,9 @@
 class Window {
 public:
     Window(const std::string& name = "window",
-           int width  = 1280,
-           int height = 720,
-           int x      = SDL_WINDOWPOS_CENTERED,
-           int y      = SDL_WINDOWPOS_CENTERED);
+           int x = SDL_WINDOWPOS_CENTERED,
+           int y = SDL_WINDOWPOS_CENTERED);
+
     ~Window();
 
     void winInitGl();
@@ -31,20 +30,29 @@ public:
 
 private:
     void sdlSetAttributes();
-    void updateViewport();          // recomputes viewport_w/h and calls glViewport
+    void updateViewport(); // recomputes viewport_w/h and calls glViewport
 
     SDL_Window* win = nullptr;
     SDL_GLContext gl_context = nullptr;
 
-    int  width;
-    int  height;
+    int width = 0;
+    int height = 0;
 
     // region reserved for the GL scene — the rest is ImGui panels
-    int  viewport_w;                // set in winRun / updated on resize
-    int  viewport_h;
-    int  panel_width  = 300;        // right-side ImGui panel width
-    int  panel_height = 0;          // bottom panel height (0 = none yet)
+    int viewport_w = 0; // set in winRun / updated on resize
+    int viewport_h = 0;
 
+    // Panels expressed as fractions of the display size
+    static constexpr float kTopPanelFrac    = 0.1f; // ~4% of height  (toolbar)
+    static constexpr float kBottomPanelFrac = 0.04f; // ~4% of height  (status bar)
+    static constexpr float kLeftPanelFrac   = 0.05f; // ~12% of width  (outliner)
+    static constexpr float kRightPanelFrac  = 0.20f; // ~20% of width  (properties)
+
+    int panel_top = 0; // derived in constructor / updateViewport
+    int panel_bottom = 0;
+    int panel_left = 0;
+    int panel_right = 0;
+     
     bool stop = false;
 };
 

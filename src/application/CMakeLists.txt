@@ -1,5 +1,7 @@
 add_library(application STATIC
     Window.cpp
+    input.cpp
+    controller.cpp
 )
 
 find_package(SDL2 REQUIRED)

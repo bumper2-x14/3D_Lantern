@@ -18,13 +18,17 @@ void Input::update() {
                 break;
             
             case SDL_KEYUP:
-                if (e.button.button < curr_mouse.size())
-                    curr_keys[e.key.keysym.scancode] = false;
+                curr_keys[e.key.keysym.scancode] = false;
                 break;
             
             case SDL_MOUSEBUTTONDOWN:
                 if (e.button.button < curr_mouse.size())
                     curr_mouse[e.button.button] = true;
+                break;
+            
+            case SDL_MOUSEBUTTONUP:
+                if (e.button.button < curr_mouse.size())
+                    curr_mouse[e.button.button] = false;
                 break;
             
             case SDL_MOUSEMOTION:
@@ -60,7 +64,7 @@ bool Input::isMousePressed(Uint8 button) const {
 }
 
 bool Input::isMouseReleased(Uint8 button) const {
-    return !curr_keys[button] && prev_mouse[button];
+    return !curr_mouse[button] && prev_mouse[button];
 }
 
 // mouse position 

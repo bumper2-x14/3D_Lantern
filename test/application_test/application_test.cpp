@@ -3,7 +3,7 @@
 
 int main (){
     
-    Window window("name", 800, 600, 100, 100) ;
+    Window window("name", 800, 600) ;
     window.winInitGl();
     window.winRun();
 
