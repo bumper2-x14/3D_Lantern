@@ -3,53 +3,47 @@
 
 #include "math/vec3.h" 
 #include "math/mat4.h"
-#include "math/utility.h"
 
 class MD_Camera {
-        public:
-        //constructors
+    public:
+        float sensitivity = 0.1f;
+
         MD_Camera();
-        MD_Camera( const Vec3f& _cameraPos);   
-        MD_Camera( const Vec3f& _cameraPos, const Vec3f& _cameraFront);
-        MD_Camera( float x, float y, float z, const Vec3f& _cameraFront);
-        MD_Camera( float x, float y, float z, float dx, float dy, float dz);
-        MD_Camera( const Vec3f& _cameraPos, float dx, float dy, float dz);
+        MD_Camera(const Vec3f& pos, const Vec3f& front = Vec3f(0, 0, -1));
 
+        // view / projection
+        Mat4f getViewMatrix()       const;
+        Mat4f getProjectionMatrix() const; // uses fov, aspect, near, far
 
-        Vec3f getCameraPos();
-        Vec3f getCameraFront();
-        Vec3f getCameraUp();
-        float getPitch();
-        float get_Yaw();
-        unsigned int getIdShader(); 
+        // state
+        Vec3f getPosition() const { return pos; }
+        void  setAspect(float a)  { aspect = a; }
+        void  setFov(float f)     { fov = f;    }
+        void  setFloorY(float y)  { floorY = y; }
 
+        // per-frame update
+        struct CameraInput {
+            bool  w, s, a, d, up, down;
+            float xoffset, yoffset;
+            float speed;
+        };
+        void update(const CameraInput& in);
 
-        float getSensitivity()const;
-        void setSensitivity( float sensitivity);
-        
-        //to generate the lookAt matrices
-        Mat4f genLookAt()const;
-                            
+        static void regressionTest(); 
 
-        //put the shader id in our camera class
-        void setShader(int _idShader);
-
-        //change our camera object variable so that it moves around and looks around
-        void update( bool w, bool s, bool a, bool d, bool e, bool sh,
-                        float xoffset, float yoffset, float speed );
-        
-        //generates and puts the look at matrice in shader uniform
-        void setView()const;
-
-        static void regressionTest();
-    
     private:
-        Vec3f cameraPos=Vec3f(0,0,0);
-        Vec3f cameraFront=Vec3f(0,0,1);
-        Vec3f cameraUp=Vec3f(0,1,0);
-        float yaw=90;
-        float pitch=0;
-        float sensitivity=0.50;
-        unsigned int idShader;
+        Vec3f pos   = { 0, 0,  0 };
+        Vec3f front = { 0, 0, -1 };
+        Vec3f up    = { 0, 1,  0 };
+
+        float yaw   = -90.0f;
+        float pitch =   0.0f;
+
+        float fov    = 45.0f;
+        float aspect = 16.0f / 9.0f;
+        float nearZ  = 0.1f;
+        float farZ   = 1000.0f;
+        float floorY = 0.0f;
 };
+
 #endif

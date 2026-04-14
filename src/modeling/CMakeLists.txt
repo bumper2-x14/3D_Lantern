@@ -9,6 +9,7 @@ add_library(modeling STATIC
     MD_Circle.cpp
     MD_Renderer.cpp
     MD_Texture.cpp
+    MD_Scene.cpp
 )
 
 

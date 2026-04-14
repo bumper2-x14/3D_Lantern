@@ -6,17 +6,18 @@ MD_Object::MD_Object(MD_Shape* _shape, MD_Material* _material, const TRSDataf& t
     : shape(_shape), material(_material), trs(trsData)
 {}
 
+Mat4f MD_Object::getTransformMatrix() const {
+    return Mat4f::TRS(trs.translation, trs.rotation, trs.scale);
+}
+
+
 void MD_Object::draw(MD_Shader& shader) {
     if (!shape) return;
 
     const MD_Mesh* mesh = shape->getMesh();
     glBindVertexArray(mesh->VAO);
 
-    // GPU builds the matrix in the vertex shader from these three uniforms
-    shader.setVec3("uTranslation", trs.translation);
-    shader.setVec3("uRotation", trs.rotation);
-    shader.setVec3("uScale", trs.scale);
-
+    // to be fixed
     if (material) {
         MD_Texture* texture = dynamic_cast<MD_Texture*>(material);
         if (texture) {
@@ -26,6 +27,7 @@ void MD_Object::draw(MD_Shader& shader) {
         }
     }
 
+    // To be fixed
     glDrawElements(GL_TRIANGLES,
                    (GLsizei)mesh->data->indices.size(),
                    GL_UNSIGNED_INT, 0);

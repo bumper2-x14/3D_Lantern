@@ -1,39 +1,51 @@
 #include "MD_Renderer.h"
 
-MD_Renderer::MD_Renderer()
-    : camera_Main(0, 3, -3, 0, -2, 2)
-    , camera_Rt  (0, 1, -3,  0, 0, 2)
-    , groundShape(100, 100)
-    , ground(&groundShape, nullptr, {})   // identity TRS — no translation needed
-{}
+MD_Renderer::MD_Renderer() {}
 
-MD_Renderer::MD_Renderer(const MD_Camera& _camera)
-    : camera_Main(_camera)
-    , camera_Rt  (0, 1, -3, 0, 0, 2)
-    , groundShape(100, 100)
-    , ground(&groundShape, nullptr, {})
-{}
+void MD_Renderer::render(MD_Scene& scene, MD_Shader& shader) {
+    Mat4f view = camera_main.getViewMatrix();
+    Mat4f proj = camera_main.getProjectionMatrix();
 
-MD_Renderer::MD_Renderer(const MD_Camera& _camera_Main,
-                         const MD_Camera& _camera_Rt)
-    : camera_Main(_camera_Main)
-    , camera_Rt  (_camera_Rt)
-    , groundShape(100, 100)
-    , ground(&groundShape, nullptr, {})
-{}
+    shader.apply();
 
-void MD_Renderer::addObject(MD_Object* _object) {
-    objects.push_back(_object);
+    // set once per frame
+    shader.setMat4("uProjection",    proj);
+    shader.setVec3("uSelectionTint", Vec3f(1.3f, 1.3f, 0.6f));
+
+    /*
+    // upload lights — positions transformed to view space
+    auto& lights = scene.getPointLights();
+    shader.setInt("uNbLights", (int)lights.size());
+    for (int i = 0; i < (int)lights.size(); i++) {
+        std::string idx = std::to_string(i);
+        Point3d l_pos = lights[i]->getPosition();
+        Vec3f viewPos = view.project(Vec4f(l_pos.x, l_pos.y, l_pos.z, 1.0f));
+        shader.setVec3 ("uLightPositions[" + idx + "]", viewPos);
+        shader.setVec3 ("uLightColors[" + idx + "]", lights[i]->getColor());
+        shader.setFloat("uLightIntensities[" + idx + "]", lights[i]->getIntensity());
+    }
+    */
+
+    // draw objects
+    auto& objects = scene.getObjects();
+    for (int i = 0; i < (int)objects.size(); i++) {
+        shader.setBool("uSelected", i == scene.selected_index && scene.show_selected);
+        drawObject(objects[i], shader, view, proj);
+    }
 }
 
-void MD_Renderer::deleteObject(int indice) {
-    objects.erase(objects.begin() + indice);
-}
+void MD_Renderer::drawObject(MD_Object* obj, MD_Shader& shader,
+                              const Mat4f& view, const Mat4f& proj) {
+    if (!obj) return;
 
-MD_Camera& MD_Renderer::setCameraMain() { return camera_Main; }
-MD_Camera& MD_Renderer::setCameraRt()   { return camera_Rt;   }
+    Mat4f model = obj->getTransformMatrix();
+    Mat4f localToView = view * model;
+    // pass the full mat4 — the shader extracts mat3 and computes the normal matrix
+    shader.setMat4("uLocalToView", localToView);
+    /*
+    if (obj->getMaterial())
+        obj->getMaterial()->bind(shader);
+    */
 
-void MD_Renderer::render(MD_Shader& shader) {
-    for (auto* obj : objects)
-        obj->draw(shader);
+    obj->draw(shader);
 }

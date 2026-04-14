@@ -184,6 +184,7 @@ class Mat4 {
             return r;
         }
 
+
         //=================================================//
 
         static Mat4 zero() {
@@ -306,6 +307,13 @@ class Mat4 {
             return m;
         }
 
+        static Mat4 TRS(const Vec3<T>& t, const Vec3<T>& rotDeg, const Vec3<T>& s) {
+            return translation(t) * rotationZ(rotDeg.z) 
+                                * rotationY(rotDeg.y) 
+                                * rotationX(rotDeg.x) 
+                                * scale(s);
+        }
+        
     private:
         T matrix[4][4];
 };

@@ -1,124 +1,44 @@
 #include "MD_Camera.h"
 #include <cmath>
-#include <glad/glad.h>
-#include <iostream>
 
-//constructors
-MD_Camera::MD_Camera(){
-    cameraPos=Vec3f(0.0,0.0,0.0);
-    cameraFront=Vec3f( 0.0, 0.0, -1.0);
-    cameraUp=Vec3f(0.0,1.0,0.0);
-}
-MD_Camera::MD_Camera(const Vec3f& _cameraPos){
-    cameraPos=_cameraPos;
-    cameraFront=Vec3f( 0.0, 0.0, -1.0);
-    cameraUp=Vec3f( 0.0, 1.0, 0.0);
-}
-MD_Camera::MD_Camera( const Vec3f& _cameraPos, const Vec3f& _cameraFront){
-    cameraPos=_cameraPos;
-    cameraFront=_cameraFront;
-    cameraUp=Vec3f( 0.0, 1.0, 0.0);
-}
-MD_Camera::MD_Camera( float x, float y, float z, const Vec3f& _cameraFront){
-    cameraPos=Vec3f( x, y, z);
-    cameraFront=_cameraFront;
-    cameraUp=Vec3f( 0.0, 1.0, 0.0);
-}
-MD_Camera::MD_Camera( float x, float y, float z,
-                            float dx, float dy, float dz){
-    cameraPos=Vec3f( x, y, z);
-    cameraFront=Vec3f( dx, dy, dz);
-    cameraUp=Vec3f( 0.0, 1.0, 0.0);
-}
-MD_Camera::MD_Camera(const Vec3f& _cameraPos, float dx, float dy, float dz){
-    cameraPos=_cameraPos;
-    cameraFront=Vec3f( dx, dy, dz);
-    cameraUp=Vec3f( 0.0, 1.0, 0.0);
+MD_Camera::MD_Camera() {}
+
+MD_Camera::MD_Camera(const Vec3f& _pos, const Vec3f& _front)
+    : pos(_pos), front(normalize(_front)) {}
+
+Mat4f MD_Camera::getViewMatrix() const {
+    return Mat4f::lookAt(pos, pos + front, up);
 }
 
-Vec3f MD_Camera::getCameraPos(){
-    return cameraPos;; 
+Mat4f MD_Camera::getProjectionMatrix() const {
+    return Mat4f::perspective(toRadians(fov), aspect, nearZ, farZ);
 }
 
+void MD_Camera::update(const CameraInput& in) {
+    // horizontal forward (XZ only) so W/S doesn't change height
+    Vec3f hFront = normalize(Vec3f(front.x, 0.0f, front.z));
+    Vec3f right  = normalize(cross(front, up));
 
-float MD_Camera::getSensitivity()const{
-    return sensitivity;
-}
-void MD_Camera::setSensitivity(float _sensitivity){
-    sensitivity = _sensitivity ;
-}
+    if (in.w)    pos += in.speed * hFront;
+    if (in.s)    pos -= in.speed * hFront;
+    if (in.d)    pos += in.speed * right;
+    if (in.a)    pos -= in.speed * right;
+    if (in.up)   pos += in.speed * up;
+    if (in.down) pos -= in.speed * up;
 
-//to generate the lookAt matrices
-Mat4f MD_Camera::genLookAt()const{
-    return Mat4f::lookAt( cameraPos,
-                 cameraFront+cameraPos,
-                 cameraUp);
-}
+    if (pos.y < floorY) pos.y = floorY;
 
-//put the shader id in our camera class
-void MD_Camera::setShader(int _idShader){
-    idShader=_idShader;
-}
+    // look
+    yaw   += in.xoffset * sensitivity;
+    pitch += in.yoffset * sensitivity;
+    if (pitch >  89.0f) pitch =  89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
 
-//change our camera object variable so that it moves around and looks around
-void MD_Camera::update( bool w, bool s, bool a, bool d, bool e, bool sh ,
-        float xoffset,float yoffset,float speed){
-    //to move around
-    if(w){
-        //cameraPos+=speed*cameraFront;
-        cameraPos+=speed*normalize(Vec3f(cameraFront.x+0.1,0.0,cameraFront.z+0.1));
-    }
-    if(s){
-        //cameraPos-=speed*cameraFront;
-        cameraPos-=speed*normalize(Vec3f(cameraFront.x+0.1,0.0,cameraFront.z+0.1));
-    }
-    if(d){
-        cameraPos+=speed*normalize( cross( cameraFront, cameraUp));
-    }
-    if(a){
-        cameraPos-=speed*normalize( cross( cameraFront, cameraUp));
-    }
-    if(e){
-        cameraPos += speed * cameraUp;
-    }
-    if(sh){
-        cameraPos -= speed * cameraUp;
-    }
-    
-    if(cameraPos.y<0){
-        cameraPos.y=0;
-    }
-    if(pitch>89){
-        pitch=89;
-    }
-    if(pitch<-89){
-        pitch=-89;
-    }
-
-    //to look around 
-    Vec3f direction=cameraFront;
-    yaw+= xoffset * sensitivity;
-    pitch+= yoffset * sensitivity;
-    direction.x = std::cos( toRadians( yaw)) * std::cos( toRadians( pitch));
-    direction.y = std::sin( toRadians( pitch));
-    direction.z = std::sin( toRadians( yaw)) * std::cos( toRadians( pitch));
-    
-    cameraFront=normalize(direction);
+    front = normalize(Vec3f(
+        std::cos(toRadians(yaw)) * std::cos(toRadians(pitch)),
+        std::sin(toRadians(pitch)),
+        std::sin(toRadians(yaw)) * std::cos(toRadians(pitch))
+    ));
 }
 
-//generates and puts the look at matrice in shader uniform
-void MD_Camera::setView()const{
-    Mat4f viewMatrix= genLookAt();
-    int viewUniform= glGetUniformLocation( idShader, "worldToView");
-    if(viewUniform == -1)
-        std::cout<<"uniform not found"<<std::endl;
-    glUniformMatrix4fv( viewUniform, 1, GL_FALSE, viewMatrix.data());
-}
-
-
-void MD_Camera::regressionTest(){
-    MD_Camera testCamera;
-    testCamera.update( 1, 0, 0, 0, 0, 0, 0, 0, 30);
-    assert(testCamera.cameraPos.z <0.0);
-}
-
+void MD_Camera::regressionTest() {}

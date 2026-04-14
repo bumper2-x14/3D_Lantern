@@ -13,12 +13,16 @@ class MD_Object{
 
         MD_Object(MD_Shape* shape = nullptr, MD_Material* material = nullptr,
                     const TRSDataf& trs_data = {});
+
+        MD_Shape* getShape()    const { return shape; }
+        MD_Material* getMaterial() const { return material; }
+        void setMaterial(MD_Material* m) { material = m; }
+
+        Mat4f getTransformMatrix() const;
         
        void draw(MD_Shader& shader);
-
         
     private:
-        Vec3f* lightColor; 
         MD_Shape* shape;
         MD_Material* material;
 };

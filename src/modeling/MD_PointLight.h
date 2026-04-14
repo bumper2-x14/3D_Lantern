@@ -1,3 +1,11 @@
-#include ""
+#ifndef MD_POINTLIGHT_H
+#define MD_POINTLIGHT_H
 
-class point
+#include "math/color.h"
+
+class MD_PointLight {
+
+};
+
+
+#endif
