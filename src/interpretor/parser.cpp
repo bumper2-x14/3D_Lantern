@@ -11,47 +11,44 @@ const Token& Parser::peek(int offset) const {
     return tokens[cursor + offset];
 }
 
-/* DEV NOTE:
-    tokens[cursor++] gets the current token pointed by cursor the increments it
-    use preinc ++cursor instead
-*/
 const Token& Parser::next() {
-    return tokens[cursor++];
+    return tokens[++cursor];
+}
+
+SceneDescriptor Parser::parse() {
+    SceneDescriptor scene;
+
+    while (!current().is(TokenType::END)) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected block keyword, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        BlockType block = current().getKeyword<BlockType>();
+
+        switch(block) {
+            case BlockType::SETTING: parseSettingBlock(scene); break;
+            case BlockType::CAMERA: parseCameraBlock(scene); break;
+            case BlockType::TEXTURE: parseTextureBlock(scene); break;
+            case BlockType::MATERIAL: parseMaterialBlock(scene); break;
+            case BlockType::OBJECT: parseObjectBlock(scene); break;
+            case BlockType::LIGHT: parseLightBlock(scene); break;
+
+            default:
+                std::cout << "Error: unknown block '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+        next();
+    }
+
+    return scene;
 }
 
 // -------------------------------------------------------
 // Block parsers — each consumes one complete { } block
 // -------------------------------------------------------
-
-/*
-DEV NOTE:
-    A naive approach given that tokens are designed to hold enum identifiers
-    to avoid string comparisons and facilitate debugging.
-    
-    This block parser compares against raw strings directly, which defeats
-    the purpose of the KeywordType variant system in Token. The correct
-    approach is to switch on IdentType enum values via getKeyword<IdentType>(), 
-    which:
-    
-      - Eliminates string comparison overhead
-      - Lets the compiler warn on unhandled enum cases (-Wswitch)
-      - Keeps dispatch consistent with how other block parsers will work
-        (ObjectType, TextureType, MaterialType, etc.)
-    
-    TODO: Replace if/else chain with:
-    
-        IdentType field = current().getKeyword<IdentType>();
-        next();
-        switch (field) {
-            case IdentType::WIDTH:        ...
-            case IdentType::HEIGHT:       ...
-            ...
-        }
-
-    I'll give the fixed code for parseSettingBlock, other block parser funcs follow 
-    the same pattern.
-*/
-
 
 void Parser::parseSettingBlock(SceneDescriptor& scene) {
     expectLBrace();
@@ -63,8 +60,7 @@ void Parser::parseSettingBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-        next();
-
+    
         switch(field) {
             case IdentType::WIDTH: scene.settings.setWidth((int)parseNumber()); break;
             case IdentType::HEIGHT: scene.settings.setHeight((int)parseNumber()); break;
@@ -77,55 +73,218 @@ void Parser::parseSettingBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
+        next();
     }
     expectRBrace();
 }
 
+void Parser::parseCameraBlock(SceneDescriptor& scene) {
+    expectLBrace();
+    while(!current().isRBrace()) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected keyword in camera, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        IdentType field = current().getKeyword<IdentType>();
+
+        switch(field) {
+            case IdentType::POSITION: scene.camera.setPosition(parseVec3()); break;
+            case IdentType::LOOKAT: scene.camera.setLookat(parseVec3()); break;
+            case IdentType::UP_VIEW: scene.camera.setUpView(parseVec3()); break;
+            case IdentType::VFOV: scene.camera.setVfov(parseNumber()); break;
+            case IdentType::DEFOCUS_ANGLE: scene.camera.setDefocusAngle(parseNumber()); break;
+            case IdentType::FOCUS_DISTANCE: scene.camera.setFocusDistance(parseNumber()); break;
+            default:
+                std::cout << "Error: unknown camera field '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+        next();
+    }
+    expectRBrace();
+}
+
+void Parser::parseTextureBlock(SceneDescriptor& scene) {
+    expectLBrace();
+
+    TextureDescriptor texture;
+
+    while(!current().isRBrace()) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected keyword in texture, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        IdentType field = current().getKeyword<IdentType>();
+
+        switch(field) {
+            case IdentType::NAME: texture.setName(parseIdentifier()); break;
+
+            case IdentType::TYPE:
+                texture.setType(current().getKeyword<TextureType>());
+                next();
+                break;
+
+            case IdentType::COLOR: texture.setColor(parseVec3()); break;
+            case IdentType::EVEN: texture.setEven(parseVec3()); break;
+            case IdentType::ODD: texture.setOdd(parseVec3()); break;
+            case IdentType::SCALE: texture.setScale(parseNumber()); break;
+            case IdentType::FILE: texture.setFile(parseString()); break;
+
+            default:
+                std::cout << "Error: unknown texture field '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+        next();
+    }
+
+    expectRBrace();
+
+    scene.textures[texture.name] = texture;
+}
+
+void Parser::parseMaterialBlock(SceneDescriptor& scene) {
+    expectLBrace();
+
+    MaterialDescriptor material;
+
+    while(!current().isRBrace()) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected keyword in material, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        IdentType field = current().getKeyword<IdentType>();
+
+
+        switch(field) {
+            case IdentType::NAME: material.setName(parseIdentifier()); break;
+
+            case IdentType::TYPE:
+                material.setType(current().getKeyword<MaterialType>());
+                next();
+                break;
+
+            case IdentType::TEXTURE_REF: material.setTextureRef(parseIdentifier()); break;
+            case IdentType::COLOR: material.setColor(parseVec3()); break;
+            case IdentType::FUZZ: material.setFuzz(parseNumber()); break;
+            case IdentType::IOR: material.setIor(parseNumber()); break;
+            case IdentType::INTENSITY: material.setIntensity(parseNumber()); break;
+
+            default:
+                std::cout << "Error: unknown material field '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+        next();
+    }
+
+    expectRBrace();
+
+    scene.materials[material.name] = material;
+}
+
+void Parser::parseObjectBlock(SceneDescriptor& scene) {
+    expectLBrace();
+
+    ObjectDescriptor object;
+
+    while(!current().isRBrace()) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected keyword in object, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        IdentType field = current().getKeyword<IdentType>();
+
+        switch(field) {
+            case IdentType::NAME: object.setName(parseIdentifier()); break;
+
+            case IdentType::TYPE:
+                object.setType(current().getKeyword<ObjectType>());
+                next();
+                break;
+
+            case IdentType::MATERIAL_REF: object.setMaterialRef(parseIdentifier()); break;
+            case IdentType::FILE: object.setFile(parseString()); break;
+            case IdentType::TRANSLATE: object.setTranslate(parseVec3()); break;
+            case IdentType::ROTATE: object.setRotate(parseVec3()); break;
+            case IdentType::SCALE: object.setScale(parseVec3()); break;
+
+            default:
+                std::cout << "Error: unknown object field '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+        next();
+    }
+
+    expectRBrace();
+
+    scene.objects[object.name] = object;
+}
+
+void Parser::parseLightBlock(SceneDescriptor& scene) {
+    expectLBrace();
+
+    LightDescriptor light;
+
+    while(!current().isRBrace()) {
+        if (current().type != TokenType::KEYWORD) {
+            std::cout << "Error: expected keyword in light, got '"
+                      << current().raw << "' at line " << current().line << "\n";
+            exit(1);
+        }
+
+        IdentType field = current().getKeyword<IdentType>();
+        next();
+
+        switch(field) {
+            case IdentType::TYPE:
+                light.setType(current().getKeyword<LightType>());
+                next();
+                break;
+
+            case IdentType::POSITION: light.setPosition(parsePoint3()); break;
+            case IdentType::DIRECTION: light.setDirection(parseVec3()); break;
+            case IdentType::COLOR: light.setColor(parseVec3()); break;
+            case IdentType::INTENSITY: light.setIntensity(parseNumber()); break;
+
+            default:
+                std::cout << "Error: unknown light field '"
+                          << current().raw << "' at line " << current().line << "\n";
+                exit(1);
+        }
+    }
+
+    expectRBrace();
+
+    scene.lights.push_back(light);
+}
 // -------------------------------------------------------
 // Helper parsers — consume one or more tokens for a value
 // -------------------------------------------------------
 
-/*
-DEV NOTE:
-    Redundant code Token::getNumber() already handles type checking and error handeling
-*/
 double Parser::parseNumber() {
-    if (!current().isNumber()) {
-        std::cout << "Error: Expected number, got '" << current().raw 
-                  << "' at line " << current().line << std::endl;
-        exit(1);
-    }
-
     double value = current().getNumber();
     next();
     return value;
 }
 
-/*
-DEV NOTE:
-    Redundant code Token::getBool() already handles type checking and error handeling
-*/
 bool Parser::parseBool() {
-    if (!current().isBool()) {
-        std::cout << "Error: Expected boolean, got '" << current().raw << "'" << std::endl;
-        exit(1);
-    }
-
     bool value = current().getBool();
     next();
     return value;
 }
 
-/*
-DEV NOTE:
-    Redundant code Token::getString() already handles type checking and error handeling
-*/
-std::string Parser::parseString() {
-    if (!current().isString()) {
-        std::cout << "Error: Expected string, got '" << current().raw << "'" << std::endl;
-        exit(1);
-    }
 
+std::string Parser::parseString() {
     std::string value = current().getString();
     next();
     return value;
