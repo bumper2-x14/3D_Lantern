@@ -12,6 +12,7 @@ add_library(modeling STATIC
     MD_Renderer.cpp
     MD_Texture.cpp
     MD_Scene.cpp
+    MD_Renderer.cpp
 )
 
 

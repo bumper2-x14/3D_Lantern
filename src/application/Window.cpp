@@ -15,7 +15,6 @@ void Window::sdlSetAttributes() {
     // SDL_Init is called once here; don't call it again in the constructor.
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         throw std::runtime_error(SDL_GetError());
-
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -98,7 +97,6 @@ void Window::winRun() {
     MD_Camera& camera = renderer.getCameraMain();
     camera = MD_Camera(Vec3f(0.f, 2.f, 6.f), Vec3f(0.f, 0.f, -1.f));
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
-
     // ── shader ────────────────────────────────────────────────────────────
     MD_Shader shader(SHADER_DIR "light_Shaders.vs",
                      SHADER_DIR "light_Shaders.fs");
@@ -171,8 +169,7 @@ void Window::winRun() {
         // other SDL events your input system doesn't consume.
         SDL_Event e;
         while (SDL_PollEvent(&e)) { /* forwarded to input if needed */ }
-
-        // ── render ────────────────────────────────────────
+              // ── render ────────────────────────────────────────
         // Full-screen clear paints the panel background colour.
         glDisable(GL_SCISSOR_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

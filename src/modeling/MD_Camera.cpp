@@ -39,6 +39,7 @@ void MD_Camera::update(const CameraInput& in) {
         std::sin(toRadians(pitch)),
         std::sin(toRadians(yaw)) * std::cos(toRadians(pitch))
     ));
+
 }
 
 void MD_Camera::regressionTest() {}
