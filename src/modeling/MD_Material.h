@@ -6,20 +6,21 @@
 
 class MD_Material{
     public:
-        MD_Material(MD_Texture* _texture)
+        MD_Material(Texture* _texture);
 
         MD_Material(Vec3f* _ambient = nullptr,
                         Vec3f* _diffuse = nullptr,
                                 Vec3f* _spec = nullptr );
 
-        MD_Texture* getTexture(){ return texture;}
+        Texture* getTexture(){ return texture;}
 
-        Vec3f getAmbient(){ return ambient; }
+        Vec3f* getAmbient(){ return ambient; }
 
-        Vec3f getDiffuse(){ return diffuse; }
+        Vec3f* getDiffuse(){ return diffuse; }
 
-        Vec3f spec(){ return spec; }
+        Vec3f* getSpec(){ return spec; }
 
+        unsigned int getTextureId(){ return gl_Texture_Id; }
     private:
 
         Texture* texture = nullptr;

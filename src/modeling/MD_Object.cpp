@@ -19,14 +19,28 @@ void MD_Object::draw(MD_Shader& shader) {
 
     // to be fixed
     if (material) {
-        if (material->texture){
+        if (material->getTexture()){
             glActiveTexture(GL_TEXTURE0);
+            //need to modified for multiple textures 
             shader.setInt("texture0", 0);
-            glBindTexture(GL_TEXTURE_2D, texture->getTextureId());
+            glBindTexture(GL_TEXTURE_2D, material->getTextureId());
         }
         else{
-          // shader.set 
+            if(!material->getDiffuse() && 
+                    !material->getAmbient() &&
+                            !material->getSpec())
+                return;
+            else{
+                shader.setBool("texture_Use", false);
+                shader.setVec3("ambient", *(material->getAmbient()));
+                shader.setVec3("diffuse", *(material->getDiffuse()));
+                shader.setVec3("spec", *(material->getSpec()));
+            }   
         }
+    }
+    else{
+        //nessecry commands to only draw the mesh
+        shader.setBool("outlines" , true );
     }
 
     // To be fixed

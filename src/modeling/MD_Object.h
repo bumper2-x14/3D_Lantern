@@ -1,10 +1,10 @@
 #ifndef MD_OBJECT_H
 #define MD_OBJECT_H
 
-#include "MD_Shape.h"
+
+#include "modeling/MD_Shape.h"
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Material.h"
-#include "modeling/MD_Texture.h"
 #include "math/TRS_data.h"
 
 class MD_Object{
@@ -30,5 +30,4 @@ class MD_Object{
 
         MD_Material* material;
 };
-
 #endif
