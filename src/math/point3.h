@@ -2,8 +2,9 @@
 #define POINT3_H
 
 #include <cassert>
-#include "vec3.h"
+#include <ostream>
 
+#include "vec3.h"
 #include "utility"
 
 template <typename T>
@@ -71,6 +72,11 @@ class Point3 {
 
 using Point3f = Point3<float>;
 using Point3d = Point3<double>; 
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const Point3<T>& v) {
+    return os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
 
 template <typename T>
 inline Point3<T> random(T min_r, T max_r) {

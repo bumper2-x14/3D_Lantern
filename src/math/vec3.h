@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <ostream>
 
 #include "utility.h"
 
@@ -118,6 +119,11 @@ class Vec3 {
 
 using Vec3f = Vec3<float>;
 using Vec3d = Vec3<double>;
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const Vec3<T>& v) {
+    return os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
 
 template <typename T>
 Vec3<T> operator*(T scalar, const Vec3<T>& v){
