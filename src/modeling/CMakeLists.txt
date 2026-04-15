@@ -10,6 +10,7 @@ add_library(modeling STATIC
     MD_Cone.cpp
     MD_Torus.cpp
     MD_Renderer.cpp
+    MD_Material.cpp
     MD_Scene.cpp
     MD_Renderer.cpp
 )

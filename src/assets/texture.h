@@ -46,11 +46,14 @@ class Texture {
         // UV axes: i iterates height (v), j iterates width (u)
         // Buffer layout: buffer[i * width + j] — row-major, top to bottom
         std::vector<RGB> createPixelBuffer(int width, int height) const {
+            if (width <= 0 || height <= 0) return {};
             std::vector<RGB> buffer(width * height);
             for (int i = 0; i < height; i++){
                 for (int j = 0; j < width; j++){
-                    Vec2d uv(double(j) / (width  - 1),  // u along width  (j)
-                            double(i) / (height - 1));  // v along height (i)
+                    Vec2d uv(
+                        width  > 1 ? double(j) / (width  - 1) : 0.0,
+                        height > 1 ? double(i) / (height - 1) : 0.0
+                    );  
                     Point3d p = uvToWorldConverter(uv);
                     Color c = sample(uv, p);
                     buffer[i * width + j] = c.toRGB();

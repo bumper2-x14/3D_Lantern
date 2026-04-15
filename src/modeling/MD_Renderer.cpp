@@ -42,10 +42,9 @@ void MD_Renderer::drawObject(MD_Object* obj, MD_Shader& shader,
     Mat4f localToView = view * model;
     // pass the full mat4 — the shader extracts mat3 and computes the normal matrix
     shader.setMat4("uLocalToView", localToView);
-    /*
+    
     if (obj->getMaterial())
         obj->getMaterial()->bind(shader);
-    */
 
     obj->draw(shader);
 }

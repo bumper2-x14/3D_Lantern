@@ -9,6 +9,7 @@
 #include "modeling/MD_Cone.h"
 #include "modeling/MD_Torus.h"
 #include "controller.h"
+#include "assets/image_texture.h"
 
 
 void Window::sdlSetAttributes() {
@@ -88,56 +89,60 @@ void Window::winRun() {
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    updateViewport();   // single source of truth for viewport + camera aspect
+    updateViewport();
 
-    // ── renderer ──────────────────────────────────────────────────────────
+    // ── renderer ─────────────────────────────────────────
     MD_Renderer renderer;
 
-    // ── camera ────────────────────────────────────────────────────────────
+    // ── camera ───────────────────────────────────────────
     MD_Camera& camera = renderer.getCameraMain();
     camera = MD_Camera(Vec3f(0.f, 2.f, 6.f), Vec3f(0.f, 0.f, -1.f));
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
-    // ── shader ────────────────────────────────────────────────────────────
-    MD_Shader shader(SHADER_DIR "light_Shaders.vs",
-                     SHADER_DIR "light_Shaders.fs");
 
-    // ── textures ──────────────────────────────────────────────────────────
-    MD_Texture texture(IMG_DIR "bluePng.png");
-    texture.init();
-    texture.load_Image();
+    // ── shader ───────────────────────────────────────────
+    MD_Shader shader(SHADER_DIR "trs_shader.vs",
+                     SHADER_DIR "trs_shader.fs");
 
-    MD_Texture texture2(IMG_DIR "coolJoshHomme.jfif");
-    texture2.init();
-    texture2.load_Image();
+    // ── textures ─────────────────────────────────────────
+    ImageTexture texture(IMG_DIR "cracked_tx.jpg");
 
-    // ── scene ─────────────────────────────────────────────────────────────
+    ImageTexture texture2(IMG_DIR "texture-background.jpg");
+    
+
+    MD_Material matTex(&texture);
+    MD_Material matTex2(&texture2);
+
+    MD_Material matDiffuse(Vec3f(0.2f, 0.8f, 0.3f), MD_Material::MatType::DIFFUSE);
+    MD_Material matSpec(Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::SPECULAR, 64.f);
+
+    // ── scene ────────────────────────────────────────────
     MD_Scene scene;
 
     MD_Sphere sp1(5, 5);
-    scene.createObject(&sp1, { {30.f, 0.f, 30.f} }, &texture);
+    scene.createObject(&sp1, { {30.f, 0.f, 30.f} }, &matTex);
 
     MD_Sphere sp(25, 25);
-    scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &texture);
+    scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &matDiffuse);
 
     MD_Quad quad0(10, 10);
-    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &texture);
+    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matTex);
 
     MD_Quad quad1(10, 10);
-    scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &texture);
+    scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &matSpec);
 
     MD_Cylinder cylinder(25);
-    scene.createObject(&cylinder, { {2.f, 2.f, 0.f}, {0.5f, 2.f, 0.5f} }, &texture);
+    scene.createObject(&cylinder, { {2.f, 2.f, 0.f}, {0.5f, 2.f, 0.5f} }, &matTex);
 
     MD_Disk circle(40);
-    scene.createObject(&circle, { {0.f, 4.f, 0.f} }, &texture);
+    scene.createObject(&circle, { {0.f, 4.f, 0.f} }, &matDiffuse);
 
     MD_Cone cone;
-    scene.createObject(&cone, { {-2.f, 1.f, 0.f} }, &texture2);
+    scene.createObject(&cone, { {-2.f, 1.f, 0.f} }, &matTex2);
 
     MD_Torus torus;
-    scene.createObject(&torus, { {-7.f, 1.f, 0.f} }, &texture2);
+    scene.createObject(&torus, { {-7.f, 1.f, 0.f} }, &matSpec);
 
-    // ── timing ────────────────────────────────────────────────────────────
+    // ── timing ───────────────────────────────────────────
     Uint64 last = SDL_GetPerformanceCounter();
     double deltaTime = 0.0;
 
@@ -165,24 +170,39 @@ void Window::winRun() {
                               static_cast<float>(deltaTime));
 
         // ── SDL events ────────────────────────────────────
-        // No resize handling needed in fullscreen; keep the loop for any
-        // other SDL events your input system doesn't consume.
         SDL_Event e;
-        while (SDL_PollEvent(&e)) { /* forwarded to input if needed */ }
-              // ── render ────────────────────────────────────────
-        // Full-screen clear paints the panel background colour.
+        while (SDL_PollEvent(&e)) {}
+
+        // ── render ────────────────────────────────────────
         glDisable(GL_SCISSOR_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Scissor to the viewport region and clear with the scene colour.
         glEnable(GL_SCISSOR_TEST);
         glScissor(panel_left, panel_bottom, viewport_w, viewport_h);
-        glClearColor(0.35f, 0.35f, 0.38f, 1.0f); 
+        glClearColor(0.35f, 0.35f, 0.38f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_SCISSOR_TEST);
 
+        // ===== SHADER GLOBALS =====
+        shader.apply();
+
+        shader.setVec3("u_viewPos", camera.getPosition());
+        shader.setFloat("uAmbient", 0.1f);
+
+        shader.setInt("uNbLights", 2);
+
+        shader.setVec3("uLightPositions[0]", Vec3f(3.f, 5.f, 3.f));
+        shader.setVec3("uLightColors[0]", Vec3f(1.f, 1.f, 1.f));
+        shader.setFloat("uLightIntensities[0]", 1.5f);
+
+        shader.setVec3("uLightPositions[1]", Vec3f(-4.f, 3.f, 2.f));
+        shader.setVec3("uLightColors[1]", Vec3f(1.f, 0.8f, 0.6f));
+        shader.setFloat("uLightIntensities[1]", 1.0f);
+
+        // ===== RENDER =====
         renderer.render(scene, shader);
+
         SDL_GL_SwapWindow(win);
     }
 }

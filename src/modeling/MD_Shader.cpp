@@ -113,7 +113,7 @@ void MD_Shader::setBool(const std::string &name ,bool value)const{
         glUniform1i(location ,(int)value);
 }
 
-void MD_Shader::setVec2(const std::string &name ,const Vec2f &value){
+void MD_Shader::setVec2(const std::string &name ,const Vec2f &value) const{
     int location = glGetUniformLocation(program_id ,name.c_str());
     if(location == -1)
         std::cout<<"could not find uniform location "<<name<<std::endl;
@@ -121,7 +121,7 @@ void MD_Shader::setVec2(const std::string &name ,const Vec2f &value){
         glUniform2f(location ,value.x , value.y);
 }
 
-void MD_Shader::setVec3(const std::string &name ,const Vec3f &value){
+void MD_Shader::setVec3(const std::string &name ,const Vec3f &value) const{
     int location = glGetUniformLocation(program_id ,name.c_str());
     if(location == -1)
         std::cout<<"could not find uniform location "<<name<<std::endl;
@@ -129,7 +129,7 @@ void MD_Shader::setVec3(const std::string &name ,const Vec3f &value){
         glUniform3f(location ,value.x ,value.y ,value.z);
 }
 
-void MD_Shader::setMat4(const std::string &name ,const Mat4f &value){
+void MD_Shader::setMat4(const std::string &name ,const Mat4f &value) const{
     int location = glGetUniformLocation(program_id ,name.c_str());
     if(location == -1)
         std::cout<<"could not find uniform location "<<name<<std::endl;

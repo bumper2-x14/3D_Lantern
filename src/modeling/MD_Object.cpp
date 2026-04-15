@@ -17,34 +17,20 @@ void MD_Object::draw(MD_Shader& shader) {
     const MD_Mesh* mesh = shape->getMesh();
     glBindVertexArray(mesh->VAO);
 
-    // to be fixed
+    // MATERIAL BIND
     if (material) {
-        if (material->getTexture()){
-            glActiveTexture(GL_TEXTURE0);
-            //need to modified for multiple textures 
-            shader.setInt("texture0", 0);
-            glBindTexture(GL_TEXTURE_2D, material->getTextureId());
-        }
-        else{
-            if(!material->getDiffuse() && 
-                    !material->getAmbient() &&
-                            !material->getSpec())
-                return;
-            else{
-                shader.setBool("texture_Use", false);
-                shader.setVec3("ambient", *(material->getAmbient()));
-                shader.setVec3("diffuse", *(material->getDiffuse()));
-                shader.setVec3("spec", *(material->getSpec()));
-            }   
-        }
-    }
-    else{
-        //nessecry commands to only draw the mesh
-        shader.setBool("outlines" , true );
+        material->bind(shader);
     }
 
-    // To be fixed
+    // DRAW
     glDrawElements(GL_TRIANGLES,
                    (GLsizei)mesh->data->indices.size(),
                    GL_UNSIGNED_INT, 0);
+
+    // MATERIAL UNBIND
+    if (material) {
+        material->unbind();
+    }
+
+    glBindVertexArray(0);
 }

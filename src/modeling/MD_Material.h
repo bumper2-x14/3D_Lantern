@@ -6,32 +6,42 @@
 
 class MD_Material{
     public:
+        static constexpr int TEX_RESOLUTION = 256;
+
+        enum class MatType {
+            TEXTURE,
+            AMBIENT,
+            DIFFUSE,
+            SPECULAR
+        };
+
+
         MD_Material(Texture* _texture);
+        MD_Material(const Vec3f& color, MatType type, float shininess = 32.f);
 
-        MD_Material(Vec3f* _ambient = nullptr,
-                        Vec3f* _diffuse = nullptr,
-                                Vec3f* _spec = nullptr );
+        ~MD_Material();
 
-        Texture* getTexture(){ return texture;}
+        MD_Material(const MD_Material&) = delete;
+        MD_Material& operator=(const MD_Material&) = delete;
 
-        Vec3f* getAmbient(){ return ambient; }
+        // Binds this material's GL texture (or flat color uniforms) to a shader
+        void bind(const MD_Shader& shader) const;
+        void unbind() const;
 
-        Vec3f* getDiffuse(){ return diffuse; }
+        MatType getType() const { return type; }
+        bool hasTexture() const { return type == MatType::TEXTURE; }
+        Vec3f getColor() const { return color; }
+        float getShininess() const { return shininess; }
+        unsigned int getTextureId(){ return gl_texture_id; }
 
-        Vec3f* getSpec(){ return spec; }
-
-        unsigned int getTextureId(){ return gl_Texture_Id; }
     private:
+        void uploadTexture();
 
+        MatType type = MatType::DIFFUSE;
         Texture* texture = nullptr;
-
-        unsigned int gl_Texture_Id= -1;
-
-        Vec3f* ambient = nullptr;
-
-        Vec3f* diffuse = nullptr;
-        
-        Vec3f* spec = nullptr;
+        Vec3f color {};
+        float shininess = 32.f;
+        unsigned int gl_texture_id = 0;
 };
 
 #endif

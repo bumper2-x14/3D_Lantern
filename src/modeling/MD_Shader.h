@@ -22,9 +22,9 @@ public:
     void setFloat(const std::string &name, float value) const;
     void setInt(const std::string &name, int value) const;
     void setBool(const std::string &name, bool value) const;
-    void setVec2(const std::string &name, const Vec2f &value);
-    void setVec3(const std::string &name, const Vec3f &value);
-    void setMat4(const std::string &name, const Mat4f &value);
+    void setVec2(const std::string &name, const Vec2f &value) const;
+    void setVec3(const std::string &name, const Vec3f &value) const;
+    void setMat4(const std::string &name, const Mat4f &value) const;
     
     //getter
     unsigned int get_program_id()const;
