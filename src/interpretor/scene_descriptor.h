@@ -80,6 +80,8 @@ struct ObjectDescriptor {
     Vec3d rotate = {0, 0, 0};
     Vec3d scale = {1, 1, 1};
 
+    bool capped = true;
+
     ObjectDescriptor& setName(const std::string& v)         { name = v;        return *this; }
     ObjectDescriptor& setType(ObjectType v)                 { type = v;        return *this; }
     ObjectDescriptor& setMaterialRef(const std::string& v)  { materialRef = v; return *this; }
@@ -87,6 +89,7 @@ struct ObjectDescriptor {
     ObjectDescriptor& setTranslate(const Vec3d& v)          { translate = v;   return *this; }
     ObjectDescriptor& setRotate(const Vec3d& v)             { rotate = v;      return *this; }
     ObjectDescriptor& setScale(const Vec3d& v)              { scale = v;       return *this; }
+    ObjectDescriptor& setCapped(bool capped)                { capped = true;   return *this; }
 };
 
 struct LightDescriptor {

@@ -19,8 +19,8 @@ camera {
 texture {
     name checker_floor
     type checker
-    even 0.9 0.9 0.9
-    odd  0.2 0.2 0.2
+    odd 0.9 0.9 0.9
+    even  0.2 0.2 0.2
     scale 5.0
 }
 
@@ -33,7 +33,7 @@ texture {
 material {
     name ground_mat
     type lambertian
-    texture checker_floor
+    texture_ref checker_floor
 }
 
 material {
@@ -59,35 +59,28 @@ material {
 object {
     name floor
     type quad
-    material ground_mat
-    position 0.0 0.0 0.0
-    normal 0.0 1.0 0.0
+    material_ref ground_mat
     translate 0.0 -1.0 0.0
 }
 
 object {
     name glass_sphere
     type sphere
-    material glass_mat
-    radius 1.0
+    material_ref glass_mat
     translate -2.0 0.0 0.0
 }
 
 object {
     name metal_sphere
     type sphere
-    material metal_mat
-    radius 1.0
+    material_ref metal_mat
     translate 2.0 0.0 0.0
 }
 
 object {
     name my_cylinder
     type cylinder
-    material metal_mat
-    radius 0.5
-    y_min 0.0
-    y_max 2.0
+    material_ref metal_mat
     capped true
     translate 0.0 0.0 2.0
 }
@@ -95,7 +88,7 @@ object {
 object {
     name mesh_obj
     type mesh
-    material glass_mat
+    material_ref glass_mat
     file "meshes/bunny.obj"
     translate 0.0 0.0 0.0
     rotate 0.0 45.0 0.0

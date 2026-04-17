@@ -14,6 +14,7 @@ const Token& Parser::peek(int offset) const {
 
 const Token& Parser::next() {
     if (cursor + 1 < tokens.size()) ++cursor;
+    std::cout<<"Next called -> Current is \n"<< tokens[cursor]<<"\n";
     return tokens[cursor];
 }
 
@@ -31,7 +32,7 @@ SceneDescriptor Parser::parse() {
         }
 
         BlockType block = current().getKeyword<BlockType>();
-
+        next();
         switch(block) {
             case BlockType::SETTING: parseSettingBlock(scene); break;
             case BlockType::CAMERA: parseCameraBlock(scene); break;
@@ -45,7 +46,6 @@ SceneDescriptor Parser::parse() {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
 
     return scene;
@@ -56,6 +56,7 @@ SceneDescriptor Parser::parse() {
 // -------------------------------------------------------
 
 void Parser::parseSettingBlock(SceneDescriptor& scene) {
+    std::cout<<"Setting Block detected\n";
     expectLBrace();
     while(!current().isRBrace()) {
         if (current().type != TokenType::KEYWORD) {
@@ -65,7 +66,8 @@ void Parser::parseSettingBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-    
+        next();
+
         switch(field) {
             case IdentType::WIDTH: scene.settings.setWidth((int)parseNumber()); break;
             case IdentType::HEIGHT: scene.settings.setHeight((int)parseNumber()); break;
@@ -78,12 +80,12 @@ void Parser::parseSettingBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
     expectRBrace();
 }
 
 void Parser::parseCameraBlock(SceneDescriptor& scene) {
+    std::cout<<"Camera Block detected\n";
     expectLBrace();
     while(!current().isRBrace()) {
         if (current().type != TokenType::KEYWORD) {
@@ -93,7 +95,7 @@ void Parser::parseCameraBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-
+        next();
         switch(field) {
             case IdentType::POSITION: scene.camera.setPosition(parseVec3()); break;
             case IdentType::LOOKAT: scene.camera.setLookat(parseVec3()); break;
@@ -106,12 +108,12 @@ void Parser::parseCameraBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
     expectRBrace();
 }
 
 void Parser::parseTextureBlock(SceneDescriptor& scene) {
+    std::cout<<"Texture Block detected\n";
     expectLBrace();
 
     TextureDescriptor texture;
@@ -119,18 +121,18 @@ void Parser::parseTextureBlock(SceneDescriptor& scene) {
     while(!current().isRBrace()) {
         if (current().type != TokenType::KEYWORD) {
             std::cout << "Parser::parseTextureBlock -> Error: expected keyword in texture, got '"
-                      << current().raw << "' at line " << current().line << "\n";
+                    << current().raw << "' at line " << current().line << "\n";
             exit(1);
         }
 
         IdentType field = current().getKeyword<IdentType>();
-
+        next();
         switch(field) {
             case IdentType::NAME: texture.setName(parseIdentifier()); break;
 
             case IdentType::TYPE:
-                next();
                 texture.setType(current().getKeyword<TextureType>());
+                next();
                 break;
 
             case IdentType::COLOR: texture.setColor(parseVec3()); break;
@@ -141,10 +143,9 @@ void Parser::parseTextureBlock(SceneDescriptor& scene) {
 
             default:
                 std::cout << "Parser::parseTextureBlock -> Error: unknown texture field '"
-                          << current().raw << "' at line " << current().line << "\n";
+                        << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
 
     expectRBrace();
@@ -153,6 +154,7 @@ void Parser::parseTextureBlock(SceneDescriptor& scene) {
 }
 
 void Parser::parseMaterialBlock(SceneDescriptor& scene) {
+    std::cout<<"Material Block detected\n";
     expectLBrace();
 
     MaterialDescriptor material;
@@ -165,14 +167,13 @@ void Parser::parseMaterialBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-
-
+        next();
         switch(field) {
             case IdentType::NAME: material.setName(parseIdentifier()); break;
 
             case IdentType::TYPE:
-                next();
                 material.setType(current().getKeyword<MaterialType>());
+                next();
                 break;
 
             case IdentType::TEXTURE_REF: material.setTextureRef(parseIdentifier()); break;
@@ -186,7 +187,6 @@ void Parser::parseMaterialBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
 
     expectRBrace();
@@ -195,6 +195,7 @@ void Parser::parseMaterialBlock(SceneDescriptor& scene) {
 }
 
 void Parser::parseObjectBlock(SceneDescriptor& scene) {
+    std::cout<<"Object Block detected\n";
     expectLBrace();
 
     ObjectDescriptor object;
@@ -207,17 +208,18 @@ void Parser::parseObjectBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-
+        next();
         switch(field) {
             case IdentType::NAME: object.setName(parseIdentifier()); break;
 
             case IdentType::TYPE:
-                next();
                 object.setType(current().getKeyword<ObjectType>());
+                next();
                 break;
 
             case IdentType::MATERIAL_REF: object.setMaterialRef(parseIdentifier()); break;
             case IdentType::FILE: object.setFile(parseString()); break;
+            case IdentType::CAPPED: object.setCapped(parseBool()); break;
             case IdentType::TRANSLATE: object.setTranslate(parseVec3()); break;
             case IdentType::ROTATE: object.setRotate(parseVec3()); break;
             case IdentType::SCALE: object.setScale(parseVec3()); break;
@@ -227,7 +229,6 @@ void Parser::parseObjectBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-        next();
     }
 
     expectRBrace();
@@ -236,6 +237,7 @@ void Parser::parseObjectBlock(SceneDescriptor& scene) {
 }
 
 void Parser::parseLightBlock(SceneDescriptor& scene) {
+    std::cout<<"Light Block detected\n";
     expectLBrace();
 
     LightDescriptor light;
@@ -248,11 +250,11 @@ void Parser::parseLightBlock(SceneDescriptor& scene) {
         }
 
         IdentType field = current().getKeyword<IdentType>();
-
+        next();
         switch(field) {
             case IdentType::TYPE:
-                next();
                 light.setType(current().getKeyword<LightType>());
+                next();
                 break;
 
             case IdentType::POSITION: light.setPosition(parsePoint3()); break;
@@ -265,8 +267,6 @@ void Parser::parseLightBlock(SceneDescriptor& scene) {
                           << current().raw << "' at line " << current().line << "\n";
                 exit(1);
         }
-
-        next();
     }
 
     expectRBrace();

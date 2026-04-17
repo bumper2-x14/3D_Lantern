@@ -28,6 +28,7 @@ enum class TokenType {
     END
 };
 
+
 struct Token {
     TokenType type;
     KeywordType key;
@@ -50,8 +51,11 @@ struct Token {
     template<typename T>
     T getKeyword() const {
         const T* v = std::get_if<T>(&key);
-        if (!v)
+        if (!v){
+            std::cout << "DEBUG: token = " << raw << "\n";
+            std::cout << "Stored type = " << key.index() << "\n";
             throw std::runtime_error("LINE : " + std::to_string(line) + " -- Token '" + raw + "' is not the expected keyword type");
+        }
         return *v;
     }
 
