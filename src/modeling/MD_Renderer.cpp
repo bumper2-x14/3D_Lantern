@@ -9,22 +9,22 @@ void MD_Renderer::render(MD_Scene& scene, MD_Shader& shader) {
     shader.apply();
 
     // set once per frame
-    shader.setMat4("uProjection",    proj);
+    shader.setMat4("uProjection", proj);
     shader.setVec3("uSelectionTint", Vec3f(1.3f, 1.3f, 0.6f));
 
-    /*
-    // upload lights — positions transformed to view space
     auto& lights = scene.getPointLights();
     shader.setInt("uNbLights", (int)lights.size());
     for (int i = 0; i < (int)lights.size(); i++) {
         std::string idx = std::to_string(i);
-        Point3d l_pos = lights[i]->getPosition();
-        Vec3f viewPos = view.project(Vec4f(l_pos.x, l_pos.y, l_pos.z, 1.0f));
-        shader.setVec3 ("uLightPositions[" + idx + "]", viewPos);
-        shader.setVec3 ("uLightColors[" + idx + "]", lights[i]->getColor());
+
+        // transform position to view space to match v_fragPos space
+        Vec3f worldPos = lights[i]->getPosition();
+        Vec4f viewPos  = view * Vec4f(worldPos.x, worldPos.y, worldPos.z, 1.f);
+
+        shader.setVec3 ("uLightPositions["   + idx + "]", Vec3f(viewPos.x, viewPos.y, viewPos.z));
+        shader.setVec3 ("uLightColors["      + idx + "]", lights[i]->getColor());
         shader.setFloat("uLightIntensities[" + idx + "]", lights[i]->getIntensity());
     }
-    */
 
     // draw objects
     auto& objects = scene.getObjects();

@@ -34,13 +34,13 @@ void MD_Scene::nextObject() {
 
 
 // ── Point lights ─────────────────────────────────────────────────────────
-/*
+
 MD_PointLight* MD_Scene::createPointLight(const Vec3f& position, const Color& color, float intensity) {
     MD_PointLight* light = new MD_PointLight(position, color, intensity);
     point_lights.push_back(light);
     return light;
 }
-*/
+
 
 void MD_Scene::removePointLight(int index) {
     if (index < 0 || index >= (int)point_lights.size()) return;

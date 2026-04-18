@@ -2,8 +2,8 @@
 #include "MD_Object.h"
 #include "math/TRS_data.h"
 
-MD_Object::MD_Object(MD_Shape* _shape, MD_Material* _material, const TRSDataf& trsData)
-    : shape(_shape), material(_material), trs(trsData)
+MD_Object::MD_Object(MD_Shape* _shape, MD_Material* _material, const TRSDataf& _trsData)
+    : shape(_shape), material(_material), trs(_trsData)
 {}
 
 Mat4f MD_Object::getTransformMatrix() const {

@@ -10,7 +10,9 @@
 #include "modeling/MD_Torus.h"
 #include "controller.h"
 #include "assets/image_texture.h"
-
+#include "assets/checker_texture.h"
+#include "assets/color_texture.h"
+#include "assets/perlin_texture.h"
 
 void Window::sdlSetAttributes() {
     // SDL_Init is called once here; don't call it again in the constructor.
@@ -105,12 +107,20 @@ void Window::winRun() {
 
     // ── textures ─────────────────────────────────────────
     ImageTexture texture(IMG_DIR "cracked_tx.jpg");
-
     ImageTexture texture2(IMG_DIR "texture-background.jpg");
-    
 
+    CheckerTexture chk(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 5); 
+
+    ColorTexture col(Color(1.0, 0.0, 0.0));
+
+    PerlinTexture per(PerlinType::MARBLE, 10);
+    
     MD_Material matTex(&texture);
-    MD_Material matTex2(&texture2);
+    MD_Material matTex2(&chk);
+
+    MD_Material matCol(&col);
+
+    MD_Material matPerlin(&per);
 
     MD_Material matDiffuse(Vec3f(0.2f, 0.8f, 0.3f), MD_Material::MatType::DIFFUSE);
     MD_Material matSpec(Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::SPECULAR, 64.f);
@@ -125,10 +135,10 @@ void Window::winRun() {
     scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &matDiffuse);
 
     MD_Quad quad0(10, 10);
-    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matTex);
+    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matPerlin);
 
     MD_Quad quad1(10, 10);
-    scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &matSpec);
+    scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &matCol);
 
     MD_Cylinder cylinder(25);
     scene.createObject(&cylinder, { {2.f, 2.f, 0.f}, {0.5f, 2.f, 0.5f} }, &matTex);
@@ -183,22 +193,6 @@ void Window::winRun() {
         glClearColor(0.35f, 0.35f, 0.38f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_SCISSOR_TEST);
-
-        // ===== SHADER GLOBALS =====
-        shader.apply();
-
-        shader.setVec3("u_viewPos", camera.getPosition());
-        shader.setFloat("uAmbient", 0.1f);
-
-        shader.setInt("uNbLights", 2);
-
-        shader.setVec3("uLightPositions[0]", Vec3f(3.f, 5.f, 3.f));
-        shader.setVec3("uLightColors[0]", Vec3f(1.f, 1.f, 1.f));
-        shader.setFloat("uLightIntensities[0]", 1.5f);
-
-        shader.setVec3("uLightPositions[1]", Vec3f(-4.f, 3.f, 2.f));
-        shader.setVec3("uLightColors[1]", Vec3f(1.f, 0.8f, 0.6f));
-        shader.setFloat("uLightIntensities[1]", 1.0f);
 
         // ===== RENDER =====
         renderer.render(scene, shader);

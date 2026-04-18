@@ -25,6 +25,9 @@ uniform vec3 u_viewPos;
 // ===== GLOBAL =====
 uniform float uAmbient;
 
+uniform bool  uSelected;
+uniform vec3  uSelectionTint;
+
 void main() {
 
     // ===== BASE COLOR =====
@@ -51,7 +54,7 @@ void main() {
         float dist  = length(uLightPositions[i] - v_fragPos);
 
         // attenuation
-        float atten = 1.0 / (1.0 + 0.09 * dist + 0.032 * dist * dist);
+        float atten = 1.0 / (1.0 + 0.02 * dist + 0.005 * dist * dist);
         float inten = uLightIntensities[i] * atten;
 
         // ===== DIFFUSE =====
@@ -77,7 +80,10 @@ void main() {
         lighting = vec3(1.0); // fallback white light
     }
 
-    lighting += uAmbient;
-    vec3 finalColor = baseColor * lighting;
+    vec3 ambient = uAmbient * baseColor;
+    vec3 finalColor = ambient + baseColor * result;
     fragColor = vec4(finalColor, 1.0);
+
+    if (uSelected)
+        finalColor = mix(finalColor, uSelectionTint, 0.3);
 }

@@ -13,7 +13,7 @@ class MD_Object{
 
         MD_Object(MD_Shape* shape = nullptr,
                         MD_Material* material = nullptr,
-                                const TRSDataf& trs_data = {});
+                                const TRSDataf& _trs_data = {});
 
         MD_Shape* getShape()const { return shape; }
         

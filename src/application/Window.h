@@ -10,7 +10,6 @@
 #include <iostream>
 
 
-
 class Window {
 public:
     Window(const std::string& name = "window",
