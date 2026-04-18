@@ -8,6 +8,10 @@ MD_Cone::MD_Cone(int _nb_seg){
     mesh->setupMD_Mesh();
 }
 
+std::string MD_Cone::serialize() const {
+    return "cone " + std::to_string(nb_seg);
+}
+
 void MD_Cone::buildShape(){
     float step = 2 * M_PI / nb_seg;
     

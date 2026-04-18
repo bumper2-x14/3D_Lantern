@@ -9,6 +9,10 @@ MD_Torus::MD_Torus(int _nb_ring, int _nb_side){
     mesh->setupMD_Mesh();
 }
 
+std::string MD_Torus::serialize() const {
+    return "torus " + std::to_string(nb_ring) + " " + std::to_string(nb_side);
+}
+
 void MD_Torus::buildShape(){
     
     float R = 1.0f;   

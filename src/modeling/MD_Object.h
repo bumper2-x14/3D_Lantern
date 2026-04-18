@@ -22,8 +22,10 @@ class MD_Object{
         void setMaterial(MD_Material* m) { material = m; }
 
         Mat4f getTransformMatrix() const;
-        
+
         void draw(MD_Shader& shader);
+
+        std::string serialize() const override;
         
     private:
         MD_Shape* shape;

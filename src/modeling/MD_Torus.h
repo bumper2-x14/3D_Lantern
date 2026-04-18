@@ -8,6 +8,7 @@ class MD_Torus : public MD_Shape{
         MD_Torus(int _nb_ring = 25, int _nb_side=25);
         void buildShape() override;
         void applyTransform(Transform* transform) override; 
+        std::string serialize() const override;
 
     private:
         int nb_ring; // divisons around the big circle

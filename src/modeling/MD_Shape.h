@@ -15,6 +15,7 @@ class MD_Shape {
 
         virtual void buildShape() = 0;
         virtual void applyTransform(Transform* transform) = 0;
+        virtual std::string serialize() const = 0;
 
         MD_Shape(const MD_Shape&) = delete;
         MD_Shape& operator=(const MD_Shape&) = delete;

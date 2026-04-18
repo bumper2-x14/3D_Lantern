@@ -9,6 +9,7 @@ class MD_Cone : public MD_Shape{
         MD_Cone(int _nb_seg = 25);
         void buildShape() override;
         void applyTransform(Transform* transform) override; 
+        std::string serialize() const override;
 
     private:
         int nb_seg;

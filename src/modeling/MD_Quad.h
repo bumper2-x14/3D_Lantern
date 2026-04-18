@@ -9,6 +9,7 @@ class MD_Quad : public MD_Shape{
         MD_Quad(float _width =1 , float _lenght = 1);
         void buildShape() override;
         void applyTransform(Transform* transform) override;
+        std::string serialize() const override;
 
     private:
         float width;

@@ -8,6 +8,10 @@ MD_Cylinder::MD_Cylinder(int _nb_seg){
     mesh->setupMD_Mesh();
 }
 
+std::string MD_Cylinder::serialize() const {
+    return "cylinder " + std::to_string(nb_seg);
+}
+
 void MD_Cylinder::buildShape(){
     float step =( 2 * M_PI ) / nb_seg; 
     
