@@ -1,9 +1,9 @@
 #include "controller.h"
 
 void Controller::ctrlUpdate(const Input& in, MD_Camera& cam, 
-                            MD_Object* selected_obj, MD_Scene& scene, float dt) {
+                            MD_Object* selected_obj, MD_Scene& scene, int picked, float dt) {
 
-    handleSelection(in, scene);
+    handleSelection(in, scene, picked);
 
     modeSwitcher(in);
     axisSwitcher(in);
@@ -143,10 +143,30 @@ void Controller::updateScale(const Input& in, MD_Object* selected_obj, float dt)
     selected_obj->trs.scaleBy(factor);
 }
 
-void Controller::handleSelection(const Input& in, MD_Scene& scene) {
+void Controller::handleSelection(const Input& in, MD_Scene& scene, int picked) {
+    // keyboard — cycle with TAB
     if (in.isKeyPressed(SDL_SCANCODE_TAB)) {
         scene.nextObject();
-        std::cout << "Selected object: " << scene.selected_index << '\n';
+        scene.selected_is_light = false;
+        scene.show_selected     = true;
+        std::cout << "Selected object: " << scene.selected_obj_index << '\n';
+    }
+
+    // mouse — left click pick result
+    if (in.isMousePressed(SDL_BUTTON_RIGHT)) {
+        if (picked == -1) {
+            scene.deselect();
+        } else if (picked >= scene.LIGHT_ID_OFFSET) {
+            scene.selected_light_index = picked - scene.LIGHT_ID_OFFSET;
+            scene.selected_is_light    = true;
+            scene.show_selected        = true;
+            std::cout << "Selected light: " << scene.selected_light_index << '\n';
+        } else {
+            scene.selected_obj_index = picked;
+            scene.selected_is_light = false;
+            scene.show_selected = true;
+            std::cout << "Selected object: " << scene.selected_obj_index << '\n';
+        }
     }
 }
 

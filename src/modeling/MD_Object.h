@@ -7,9 +7,10 @@
 #include "modeling/MD_Material.h"
 #include "math/TRS_data.h"
 
-class MD_Object{
+class MD_Object {
     public:
-        TRSDataf trs; 
+        TRSDataf trs;
+        bool selectable = true;
 
         MD_Object(MD_Shape* shape = nullptr,
                         MD_Material* material = nullptr,
@@ -25,11 +26,10 @@ class MD_Object{
 
         void draw(MD_Shader& shader);
 
-        std::string serialize() const override;
+        std::string serialize() const;
         
     private:
         MD_Shape* shape;
-
         MD_Material* material;
 };
 #endif

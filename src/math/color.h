@@ -63,6 +63,11 @@ class Color {
              return *this; 
         }
 
+        Color& operator=(const Color& col) {
+            r = col.r; g = col.g; b = col.b;
+            return *this;
+        }
+
         static Color lerp(const Color& a, const Color& b, float t) {
             return a * (1.0f - t) + b * t;
         }
@@ -102,6 +107,9 @@ class Color {
             };
         }            
 };
+
+template<typename T>
+inline Vec3<T>toVec3(const Color& col) { return Vec3<T>((T)col.r, (T)col.g, (T)col.b); } 
 
 inline Color operator*(float s, const Color& c) { return c * s; }
 

@@ -30,16 +30,18 @@ class MD_Material{
 
         MatType getType() const { return type; }
         bool hasTexture() const { return type == MatType::TEXTURE; }
-        Vec3f getColor() const { return color; }
+        Color getColor() const { return color; }
         float getShininess() const { return shininess; }
         unsigned int getTextureId(){ return gl_texture_id; }
+
+        void setColor(const Color& _color) { color = _color; }
 
     private:
         void uploadTexture();
 
         MatType type = MatType::DIFFUSE;
         Texture* texture = nullptr;
-        Vec3f color {};
+        Color color {};
         float shininess = 32.f;
         unsigned int gl_texture_id = 0;
 };

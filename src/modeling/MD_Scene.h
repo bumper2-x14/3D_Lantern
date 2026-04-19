@@ -4,12 +4,18 @@
 #include <vector>
 #include "MD_Object.h"
 #include "MD_PointLight.h"
+#include "MD_Quad.h"
+#include "MD_Sphere.h"
 
 
 class MD_Scene{
     public:
-		int selected_index = 0;
+		static constexpr int LIGHT_ID_OFFSET = 1000;
+		int selected_obj_index = -1;
 		bool show_selected = false;
+		int  selected_light_index = -1;
+    	bool selected_is_light = false;
+
 
 		MD_Scene();
 		~MD_Scene();
@@ -34,9 +40,21 @@ class MD_Scene{
 
 		std::vector<MD_PointLight*>& getPointLights();
 
+		void loadDefaultScene();
+
+		MD_Object* getSelectedObject() const;
+		MD_PointLight* getSelectedLight() const;
+		void deselect();
+
     private:	
 		std::vector<MD_Object*> objects;
 		std::vector<MD_PointLight*> point_lights;	
+
+		MD_Quad default_ground{100, 100};
+		MD_Sphere default_sphere{25, 25};
+
+		MD_Material default_ground_mat{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE};
+		MD_Material default_sphere_mat{Vec3f(0.2f, 0.6f, 1.0f), MD_Material::MatType::DIFFUSE};
 		
 };
 

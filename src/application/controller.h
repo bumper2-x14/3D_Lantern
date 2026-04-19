@@ -18,7 +18,7 @@ enum class AxisOfChange { NONE, X, Y, Z };
 class Controller {
     public:
         void ctrlUpdate(const Input& in, MD_Camera& cam, 
-                            MD_Object* selected_obj, MD_Scene& scene, float dt);
+                            MD_Object* selected_obj, MD_Scene& scene, int picked, float dt);
 
     private:
         CtrlMode mode = CtrlMode::CAMERA;
@@ -30,10 +30,11 @@ class Controller {
         void updateRotate(const Input& in, MD_Object* selected_obj, float dt);
         void updateScale(const Input& in, MD_Object* selected_obj, float dt);
         
-        void handleSelection(const Input& in, MD_Scene& scene);
+        void handleSelection(const Input& in, MD_Scene& scene, int picked);
 
         void modeSwitcher(const Input& in);
         void axisSwitcher(const Input& in);
+
 };
 
 

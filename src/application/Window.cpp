@@ -125,17 +125,22 @@ void Window::winRun() {
     MD_Material matDiffuse(Vec3f(0.2f, 0.8f, 0.3f), MD_Material::MatType::DIFFUSE);
     MD_Material matSpec(Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::SPECULAR, 64.f);
 
+    MD_Material imgTex1(&texture);
+    MD_Material imgTex2(&texture2);
+
     // ── scene ────────────────────────────────────────────
     MD_Scene scene;
-
+    scene.loadDefaultScene();
+        
+    /*
     MD_Sphere sp1(5, 5);
     scene.createObject(&sp1, { {30.f, 0.f, 30.f} }, &matTex);
 
     MD_Sphere sp(25, 25);
-    scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &matDiffuse);
+    scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &matDiffuse);  
 
     MD_Quad quad0(10, 10);
-    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matPerlin);
+    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matTex2);
 
     MD_Quad quad1(10, 10);
     scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &matCol);
@@ -147,10 +152,14 @@ void Window::winRun() {
     scene.createObject(&circle, { {0.f, 4.f, 0.f} }, &matDiffuse);
 
     MD_Cone cone;
-    scene.createObject(&cone, { {-2.f, 1.f, 0.f} }, &matTex2);
+    scene.createObject(&cone, { {-2.f, 1.f, 0.f} }, &imgTex1);
 
     MD_Torus torus;
     scene.createObject(&torus, { {-7.f, 1.f, 0.f} }, &matSpec);
+
+    MD_PointLight pl;
+    scene.createPointLight(Vec3f(3.0, 2.0, .10), Color(1.0, 1.0, 1.0), 2.0);
+    */
 
     // ── timing ───────────────────────────────────────────
     Uint64 last = SDL_GetPerformanceCounter();
@@ -172,16 +181,23 @@ void Window::winRun() {
         last = now;
 
         // ── controller ────────────────────────────────────
+        // pick on left click
+        int picked = -1;
+        if (input.isMousePressed(SDL_BUTTON_RIGHT)) {
+            int mx, my;
+            SDL_GetMouseState(&mx, &my);
+            picked = renderer.pickAt(scene, mx, my,
+                                    panel_left, panel_bottom,
+                                    viewport_w, viewport_h);
+        }
+
         MD_Object* selected = nullptr;
-        if (!scene.getObjects().empty())
-            selected = scene.getObject(scene.selected_index);
+        if (!scene.getObjects().empty() && !scene.selected_is_light)
+            selected = scene.getObject(scene.selected_obj_index);
 
-        controller.ctrlUpdate(input, camera, selected, scene,
-                              static_cast<float>(deltaTime));
+        controller.ctrlUpdate(input, camera, selected, scene, picked,
+                            static_cast<float>(deltaTime));
 
-        // ── SDL events ────────────────────────────────────
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {}
 
         // ── render ────────────────────────────────────────
         glDisable(GL_SCISSOR_TEST);

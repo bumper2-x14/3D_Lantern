@@ -47,10 +47,10 @@ void MD_Material::bind(const MD_Shader& shader) const {
             break;
         case MatType::AMBIENT:
         case MatType::DIFFUSE:
-            shader.setVec3("u_color", color);
+            shader.setVec3("u_color", toVec3<float>(color));
             break;
         case MatType::SPECULAR:
-            shader.setVec3("u_color", color);
+            shader.setVec3("u_color", toVec3<float>(color));
             shader.setFloat("u_shininess", shininess);
             break;
     }

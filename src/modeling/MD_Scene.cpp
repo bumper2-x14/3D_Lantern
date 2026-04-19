@@ -29,7 +29,7 @@ std::vector<MD_Object*>& MD_Scene::getObjects() { return objects; }
 
 void MD_Scene::nextObject() {
     if (objects.empty()) return;
-    selected_index = (selected_index + 1) % (int)objects.size();
+    selected_obj_index = (selected_obj_index + 1) % (int)objects.size();
 }
 
 
@@ -55,3 +55,45 @@ MD_PointLight* MD_Scene::getPointLight(int index) {
 }
 
 std::vector<MD_PointLight*>& MD_Scene::getPointLights() { return point_lights; }
+
+void MD_Scene::loadDefaultScene() {
+    // clear anything already in the scene
+    for (auto* o : objects)     delete o;
+    for (auto* l : point_lights) delete l;
+    objects.clear();
+    point_lights.clear();
+    selected_obj_index = 0;
+
+    // ground — not selectable
+    MD_Object* ground = createObject(&default_ground,
+                                     TRSDataf{ {0.f, 0.f, 0.f} },
+                                     &default_ground_mat);
+    ground->selectable = false;
+
+    // sphere sitting on the ground
+    createObject(&default_sphere,
+                 TRSDataf{ {0.f, 1.f, 0.f} },
+                 &default_sphere_mat);
+
+    // one warm point light above and to the side
+    createPointLight(Vec3f(3.f, 4.f, 3.f), Color(1.f, 1.f, 1.f), 2.0f);
+}
+
+MD_Object* MD_Scene::getSelectedObject() const {
+    if (selected_is_light || selected_obj_index < 0
+        || selected_obj_index >= (int)objects.size()) return nullptr;
+    return objects[selected_obj_index];
+}
+
+MD_PointLight* MD_Scene::getSelectedLight() const {
+    if (!selected_is_light || selected_light_index < 0
+        || selected_light_index >= (int)point_lights.size()) return nullptr;
+    return point_lights[selected_light_index];
+}
+
+void MD_Scene::deselect() {
+    show_selected = false;
+    selected_is_light = false;
+    selected_light_index = -1;
+    selected_obj_index = -1;
+}

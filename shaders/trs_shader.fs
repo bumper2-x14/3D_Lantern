@@ -74,16 +74,12 @@ void main() {
     }
 
     // ===== FINAL COLOR =====
-    vec3 lighting = result;
+    vec3 ambient    = uAmbient * baseColor;
+    vec3 finalColor = ambient + baseColor * (uNbLights == 0 ? vec3(1.0) : result);
 
-    if (uNbLights == 0) {
-        lighting = vec3(1.0); // fallback white light
-    }
-
-    vec3 ambient = uAmbient * baseColor;
-    vec3 finalColor = ambient + baseColor * result;
-    fragColor = vec4(finalColor, 1.0);
-
+    // ===== SELECTION TINT =====
     if (uSelected)
         finalColor = mix(finalColor, uSelectionTint, 0.3);
+
+    fragColor = vec4(finalColor, 1.0);
 }
