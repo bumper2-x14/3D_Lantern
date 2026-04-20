@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include <iostream>
+#include "gui.h"
 
 
 class Window {
@@ -51,13 +52,11 @@ private:
     int panel_bottom = 0;
     int panel_left = 0;
     int panel_right = 0;
+
+    GUI* gui = nullptr;
      
     bool stop = false;
 };
-
-
-
-
 
 #endif
 

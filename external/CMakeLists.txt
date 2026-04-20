@@ -18,3 +18,24 @@ target_include_directories(stb_image PUBLIC stb)
 # TINYOBJLOADER
 add_library(tinyobjloader STATIC tinyObjLoader/tiny_obj_loader.cpp)
 target_include_directories(tinyobjloader PUBLIC tinyObjLoader)
+
+# IMGUI
+find_package(SDL2 REQUIRED)
+
+add_library(imgui STATIC
+    ImGui/imgui.cpp
+    ImGui/imgui_draw.cpp
+    ImGui/imgui_tables.cpp
+    ImGui/imgui_widgets.cpp
+
+    ImGui/backends/imgui_impl_sdl2.cpp
+    ImGui/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui PUBLIC
+    ImGui
+    ImGui/backends
+    ${SDL2_INCLUDE_DIRS}
+)
+
+target_link_libraries(imgui PUBLIC glad SDL2 SDL2::SDL2)

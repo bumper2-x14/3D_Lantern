@@ -1,4 +1,4 @@
-#include "interpretor/lexer.h"
+#include "interpreter/lexer.h"
 
 int main() {
     Lexer::regressionTest();

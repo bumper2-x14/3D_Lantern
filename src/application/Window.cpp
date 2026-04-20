@@ -55,6 +55,7 @@ Window::Window(const std::string& name, int x, int y)
 }
 
 Window::~Window() {
+    delete gui;
     if (gl_context) SDL_GL_DeleteContext(gl_context);
     if (win) SDL_DestroyWindow(win);
     SDL_Quit();
@@ -72,6 +73,9 @@ void Window::winInitGl() {
     }
     if (SDL_GL_SetSwapInterval(1) < 0)
         std::cerr << "warning: unable to set VSync\n";
+    
+    if (!gui)
+        gui = new GUI(win, gl_context);
 }
 
 // ── main loop ─────────────────────────────────────────────────────────────────
@@ -169,11 +173,12 @@ void Window::winRun() {
     Controller controller;
 
     while (!stop) {
-        // ── input ─────────────────────────────────────────
+        // input
         input.update();
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
+            gui->processEvent(e);
             if (e.type == SDL_WINDOWEVENT &&
                 e.window.event == SDL_WINDOWEVENT_RESIZED) {
                 // update pixel size for HiDPI
@@ -186,7 +191,6 @@ void Window::winRun() {
                 camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
             }
         }
-
         if (input.quitPressed() || input.isKeyPressed(SDL_SCANCODE_ESCAPE))
             stop = true;
 
@@ -227,6 +231,13 @@ void Window::winRun() {
         // RENDER 
         renderer.render(scene, shader);
 
+        gui->begin();
+        // draw UI
+        gui->drawPanels(width, height,panel_top, panel_bottom,
+                        panel_left, panel_right);
+        gui->render();
+
         SDL_GL_SwapWindow(win);
+
     }
 }
