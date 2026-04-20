@@ -191,7 +191,7 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
                     * Mat4f::scale(Vec3f(0.8f, 0.8f, 0.8f));
         Mat4f ltv = view * model;
         pick_shader.setMat4("uLocalToView", ltv);
-        pick_shader.setInt ("uObjectID",    LIGHT_ID_OFFSET + i + 1);
+        pick_shader.setInt ("uObjectID", LIGHT_ID_OFFSET + i + 1);
         MD_Object p_light_gizmo_obj(&pick_light_gizmo);
         p_light_gizmo_obj.draw(pick_shader); // draw raw mesh, no material needed
     }
@@ -204,9 +204,12 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
     unsigned char pixel[4] = {0};
     glReadPixels(gl_x, gl_y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(vp_x, vp_y, vp_w, vp_h);  // restore viewport
 
-    int id = pixel[0];
-    if (id == 0) return -1;  // background
-    if (id <= (int)objects.size()) return id - 1;  // object index
-    return LIGHT_ID_OFFSET + (id - LIGHT_ID_OFFSET - 1); // light index
+    int obj_id   = pixel[0];  // R = object  (1-based)
+    int light_id = pixel[1];  // G = light   (1-based)
+
+    if (light_id > 0) return MD_Scene::LIGHT_ID_OFFSET + light_id - 1;
+    if (obj_id   > 0) return obj_id - 1;
+    return -1;
 }

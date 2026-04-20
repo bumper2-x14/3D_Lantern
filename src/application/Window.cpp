@@ -172,6 +172,21 @@ void Window::winRun() {
         // ── input ─────────────────────────────────────────
         input.update();
 
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_WINDOWEVENT &&
+                e.window.event == SDL_WINDOWEVENT_RESIZED) {
+                // update pixel size for HiDPI
+                SDL_GL_GetDrawableSize(win, &width, &height);
+                panel_top = static_cast<int>(height * kTopPanelFrac);
+                panel_bottom = static_cast<int>(height * kBottomPanelFrac);
+                panel_left = static_cast<int>(width * kLeftPanelFrac);
+                panel_right = static_cast<int>(width * kRightPanelFrac);
+                updateViewport();
+                camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
+            }
+        }
+
         if (input.quitPressed() || input.isKeyPressed(SDL_SCANCODE_ESCAPE))
             stop = true;
 
@@ -198,8 +213,7 @@ void Window::winRun() {
         controller.ctrlUpdate(input, camera, selected, scene, picked,
                             static_cast<float>(deltaTime));
 
-
-        // ── render ────────────────────────────────────────
+        // render
         glDisable(GL_SCISSOR_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -210,7 +224,7 @@ void Window::winRun() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_SCISSOR_TEST);
 
-        // ===== RENDER =====
+        // RENDER 
         renderer.render(scene, shader);
 
         SDL_GL_SwapWindow(win);
