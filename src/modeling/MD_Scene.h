@@ -10,17 +10,19 @@
 
 class MD_Scene{
     public:
-		static constexpr int LIGHT_ID_OFFSET = 1000;
-		int selected_obj_index = -1;
-		bool show_selected = false;
-		int  selected_light_index = -1;
-    	bool selected_is_light = false;
+		std::vector<MD_Object*> objects;
+		std::vector<MD_PointLight*> point_lights;
 
+		static constexpr int LIGHT_ID_OFFSET = 1000;
+		int selected_obj_index = -2;
+		bool show_selected = false;
+		int selected_light_index = -2;
+    	bool selected_is_light = false;
 
 		MD_Scene();
 		~MD_Scene();
 
-		MD_Object* createObject(MD_Shape* _shape, const TRSDataf& _transform = {},
+		MD_Object* createObject(const std::string& _name, MD_Shape* _shape, const TRSDataf& _transform = {},
 								MD_Material* _mat = nullptr);
 
 		void removeObject(int index);
@@ -46,10 +48,10 @@ class MD_Scene{
 		MD_PointLight* getSelectedLight() const;
 		void deselect();
 
-    private:	
-		std::vector<MD_Object*> objects;
-		std::vector<MD_PointLight*> point_lights;	
+		void setSelectedObject(int index);
+		void setSelectedPointLight(int index);
 
+    private:	
 		MD_Quad default_ground{100, 100};
 		MD_Sphere default_sphere{25, 25};
 

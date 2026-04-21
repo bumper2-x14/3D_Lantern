@@ -29,7 +29,7 @@ private:
     MD_Camera camera_main;
     MD_Sphere light_gizmo_shape{4, 4};
     MD_Material light_gizmo_mat{Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::AMBIENT};
-    MD_Object light_gizmo_obj{&light_gizmo_shape, &light_gizmo_mat};
+    MD_Object light_gizmo_obj{"Light_gizmo", &light_gizmo_shape, &light_gizmo_mat};
 
     unsigned int pick_FBO = 0;
     unsigned int pick_tex = 0;
