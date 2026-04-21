@@ -11,8 +11,9 @@ class MD_Object {
     public:
         TRSDataf trs;
         bool selectable = true;
+        std::string name;
 
-        MD_Object(MD_Shape* shape = nullptr,
+        MD_Object(const std::string& _name, MD_Shape* shape = nullptr,
                         MD_Material* material = nullptr,
                                 const TRSDataf& _trs_data = {});
 

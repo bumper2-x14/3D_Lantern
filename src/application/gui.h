@@ -3,6 +3,9 @@
 
 #include <SDL2/SDL.h>
 
+#include "modeling/MD_Camera.h"
+#include "modeling/MD_Scene.h"
+
 class GUI {
 public:
     GUI(SDL_Window* window, SDL_GLContext gl_context);
@@ -13,7 +16,7 @@ public:
 
     void processEvent(const SDL_Event& e);
 
-    void drawPanels(int width, int height, int panel_top,int panel_bottom,
+    void drawPanels(MD_Scene& scene, int width, int height, int panel_top,int panel_bottom,
                         int panel_left, int panel_right);
 
 private:

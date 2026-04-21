@@ -6,8 +6,6 @@
 
 class Input {
     public:
-        void update();
-
         // keyboard
         bool isKeyDown(SDL_Scancode key) const;
         bool isKeyPressed(SDL_Scancode key) const;
@@ -28,6 +26,9 @@ class Input {
 
         // system
         bool quitPressed() const;   
+
+        void beginFrame();
+        void handleEvent(const SDL_Event& e);
         
     private:
         static constexpr size_t KEY_COUNT = SDL_NUM_SCANCODES;

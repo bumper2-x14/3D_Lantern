@@ -7,8 +7,8 @@ MD_Scene::~MD_Scene() {
     for (auto* lgt : point_lights) delete lgt;
 }
 
-MD_Object* MD_Scene::createObject(MD_Shape* _shape, const TRSDataf& _transform, MD_Material* _mat) {
-    MD_Object* obj = new MD_Object(_shape, _mat, _transform);
+MD_Object* MD_Scene::createObject(const std::string& _name, MD_Shape* _shape, const TRSDataf& _transform, MD_Material* _mat) {
+    MD_Object* obj = new MD_Object(_name, _shape, _mat, _transform);
     objects.push_back(obj);
     return obj;
 }
@@ -65,13 +65,13 @@ void MD_Scene::loadDefaultScene() {
     selected_obj_index = 0;
 
     // ground — not selectable
-    MD_Object* ground = createObject(&default_ground,
+    MD_Object* ground = createObject("Ground", &default_ground,
                                      TRSDataf{ {0.f, 0.f, 0.f} },
                                      &default_ground_mat);
     ground->selectable = false;
 
     // sphere sitting on the ground
-    createObject(&default_sphere,
+    createObject("Sphere", &default_sphere,
                  TRSDataf{ {0.f, 1.f, 0.f} },
                  &default_sphere_mat);
 
@@ -96,4 +96,13 @@ void MD_Scene::deselect() {
     selected_is_light = false;
     selected_light_index = -1;
     selected_obj_index = -1;
+}
+
+
+void MD_Scene::setSelectedObject(int index) {
+    selected_obj_index = index;
+}
+
+void MD_Scene::setSelectedPointLight(int index) {
+    selected_light_index = index;
 }

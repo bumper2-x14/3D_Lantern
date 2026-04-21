@@ -192,7 +192,7 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
         Mat4f ltv = view * model;
         pick_shader.setMat4("uLocalToView", ltv);
         pick_shader.setInt ("uObjectID", LIGHT_ID_OFFSET + i + 1);
-        MD_Object p_light_gizmo_obj(&pick_light_gizmo);
+        MD_Object p_light_gizmo_obj("PLG", &pick_light_gizmo);
         p_light_gizmo_obj.draw(pick_shader); // draw raw mesh, no material needed
     }
 

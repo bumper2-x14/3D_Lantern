@@ -1,43 +1,36 @@
 #include "inputs.h"
 
-void Input::update() {
-    prev_keys = curr_keys;
+void Input::beginFrame() {
+    prev_keys  = curr_keys;
     prev_mouse = curr_mouse;
-
     delta_x = delta_y = 0;
+}
 
-    SDL_Event e;
-    while(SDL_PollEvent(&e)) {
-        switch(e.type) {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            
-            case SDL_KEYDOWN:
-                curr_keys[e.key.keysym.scancode] = true;
-                break;
-            
-            case SDL_KEYUP:
-                curr_keys[e.key.keysym.scancode] = false;
-                break;
-            
-            case SDL_MOUSEBUTTONDOWN:
-                if (e.button.button < curr_mouse.size())
-                    curr_mouse[e.button.button] = true;
-                break;
-            
-            case SDL_MOUSEBUTTONUP:
-                if (e.button.button < curr_mouse.size())
-                    curr_mouse[e.button.button] = false;
-                break;
-            
-            case SDL_MOUSEMOTION:
-                mouse_x = e.motion.x;
-                mouse_y = e.motion.y;
-                delta_x += e.motion.xrel;
-                delta_y += e.motion.yrel;
-                break;
-        }
+void Input::handleEvent(const SDL_Event& e) {
+    switch (e.type) {
+        case SDL_QUIT:
+            quit = true;
+            break;
+        case SDL_KEYDOWN:
+            curr_keys[e.key.keysym.scancode] = true;
+            break;
+        case SDL_KEYUP:
+            curr_keys[e.key.keysym.scancode] = false;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if (e.button.button < curr_mouse.size())
+                curr_mouse[e.button.button] = true;
+            break;
+        case SDL_MOUSEBUTTONUP:
+            if (e.button.button < curr_mouse.size())
+                curr_mouse[e.button.button] = false;
+            break;
+        case SDL_MOUSEMOTION:
+            mouse_x  = e.motion.x;
+            mouse_y  = e.motion.y;
+            delta_x += e.motion.xrel;
+            delta_y += e.motion.yrel;
+            break;
     }
 }
 

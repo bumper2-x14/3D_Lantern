@@ -173,20 +173,19 @@ void Window::winRun() {
     Controller controller;
 
     while (!stop) {
-        // input
-        input.update();
+        input.beginFrame();
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            gui->processEvent(e);
+            gui->processEvent(e);   // ImGui sees every event
+            input.handleEvent(e);   // so does input system
             if (e.type == SDL_WINDOWEVENT &&
                 e.window.event == SDL_WINDOWEVENT_RESIZED) {
-                // update pixel size for HiDPI
                 SDL_GL_GetDrawableSize(win, &width, &height);
                 panel_top = static_cast<int>(height * kTopPanelFrac);
                 panel_bottom = static_cast<int>(height * kBottomPanelFrac);
-                panel_left = static_cast<int>(width * kLeftPanelFrac);
-                panel_right = static_cast<int>(width * kRightPanelFrac);
+                panel_left = static_cast<int>(width  * kLeftPanelFrac);
+                panel_right = static_cast<int>(width  * kRightPanelFrac);
                 updateViewport();
                 camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
             }
@@ -233,7 +232,7 @@ void Window::winRun() {
 
         gui->begin();
         // draw UI
-        gui->drawPanels(width, height,panel_top, panel_bottom,
+        gui->drawPanels(scene, width, height, panel_top, panel_bottom,
                         panel_left, panel_right);
         gui->render();
 
