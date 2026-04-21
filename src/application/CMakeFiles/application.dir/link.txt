@@ -1,0 +1,2 @@
+/usr/bin/ar qc libapplication.a CMakeFiles/application.dir/Window.cpp.o CMakeFiles/application.dir/input.cpp.o CMakeFiles/application.dir/controller.cpp.o CMakeFiles/application.dir/gui.cpp.o
+/usr/bin/ranlib libapplication.a

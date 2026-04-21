@@ -1,0 +1,2 @@
+/usr/bin/ar qc libassets.a CMakeFiles/assets.dir/mesh_data.cpp.o CMakeFiles/assets.dir/image.cpp.o CMakeFiles/assets.dir/color_texture.cpp.o CMakeFiles/assets.dir/checker_texture.cpp.o CMakeFiles/assets.dir/image_texture.cpp.o CMakeFiles/assets.dir/perlin.cpp.o CMakeFiles/assets.dir/perlin_texture.cpp.o CMakeFiles/assets.dir/model.cpp.o
+/usr/bin/ranlib libassets.a

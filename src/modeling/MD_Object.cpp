@@ -10,15 +10,11 @@ Mat4f MD_Object::getTransformMatrix() const {
     return Mat4f::TRS(trs.translation, trs.rotation, trs.scale);
 }
 
-
 std::string MD_Object::serialize() const {
     std::string result = "object {\n";
 
-    result += "    name object\n";
-
-    if (shape) {
-        result += "    " + shape->serialize();
-    }
+    result += "    name " + name + "\n";
+    result += "    type " + shape->typeToString(shape->type) + "\n";
 
     result += "    material_ref default_mat\n";
 
@@ -65,3 +61,4 @@ void MD_Object::draw(MD_Shader& shader) {
 
     glBindVertexArray(0);
 }
+

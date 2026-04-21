@@ -10,10 +10,6 @@ MD_Quad::MD_Quad(float _width, float _lenght){
     mesh->setupMD_Mesh();
 }
 
-std::string MD_Quad::serialize() const {
-    return "quad " + std::to_string(width) + " " + std::to_string(length);
-}
-
 void MD_Quad::buildShape(){
     //width & length 
     float hw = width / 2.0f;
