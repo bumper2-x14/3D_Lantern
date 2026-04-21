@@ -13,7 +13,6 @@ class MD_Sphere : public MD_Shape{
       MD_Sphere(float _longtitude_seg = 25, float _latitude_seg = 25);
       void buildShape() override;
       void applyTransform(Transform* transform) override;
-      std::string serialize() const override;
 
       static void regressionTest();
       

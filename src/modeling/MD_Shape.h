@@ -22,6 +22,12 @@ class MD_Shape {
 
         const MD_Mesh* getMesh()const { return mesh; }
         MD_Mesh* getMesh() {return mesh; }
+
+        std::string typeToString(ShapeType type) const{
+            switch (type) {
+                case ShapeType::SPHERE : return "sphere"; break;
+            }
+        } 
    
     protected:
         MD_Mesh* mesh;
