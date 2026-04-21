@@ -33,6 +33,7 @@ class MD_Shape {
                 case ShapeType:: QUAD : return "quad"; break;
                 case ShapeType:: MESH : return "mesh"; break;
             }
+            return "";
         } 
         
     protected:
