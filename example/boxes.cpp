@@ -10,6 +10,8 @@
 #include "ray_tracer/RT_Box.h"
 
 int main() {
+    RT_Scene scene;
+
     // Materials
     RT_Metallic   mat_silver (Color(0.9, 0.9, 0.95), 0.0);
     RT_Metallic   mat_gold   (Color(1.0, 0.85, 0.3), 0.05);
@@ -66,20 +68,19 @@ int main() {
     // box_gold2: min(0.4,-0.5,-0.5) max(0.7,-0.2,-0.2)
     t.setTranslation({ 0.55, -0.35, -0.35}); t.setScale({0.15,0.15,  0.15}); box_gold2  .setTransform(t); t.reset();
 
-    RT_ObjectList scene;
-    scene.add(&ground);
-    scene.add(&box_gold);
-    scene.add(&box_red);
-    scene.add(&box_glass);
-    scene.add(&box_silver);
-    scene.add(&box_wood);
-    scene.add(&box_blue);
-    scene.add(&box_copper);
-    scene.add(&box_diamond);
-    scene.add(&box_brushed);
-    scene.add(&box_green);
-    scene.add(&box_red2);
-    scene.add(&box_gold2);
+    scene.addObject(&ground);
+    scene.addObject(&box_gold);
+    scene.addObject(&box_red);
+    scene.addObject(&box_glass);
+    scene.addObject(&box_silver);
+    scene.addObject(&box_wood);
+    scene.addObject(&box_blue);
+    scene.addObject(&box_copper);
+    scene.addObject(&box_diamond);
+    scene.addObject(&box_brushed);
+    scene.addObject(&box_green);
+    scene.addObject(&box_red2);
+    scene.addObject(&box_gold2);
 
     RT_Camera cam(
         Point3d(0, 1.8,  2.5),

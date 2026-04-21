@@ -5,6 +5,7 @@
 #include <fstream>
 #include <thread>
 
+#include "RT_Scene.h"
 #include "RT_Camera.h"
 #include "RT_Object.h"
 #include "RT_ObjectList.h"
@@ -14,15 +15,13 @@
 
 
 class RT_Renderer {
-    public:
-        std::vector<RT_Light*> p_lights;
-        
+    public:        
         RT_Renderer(int _img_width, double _aspect_ratio, int _samples_per_pixel, int _depth);
         ~RT_Renderer();
 
         // setup
         void setCamera(RT_Camera* cam);
-        void setScene(RT_ObjectList* scn);
+        void setScene(RT_Scene* scene);
         void setBackground(const Color& bg);
 
         // rendering
@@ -34,7 +33,6 @@ class RT_Renderer {
     private:
         Color* img_buffer;
         RT_Camera* camera;
-        RT_ObjectList* scene;
         int sample_per_pixel;
         int depth;
         Color background;
@@ -43,6 +41,7 @@ class RT_Renderer {
         int img_height;
         int sqrt_spp;
         double sample_scale;
+        RT_Scene* scene = nullptr;
 
         Color traceRay(const Rayd& ray, int recursive_depth, RT_Object* accel) const; 
         void singleThreadRender();

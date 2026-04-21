@@ -15,6 +15,8 @@
 #include "ray_tracer/RT_DirectionalLight.h"
 
 int main() {
+    RT_Scene scene;
+
     // Camera — low angle looking up slightly to emphasize the sky and clouds
     RT_Camera cam(
         Point3d(0.0, 0.8, 3.5),   // eye — slightly elevated, pulled back
@@ -142,26 +144,26 @@ int main() {
     // -------------------------------------------------------------------------
     // Scene assembly
     // -------------------------------------------------------------------------
-    RT_ObjectList scene;
-
     // Terrain & solid objects
-    scene.add(&ground);
-    scene.add(&mountain);
-    scene.add(&snow_cap);
-    scene.add(&trunk_l);
-    scene.add(&canopy_l);
-    scene.add(&trunk_r);
-    scene.add(&canopy_r);
-    scene.add(&trunk_back);
-    scene.add(&canopy_back);
-    scene.add(&rock);
+    scene.addObject(&ground);
+    scene.addObject(&mountain);
+    scene.addObject(&snow_cap);
+    scene.addObject(&trunk_l);
+    scene.addObject(&canopy_l);
+    scene.addObject(&trunk_r);
+    scene.addObject(&canopy_r);
+    scene.addObject(&trunk_back);
+    scene.addObject(&canopy_back);
+    scene.addObject(&rock);
 
     // Clouds (boundaries NOT added — only mediums)
-    scene.add(&cloud1);
-    scene.add(&cloud2);
-    scene.add(&cloud3);
-    scene.add(&cloud4);
-    scene.add(&cloud5);
+    scene.addObject(&cloud1);
+    scene.addObject(&cloud2);
+    scene.addObject(&cloud3);
+    scene.addObject(&cloud4);
+    scene.addObject(&cloud5);
+
+    scene.addLight(&light);
 
     // -------------------------------------------------------------------------
     // Renderer — high sample count to resolve volumetric noise cleanly
@@ -170,7 +172,6 @@ int main() {
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
     renderer.setBackground(Color(0.0, 0.0, 0.0));
-    renderer.p_lights.push_back(&light);
     renderer.render();
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "clouds.ppm");
 

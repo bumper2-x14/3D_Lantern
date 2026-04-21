@@ -15,6 +15,7 @@
 #include "ray_tracer/RT_PointLight.h"
 
 int main() {
+    RT_Scene scene;
 
     // Camera — inside the chamber looking inward
     RT_Camera cam(
@@ -113,28 +114,25 @@ int main() {
 
 
     // ── scene ─────────────────────────────────────────────────────────────────
-    RT_ObjectList scene;
-
     // Walls
-    scene.add(&floor_q);
-    scene.add(&ceil_q);
-    scene.add(&back_q);
-    scene.add(&front_q);
-    scene.add(&left_q);
-    scene.add(&right_q);
+    scene.addObject(&floor_q);
+    scene.addObject(&ceil_q);
+    scene.addObject(&back_q);
+    scene.addObject(&front_q);
+    scene.addObject(&left_q);
+    scene.addObject(&right_q);
 
     // Objects
-    scene.add(&sphere_center);
-    scene.add(&sphere_glass);
-    scene.add(&cylinder);
+    scene.addObject(&sphere_center);
+    scene.addObject(&sphere_glass);
+    scene.addObject(&cylinder);
+
+    scene.addLight(&light_main);
 
     RT_Renderer renderer(800, 16.0/9.0, 400, 50); // high depth for mirror bounces
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
     renderer.setBackground(Color(0.0, 0.0, 0.0)); // black bg — fully enclosed
-
-    // Add lights before render
-    renderer.p_lights.push_back(&light_main);
 
     renderer.render(true);
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "mirror_chamber.ppm");

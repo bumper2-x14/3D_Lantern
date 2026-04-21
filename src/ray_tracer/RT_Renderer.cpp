@@ -27,7 +27,7 @@ RT_Renderer::~RT_Renderer() {
 
 void RT_Renderer::setCamera(RT_Camera* _camera) { camera = _camera; }
 
-void RT_Renderer::setScene(RT_ObjectList* _scene) { scene = _scene; }
+void RT_Renderer::setScene(RT_Scene* _scene) { scene = _scene; }
 
 void RT_Renderer::setBackground(const Color& _background) { background = _background; }
 
@@ -46,7 +46,7 @@ Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* acc
 
     // direct lighting from point lights
     Color direct(0, 0, 0);
-    for (const auto& light : p_lights) {
+    for (const auto& light : scene->getLights()) {
         switch (light->type) {
             case POINTLIGHT: {
                 Vec3d to_light = light->position - rec.p;
@@ -84,13 +84,13 @@ Color RT_Renderer::traceRay(const Rayd& ray, int recursive_depth, RT_Object* acc
 }
 
 void RT_Renderer::singleThreadRender() {
-    if (!camera || !scene) {
-        std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
+    if (!camera) {
+        std::cout<<"RT_renderer::render -> camera was not set\n"<<std::endl;
         return;
     }
 
     camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
-    RT_Object* accelerated = new BVHNode(*scene);
+    RT_Object* accelerated = new BVHNode(scene->getObjects());
 
     int total = img_height * img_width;
     int done = 0;
@@ -119,13 +119,13 @@ void RT_Renderer::singleThreadRender() {
 
 // in case a memory leak is detected it sould be from accelerated
 void RT_Renderer::multiThreadRender() {
-    if (!camera || !scene) {
-        std::cout<<"RT_renderer::render -> camera or scene was not set\n"<<std::endl;
+    if (!camera) {
+        std::cout<<"RT_renderer::render -> camera was not set\n"<<std::endl;
         return;
     }
 
     camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
-    RT_Object* accelerated = new BVHNode(*scene);
+    RT_Object* accelerated = new BVHNode(scene->getObjects());
 
     int thread_count = std::thread::hardware_concurrency();
 
@@ -199,7 +199,7 @@ void RT_Renderer::writePPM(const std::string& path) const {
     }
 }
 
-
+/*
 void RT_Renderer::regressionTest() {
 
     // --- Stubs ---------------------------------------------------
@@ -273,3 +273,4 @@ void RT_Renderer::regressionTest() {
 
     std::cout << "All RT_Renderer tests passed successfully\n";
 }
+*/

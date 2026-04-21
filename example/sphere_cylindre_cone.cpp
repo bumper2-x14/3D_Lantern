@@ -16,6 +16,8 @@
 #include "assets/perlin_texture.h"
 
 int main() {
+    RT_Scene scene2;
+
     RT_Camera cam(
         Point3d(0, 0,  1),
         Point3d(0, 0, -1),
@@ -71,24 +73,24 @@ int main() {
     );
 
     // Scene
-    RT_ObjectList scene2;
-    scene2.add(&sphere_ground);
-    scene2.add(&sphere_center);
-    scene2.add(&sphere_left);
-    scene2.add(&sphere_right);
-    scene2.add(&sphere_small);
-    scene2.add(&cyl_left);
-    scene2.add(&cyl_right);
-    scene2.add(&cone_left);
-    scene2.add(&cone_right);
-    scene2.add(&cyl_left_back);
+    scene2.addObject(&sphere_ground);
+    scene2.addObject(&sphere_center);
+    scene2.addObject(&sphere_left);
+    scene2.addObject(&sphere_right);
+    scene2.addObject(&sphere_small);
+    scene2.addObject(&cyl_left);
+    scene2.addObject(&cyl_right);
+    scene2.addObject(&cone_left);
+    scene2.addObject(&cone_right);
+    scene2.addObject(&cyl_left_back);
+
+    scene2.addLight(&light);
 
     RT_Renderer renderer3(800, 16.0/9.0, 100, 20);
     renderer3.setCamera(&cam);
     renderer3.setScene(&scene2);
     renderer3.setBackground(Color(0.0, 0.0, 0.0));
-    renderer3.p_lights.push_back(&light);
-    renderer3.render();
+    renderer3.render(true);
     renderer3.writePPM(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
