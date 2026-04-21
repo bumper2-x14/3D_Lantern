@@ -112,7 +112,6 @@ void Window::winRun() {
     // ── textures ─────────────────────────────────────────
     ImageTexture texture(IMG_DIR "cracked_tx.jpg");
     ImageTexture texture2(IMG_DIR "texture-background.jpg");
-
     CheckerTexture chk(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 5); 
 
     ColorTexture col(Color(1.0, 0.0, 0.0));

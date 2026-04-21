@@ -19,6 +19,7 @@ uniform int spec;
 
 uniform sampler2D texture0;
 
+
 //to be added more texture surfaces
 
 void main(){
