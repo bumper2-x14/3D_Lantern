@@ -14,7 +14,8 @@
 #include "ray_tracer/RT_Quad.h"
 #include "ray_tracer/RT_PointLight.h"
 
-int main() {
+int main() { 
+    /*
     RT_Scene scene;
 
     RT_Camera cam(
@@ -97,5 +98,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "mirror.ppm");
     assert(file.good());
     std::cout << "mirror.ppm generated successfully\n";
-    return 0;
+    return 0; */
 }

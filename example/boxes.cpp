@@ -10,7 +10,7 @@
 #include "ray_tracer/RT_Box.h"
 
 int main() {
-    RT_Scene scene;
+    /*RT_Scene scene;
 
     // Materials
     RT_Metallic   mat_silver (Color(0.9, 0.9, 0.95), 0.0);
@@ -99,5 +99,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "boxes.ppm");
     assert(file.good());
     std::cout << "boxes.ppm generated successfully\n";
-    return 0;
+    return 0;*/
 }

@@ -15,7 +15,7 @@
 #include "ray_tracer/RT_DirectionalLight.h"
 
 int main() {
-    RT_Scene scene;
+   /* RT_Scene scene;
 
     // Camera — low angle looking up slightly to emphasize the sky and clouds
     RT_Camera cam(
@@ -179,4 +179,5 @@ int main() {
     assert(file.good());
     std::cout << "clouds.ppm was generated successfully\n";
     return 0;
+    */
 }

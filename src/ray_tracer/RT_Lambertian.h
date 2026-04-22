@@ -14,6 +14,7 @@ class RT_Lambertian : public RT_Material {
 
     private:
         Texture* tex;
+        bool own_tex = false;
 };
 
 #endif

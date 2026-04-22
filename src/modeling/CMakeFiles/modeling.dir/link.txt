@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmodeling.a CMakeFiles/modeling.dir/MD_Mesh.cpp.o CMakeFiles/modeling.dir/MD_Camera.cpp.o CMakeFiles/modeling.dir/MD_Shader.cpp.o CMakeFiles/modeling.dir/MD_Object.cpp.o CMakeFiles/modeling.dir/MD_Sphere.cpp.o CMakeFiles/modeling.dir/MD_Quad.cpp.o CMakeFiles/modeling.dir/MD_Cylinder.cpp.o CMakeFiles/modeling.dir/MD_Circle.cpp.o CMakeFiles/modeling.dir/MD_Cone.cpp.o CMakeFiles/modeling.dir/MD_Torus.cpp.o CMakeFiles/modeling.dir/MD_Renderer.cpp.o CMakeFiles/modeling.dir/MD_Material.cpp.o CMakeFiles/modeling.dir/MD_Scene.cpp.o
-/usr/bin/ranlib libmodeling.a

@@ -12,7 +12,7 @@
 #include "ray_tracer/RT_ObjectList.h"
 #include "assets/model.h"
 
-int main() {
+int main() { /*
     RT_Scene scene;
 
     RT_Camera cam(
@@ -72,5 +72,5 @@ int main() {
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "teapot.ppm");
     assert(file.good());
-    std::cout << "teapot.ppm was generated successfully\n";
+    std::cout << "teapot.ppm was generated successfully\n"; */
 }

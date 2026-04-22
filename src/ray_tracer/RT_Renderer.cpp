@@ -90,7 +90,7 @@ void RT_Renderer::singleThreadRender() {
     }
 
     camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
-    RT_Object* accelerated = new BVHNode(scene->getObjects());
+    RT_Object* accelerated = new BVHNode(scene->getObjects(), 0, scene->getObjects().size());
 
     int total = img_height * img_width;
     int done = 0;
@@ -125,7 +125,7 @@ void RT_Renderer::multiThreadRender() {
     }
 
     camera->initialize(aspect_ratio, img_width, img_height, sample_per_pixel); // Init camera
-    RT_Object* accelerated = new BVHNode(scene->getObjects());
+    RT_Object* accelerated = new BVHNode(scene->getObjects(), 0, scene->getObjects().size());
 
     int thread_count = std::thread::hardware_concurrency();
 

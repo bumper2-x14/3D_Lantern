@@ -15,7 +15,7 @@
 #include "ray_tracer/RT_PointLight.h"
 
 int main() {
-    RT_Scene scene;
+   /* RT_Scene scene;
 
     // Camera — inside the chamber looking inward
     RT_Camera cam(
@@ -140,5 +140,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "mirror_chamber.ppm");
     assert(file.good());
     std::cout << "mirror_chamber.ppm generated successfully\n";
-    return 0;
-}
+    return 0; */
+} 

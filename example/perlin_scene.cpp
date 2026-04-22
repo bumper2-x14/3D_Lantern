@@ -13,7 +13,7 @@
 #include "ray_tracer/RT_Medium.h"
 #include "ray_tracer/RT_DirectionalLight.h"
 
-int main() {
+int main() { /*
     RT_Scene scene;
 
     RT_Camera cam(
@@ -102,5 +102,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "perlin_scene.ppm");
     assert(file.good());
     std::cout << "perlin_scene.ppm was generated successfully\n";
-    return 0;
+    return 0; */
 }

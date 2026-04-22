@@ -1,99 +1,98 @@
 #include <fstream>
-#include <cassert>  
-#include <iostream>  
+#include <cassert>
+#include <iostream>
 #include <string>
+
 #include "ray_tracer/RT_Camera.h"
 #include "ray_tracer/RT_Renderer.h"
-#include "ray_tracer/RT_Lambertian.h"
-#include "ray_tracer/RT_Dielectric.h"
-#include "ray_tracer/RT_Metallic.h"
 #include "ray_tracer/RT_Sphere.h"
 #include "ray_tracer/RT_Cylinder.h"
 #include "ray_tracer/RT_Cone.h"
 #include "ray_tracer/RT_PointLight.h"
+
+#include "ray_tracer/RT_Lambertian.h"
+#include "ray_tracer/RT_Dielectric.h"
+#include "ray_tracer/RT_Metallic.h"
+
 #include "assets/checker_texture.h"
 #include "assets/image_texture.h"
 #include "assets/perlin_texture.h"
 
-int main() {
-    RT_Scene scene2;
+#include "assets/shared_resources.h"
+#include "ray_tracer/raytracer_resources.h"
 
+int main() {
+
+    // resources
+    SharedResources shared;
+    RaytracerResources rt;
+
+    // textures
+    shared.addTexture("perlin_marble",  new PerlinTexture(MARBLE,      10));
+    shared.addTexture("perlin_wood",    new PerlinTexture(WOOD,        30));
+    shared.addTexture("perlin_turb",    new PerlinTexture(TURBULENCE,   5));
+    shared.addTexture("checker",        new CheckerTexture(Color(1,1,1), Color(0,0,0), 4));
+    shared.addTexture("bg_image",       new ImageTexture(IMG_DIR "texture-background.jpg"));
+
+    // materials
+    rt.addMaterial("center",     new RT_Metallic  (Color(0.4, 0.4, 0.8), 0.0));
+    rt.addMaterial("left",       new RT_Lambertian(shared.getTexture("perlin_marble")));
+    rt.addMaterial("right",      new RT_Dielectric(1.490));
+    rt.addMaterial("small",      new RT_Metallic  (Color(0.8, 0.8, 0.3), 0.6));
+    rt.addMaterial("ground",     new RT_Lambertian(shared.getTexture("checker")));
+    rt.addMaterial("cyl_left",   new RT_Metallic  (Color(0.2, 0.8, 0.4), 0.1));
+    rt.addMaterial("cyl_right",  new RT_Lambertian(shared.getTexture("bg_image")));
+    rt.addMaterial("cyl_lback",  new RT_Lambertian(shared.getTexture("perlin_wood")));
+    rt.addMaterial("cone_left",  new RT_Lambertian(shared.getTexture("perlin_turb")));
+    rt.addMaterial("cone_right", new RT_Metallic  (Color(0.9, 0.7, 0.2), 0.0));
+
+    // camera
     RT_Camera cam(
         Point3d(0, 0,  1),
         Point3d(0, 0, -1),
-        Vec3d(0, 3, 0),
+        Vec3d  (0, 3,  0),
         60.0, 0.0, 10.0
     );
 
-    // Materials
-    RT_Metallic   mat_center    (Color(0.4, 0.4, 0.8), 0);
-    RT_Lambertian mat_left      (new PerlinTexture(MARBLE, 10));
-    RT_Dielectric mat_right     (1.490);
-    RT_Metallic   mat_small     (Color(0.8, 0.8, 0.3), 0.6);
-    RT_Lambertian mat_ground    (new CheckerTexture(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 4));
-    RT_Metallic   mat_cyl_left  (Color(0.2, 0.8, 0.4), 0.1);
-    RT_Lambertian mat_cyl_right (new ImageTexture(IMG_DIR "texture-background.jpg"));
-    RT_Lambertian mat_cyl_left_back (new PerlinTexture(WOOD, 30));
-    RT_Lambertian mat_cone_left (new PerlinTexture(TURBULENCE, 5));
-    RT_Metallic   mat_cone_right(Color(0.9, 0.7, 0.2), 0.0);
-
-    // Spheres
-    RT_Sphere sphere_center(&mat_center);
-    RT_Sphere sphere_left  (&mat_left);
-    RT_Sphere sphere_right (&mat_right);
-    RT_Sphere sphere_small (&mat_small);
-    RT_Sphere sphere_ground(&mat_ground);
-
+    RT_Scene scene;
     TRSTransformd t;
-    t.setTranslation({ 0.0,  -0.2,  -1.0}); t.setScale({0.3,   0.3,   0.3  }); sphere_center.setTransform(t); t.reset();
-    t.setTranslation({-0.8,  -0.2,  -1.2}); t.setScale({0.3,   0.3,   0.3  }); sphere_left  .setTransform(t); t.reset();
-    t.setTranslation({ 0.8,  -0.2,  -1.2}); t.setScale({0.3,   0.3,   0.3  }); sphere_right .setTransform(t); t.reset();
-    t.setTranslation({ 0.0,   0.55, -1.5}); t.setScale({0.25,  0.25,  0.25 }); sphere_small .setTransform(t); t.reset();
-    t.setTranslation({ 0.0,-100.5,  -1.0}); t.setScale({100.0, 100.0, 100.0}); sphere_ground.setTransform(t); t.reset();
+    // primitives
+    auto* sphere_center = scene.emplaceObject<RT_Sphere>(rt.getMaterial("center"));
+    t.setTranslation({ 0.0,  -0.2,  -1.0}); t.setScale({0.3,   0.3,   0.3  }); sphere_center->setTransform(t); t.reset();
+    auto* sphere_left = scene.emplaceObject<RT_Sphere>(rt.getMaterial("left"));    
+    t.setTranslation({-0.8,  -0.2,  -1.2}); t.setScale({0.3,   0.3,   0.3  }); sphere_left->setTransform(t); t.reset();
+    auto* sphere_right = scene.emplaceObject<RT_Sphere>(rt.getMaterial("right")); 
+    t.setTranslation({ 0.8,  -0.2,  -1.2}); t.setScale({0.3,   0.3,   0.3  }); sphere_right->setTransform(t); t.reset();
+    auto* sphere_small = scene.emplaceObject<RT_Sphere>(rt.getMaterial("small")); 
+    t.setTranslation({ 0.0,   0.55, -1.5}); t.setScale({0.25,  0.25,  0.25 }); sphere_small->setTransform(t); t.reset();
+    auto* sphere_ground = scene.emplaceObject<RT_Sphere>(rt.getMaterial("ground")); 
+    t.setTranslation({ 0.0,-100.5,  -1.0}); t.setScale({100.0, 100.0, 100.0}); sphere_ground->setTransform(t); t.reset();
 
-    RT_Cylinder cyl_left     (true, &mat_cyl_left);
-    RT_Cylinder cyl_right    (true, &mat_cyl_right);
-    RT_Cylinder cyl_left_back(true, &mat_cyl_left_back);
+    auto* cyl_left = scene.emplaceObject<RT_Cylinder>(true, rt.getMaterial("cyl_left")); 
+    t.setTranslation({-1.5, -0.05, -1.5}); t.setScale({0.18, 0.95, 0.18}); cyl_left->setTransform(t); t.reset();
+    auto* cyl_right = scene.emplaceObject<RT_Cylinder>(true, rt.getMaterial("cyl_right")); 
+    t.setTranslation({ 1.5, -0.05, -1.5}); t.setScale({0.18, 0.95, 0.18}); cyl_right->setTransform(t); t.reset();
+    auto* cyl_left_back = scene.emplaceObject<RT_Cylinder>(true, rt.getMaterial("cyl_lback")); 
+    t.setTranslation({-1.0, -0.05, -2.5}); t.setScale({0.18, 0.95, 0.18}); cyl_left_back->setTransform(t); t.reset();
 
-    t.setTranslation({-1.5, -0.05, -1.5}); t.setScale({0.18, 0.95, 0.18}); cyl_left     .setTransform(t); t.reset();
-    t.setTranslation({ 1.5, -0.05, -1.5}); t.setScale({0.18, 0.95, 0.18}); cyl_right    .setTransform(t); t.reset();
-    t.setTranslation({-1.0, -0.05, -2.5}); t.setScale({0.18, 0.95, 0.18}); cyl_left_back.setTransform(t); t.reset();
-
-    RT_Cone cone_left (true, &mat_cone_left);
-    RT_Cone cone_right(true, &mat_cone_right);
-
-    t.setTranslation({-1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_left .setTransform(t); t.reset();
-    t.setTranslation({ 1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_right.setTransform(t); t.reset();
+    auto* cone_left = scene.emplaceObject<RT_Cone>(true, rt.getMaterial("cone_left")); 
+    t.setTranslation({-1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_left->setTransform(t); t.reset();
+    auto* cone_right = scene.emplaceObject<RT_Cone>(true, rt.getMaterial("cone_right")); 
+    t.setTranslation({ 1.5, 0.5, -1.0}); t.setScale({0.364, 1.0, 0.364}); cone_right->setTransform(t); t.reset();
 
     // light
-    RT_PointLight light(
-        Point3d(-5.0, 5.0, -1.0),
-        Color(1.0, 1.0, 1.0),
-        2.5
-    );
+    RT_PointLight light(Point3d(-5.0, 5.0, -1.0), Color(1.0, 1.0, 1.0), 2.5);
+    scene.emplaceLight<RT_PointLight>(Point3d(-5.0, 5.0, -1.0), Color(1.0, 1.0, 1.0), 2.5);
 
-    // Scene
-    scene2.addObject(&sphere_ground);
-    scene2.addObject(&sphere_center);
-    scene2.addObject(&sphere_left);
-    scene2.addObject(&sphere_right);
-    scene2.addObject(&sphere_small);
-    scene2.addObject(&cyl_left);
-    scene2.addObject(&cyl_right);
-    scene2.addObject(&cone_left);
-    scene2.addObject(&cone_right);
-    scene2.addObject(&cyl_left_back);
-
-    scene2.addLight(&light);
-
-    RT_Renderer renderer3(800, 16.0/9.0, 100, 20);
-    renderer3.setCamera(&cam);
-    renderer3.setScene(&scene2);
-    renderer3.setBackground(Color(0.0, 0.0, 0.0));
-    renderer3.render(true);
-    renderer3.writePPM(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
+    // render
+    RT_Renderer renderer(800, 16.0/9.0, 100, 20);
+    renderer.setCamera(&cam);
+    renderer.setScene(&scene);
+    renderer.setBackground(Color(0.0, 0.0, 0.0));
+    renderer.render(true);
+    renderer.writePPM(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "sphere_cylindre_cone.ppm");
     assert(file.good());
-    std::cout << "sphere_cylindre.ppm was generated successfully\n";
+    std::cout << "sphere_cylindre_cone.ppm was generated successfully\n";
 }

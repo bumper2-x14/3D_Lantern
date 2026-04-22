@@ -10,16 +10,30 @@
 class RT_Scene {
 public:
     RT_Scene() = default;
-    ~RT_Scene() = default;
+    ~RT_Scene() {
+        for (auto* o : objects) delete o;
+        for (auto* l : lights)  delete l;
+    }
 
-    void addObject(RT_Object* obj)  { objects.add(obj); }
-    void addLight(RT_Light* light)  { lights.push_back(light); }
+    template<typename T, typename... Args>
+    T* emplaceObject(Args&&... args){ 
+        T* obj = new T(std::forward<Args>(args)...);
+        objects.push_back(obj);
+        return obj;
+    }
 
-    RT_ObjectList& getObjects() { return objects; }
+    template<typename T, typename... Args>
+    RT_Light* emplaceLight(Args&&... args){
+        T* light = new T(std::forward<Args>(args)...); 
+        lights.push_back(light); 
+        return light;
+    }
+
+    std::vector<RT_Object*>& getObjects() { return objects; }
     const std::vector<RT_Light*>& getLights() const { return lights; }
 
 private:
-    RT_ObjectList objects;
+    std::vector<RT_Object*> objects;
     std::vector<RT_Light*> lights;
 };
 
