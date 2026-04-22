@@ -1,20 +1,28 @@
 #include "gui.h"
-
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
 
-GUI::GUI(SDL_Window* window, SDL_GLContext gl_context)
+GUI::GUI(SDL_Window* window, SDL_GLContext gl_context, 
+                int _width, int _height, int _panel_bottom,
+                int _panel_top, int _panel_left, int _panel_right)
     : window(window), gl_context(gl_context) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
+    
     ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 330");
+ 
+    width = _width;
+    height = _height; 
+    panel_bottom = _panel_bottom;
+    panel_top = _panel_top;
+    panel_left = _panel_left;
+    panel_right = _panel_right;
 }
 
 GUI::~GUI() {
@@ -38,28 +46,25 @@ void GUI::render() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUI::drawPanels(MD_Scene& scene, int width, int height, int panel_top, int panel_bottom,
-                     int panel_left, int panel_right) {
-
-    int viewport_h = height - panel_top - panel_bottom;
-    int viewport_w = width  - panel_left - panel_right;
-
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    // TOP
+void GUI::drawPanelTop(MD_Scene& scene){
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(width, panel_top));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("TopBar", nullptr, flags);
     ImGui::Text("Toolbar");
+
+    static int selected = 0;
+    ImGui::RadioButton("move camera", &selected, 0); ImGui::SameLine();
+    ImGui::RadioButton("move object", &selected, 1); ImGui::SameLine();
+    ImGui::RadioButton("rotate object", &selected, 2);
+
     ImGui::End();
     ImGui::PopStyleVar();
 
-    // BOTTOM
+   }
+
+void GUI::drawPanelBottom(MD_Scene& scene){
+    
     ImGui::SetNextWindowPos(ImVec2(0, height - panel_bottom));
     ImGui::SetNextWindowSize(ImVec2(width, panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
@@ -67,19 +72,24 @@ void GUI::drawPanels(MD_Scene& scene, int width, int height, int panel_top, int 
     ImGui::Text("Status bar");
     ImGui::End();
     ImGui::PopStyleVar();
+    
+}
 
-    // LEFT
+void GUI::drawPanelLeft(MD_Scene& scene){
+    
     ImGui::SetNextWindowPos(ImVec2(0, panel_top));
-    ImGui::SetNextWindowSize(ImVec2(panel_left, viewport_h));
+    ImGui::SetNextWindowSize(ImVec2(panel_left, height - panel_top - panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("Outliner", nullptr, flags);
     ImGui::Text("Scene objects");
     ImGui::End();
     ImGui::PopStyleVar();
+    
+}
 
-    // RIGHT
+void GUI::drawPanelRight(MD_Scene& scene){
     ImGui::SetNextWindowPos(ImVec2(width - panel_right, panel_top));
-    ImGui::SetNextWindowSize(ImVec2(panel_right, viewport_h));
+    ImGui::SetNextWindowSize(ImVec2(panel_right, height - panel_top - panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("Inspector", nullptr, flags);
     ImGui::Separator();
@@ -137,4 +147,6 @@ void GUI::drawPanels(MD_Scene& scene, int width, int height, int panel_top, int 
 
     ImGui::End();
     ImGui::PopStyleVar();
+
 }
+

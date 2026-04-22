@@ -75,7 +75,9 @@ void Window::winInitGl() {
         std::cerr << "warning: unable to set VSync\n";
     
     if (!gui)
-        gui = new GUI(win, gl_context);
+        gui = new GUI(win, gl_context, width, height,
+                        panel_bottom, panel_top, panel_left,
+                                                panel_right);
 }
 
 // ── main loop ─────────────────────────────────────────────────────────────────
@@ -110,8 +112,8 @@ void Window::winRun() {
                      SHADER_DIR "trs_shader.fs");
 
     // ── textures ─────────────────────────────────────────
-    ImageTexture texture(IMG_DIR "cracked_tx.jpg");
-    ImageTexture texture2(IMG_DIR "texture-background.jpg");
+    ImageTexture texture(IMG_DIR "coolJoshHomme.jfif");
+    ImageTexture texture2(IMG_DIR "bluePng.png");
     CheckerTexture chk(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 5); 
 
     ColorTexture col(Color(1.0, 0.0, 0.0));
@@ -231,8 +233,17 @@ void Window::winRun() {
 
         gui->begin();
         // draw UI
-        gui->drawPanels(scene, width, height, panel_top, panel_bottom,
-                        panel_left, panel_right);
+
+        gui->drawPanelTop(scene);
+
+        gui->drawPanelBottom(scene);
+
+        gui->drawPanelRight(scene);
+
+        gui->drawPanelLeft(scene);
+
+
+
         gui->render();
 
         SDL_GL_SwapWindow(win);
