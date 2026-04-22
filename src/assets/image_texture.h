@@ -7,11 +7,12 @@
 class ImageTexture : public Texture {
     public:
         ImageTexture(const std::string& _path);
-        ImageTexture(const Image& _img);
+        ImageTexture(const Image* _img);
         Color sample(const Vec2d& uv, const Point3d& p) const override;
 
     private:
-        Image tex_img;
+        const Image* tex_img;
+        Image owned;
 };
 
 #endif

@@ -99,10 +99,10 @@ inline TextureType convertToTextureType(const std::string& s) {
         { "image",      TextureType::IMAGE      },
         { "checker",    TextureType::CHECKER    },
         { "noise",      TextureType::NOISE      },
-        { "trubulence",      TextureType::TURBULENCE },
-        { "marble",      TextureType::MARBLE     },
-        { "wood",      TextureType::WOOD       },
-        { "warped",      TextureType::WARPED     }
+        { "turbulence", TextureType::TURBULENCE },
+        { "marble",     TextureType::MARBLE     },
+        { "wood",       TextureType::WOOD       },
+        { "warped",     TextureType::WARPED     }
     };
     auto it = m.find(s);
     return it != m.end() ? it->second : TextureType::UNKNOWN;

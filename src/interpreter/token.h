@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <iomanip>
+#include <iostream>
 #include <variant>
 #include "keyword_map.h"
 

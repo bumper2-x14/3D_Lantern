@@ -5,14 +5,14 @@
 #include "math/vec3.h"
 #include "math/point3.h"
 
-enum LightType {
+enum RT_LightType {
     POINTLIGHT,
     DIRECTIONALLIGHT
 };
 
 class RT_Light {
     public:
-        LightType type;
+        RT_LightType type;
         Point3d position = Point3d(0.0, 0.0, 0.0);
         Vec3d direction = Vec3d(0.0, 0.0, 0.0);
         Color albedo;
