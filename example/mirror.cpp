@@ -14,7 +14,10 @@
 #include "ray_tracer/RT_Quad.h"
 #include "ray_tracer/RT_PointLight.h"
 
-int main() {
+int main() { 
+    /*
+    RT_Scene scene;
+
     RT_Camera cam(
         Point3d(2, 1.0, 3.0),
         Point3d(0, 0, -1),
@@ -74,21 +77,20 @@ int main() {
     RT_PointLight light1(Point3d(-2.0, 2.0, 3.0), Color(1.0, 1.0, 1.0), 1.0);
 
     // Scene
-    RT_ObjectList scene;
-    scene.add(&ground);
-    scene.add(&back_wall);
-    scene.add(&mirror_wall);
-    scene.add(&sphere_center);
-    scene.add(&sphere_left);
-    scene.add(&sphere_right);
-    scene.add(&cylinder);
-    scene.add(&cone);
-    
+    scene.addObject(&ground);
+    scene.addObject(&back_wall);
+    scene.addObject(&mirror_wall);
+    scene.addObject(&sphere_center);
+    scene.addObject(&sphere_left);
+    scene.addObject(&sphere_right);
+    scene.addObject(&cylinder);
+    scene.addObject(&cone);
+
+    scene.addLight(&light1);
 
     RT_Renderer renderer(800, 16.0/9.0, 50, 10);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
-    renderer.p_lights.push_back(&light1);
     renderer.setBackground(Color(0.0, 0.0, 0.0));
     renderer.render(true);
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "mirror.ppm");
@@ -96,5 +98,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "mirror.ppm");
     assert(file.good());
     std::cout << "mirror.ppm generated successfully\n";
-    return 0;
+    return 0; */
 }

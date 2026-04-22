@@ -12,15 +12,12 @@ void Controller::ctrlUpdate(const Input& in, MD_Camera& cam,
         case CtrlMode::CAMERA:
             updateCamera(in, cam, dt);
             break;
-
         case CtrlMode::TRANSLATE:
             updateTranslate(in, selected_obj, dt);
             break;
-
         case CtrlMode::ROTATE:
             updateRotate(in, selected_obj, dt);
             break;
-
         case CtrlMode::SCALE:
             updateScale(in, selected_obj, dt);
             break;
@@ -36,7 +33,7 @@ void Controller::updateCamera(const Input& in, MD_Camera& cam, float dt) {
     ci.d = in.isKeyDown(SDL_SCANCODE_RIGHT);
     ci.up = in.isKeyDown(SDL_SCANCODE_SPACE);
     ci.down = in.isKeyDown(SDL_SCANCODE_LALT);
-
+    
     ci.speed = 4.0f * dt;
 
     // sprint combo

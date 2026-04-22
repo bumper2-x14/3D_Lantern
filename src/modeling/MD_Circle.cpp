@@ -8,10 +8,6 @@ MD_Disk::MD_Disk(int _nb_seg){
     mesh->setupMD_Mesh();
 }
 
-// Serialize disk (nb_seg only)
-std::string MD_Disk::serialize() const {
-    return "disk " + std::to_string(nb_seg);
-}
 
 void MD_Disk::buildShape(){
     // Angle between segments

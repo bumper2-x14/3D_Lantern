@@ -9,7 +9,6 @@ class MD_Disk : public MD_Shape{
         MD_Disk(int _nb_seg = 25);
         void buildShape() override;
         void applyTransform(Transform* transform) override;
-        std::string serialize() const override;
         
     private:
         int nb_seg;    

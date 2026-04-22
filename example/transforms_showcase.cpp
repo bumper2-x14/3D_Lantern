@@ -13,7 +13,9 @@
 #include "assets/perlin_texture.h"
 
 
-int main() {
+int main() { /*
+    RT_Scene scene;
+
     RT_Camera cam(
         Point3d(0, 5, 5),
         Point3d(0, 1, -1),
@@ -124,21 +126,20 @@ int main() {
     cone_tilted.setTransform(t); t.reset();
 
     // ── Scene ─────────────────────────────────────────────────────────
-    RT_ObjectList scene;
-    scene.add(&ground);
-    scene.add(&back_wall);
-    scene.add(&sphere_plain);
-    scene.add(&sphere_squashed);
-    scene.add(&sphere_tall);
-    scene.add(&box_plain);
-    scene.add(&box_rotated);
-    scene.add(&box_tilted);
-    scene.add(&cyl_upright);
-    scene.add(&cyl_sideways);
-    scene.add(&cyl_tilted);
-    scene.add(&cone_upright);
-    scene.add(&cone_flipped);
-    scene.add(&cone_tilted);
+    scene.addObject(&ground);
+    scene.addObject(&back_wall);
+    scene.addObject(&sphere_plain);
+    scene.addObject(&sphere_squashed);
+    scene.addObject(&sphere_tall);
+    scene.addObject(&box_plain);
+    scene.addObject(&box_rotated);
+    scene.addObject(&box_tilted);
+    scene.addObject(&cyl_upright);
+    scene.addObject(&cyl_sideways);
+    scene.addObject(&cyl_tilted);
+    scene.addObject(&cone_upright);
+    scene.addObject(&cone_flipped);
+    scene.addObject(&cone_tilted);
 
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);
@@ -150,5 +151,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "transforms_showcase.ppm");
     assert(file.good());
     std::cout << "transforms_showcase.ppm generated successfully\n";
-    return 0;
+    return 0; */
 }

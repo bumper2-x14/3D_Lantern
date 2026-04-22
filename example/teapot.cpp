@@ -12,7 +12,9 @@
 #include "ray_tracer/RT_ObjectList.h"
 #include "assets/model.h"
 
-int main() {
+int main() { /*
+    RT_Scene scene;
+
     RT_Camera cam(
         Point3d(0, 2, 8),
         Point3d(0, 0, 0),
@@ -54,21 +56,21 @@ int main() {
     
 
     // --- Scene ---
-    RT_ObjectList scene;
-    scene.add(&ground);
-    scene.add(&teapot);
+    scene.addObject(&ground);
+    scene.addObject(&teapot);
+
+    scene.addLight(&light1);
+    scene.addLight(&light2);
 
     // --- Renderer ---
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
     renderer.setBackground(Color(0.0, 0.0, 0.0));
-    renderer.p_lights.push_back(&light1);
-    renderer.p_lights.push_back(&light2);
     renderer.render(true);
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "teapot.ppm");
 
     std::ifstream file(EXAMPLE_OUTPUT_DIR "teapot.ppm");
     assert(file.good());
-    std::cout << "teapot.ppm was generated successfully\n";
+    std::cout << "teapot.ppm was generated successfully\n"; */
 }

@@ -7,7 +7,8 @@ RT_Lambertian::RT_Lambertian(const Color& _albedo) : tex(new ColorTexture(_albed
 RT_Lambertian::RT_Lambertian(Texture* _tex) : tex(_tex) {} 
 
 RT_Lambertian::~RT_Lambertian() {
-    delete tex;
+    if (own_tex)
+        delete tex;
 }
 
 bool RT_Lambertian::rayScatter(const Rayd& ray_in, const RT_Record& rec, 

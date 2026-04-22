@@ -9,7 +9,9 @@
 #include "ray_tracer/RT_Quad.h"
 
 
-int main() {
+int main() { /*
+    RT_Scene scene;
+
     RT_Camera cam(
         Point3d(0, 2, 5),
         Point3d(0, 0, 0),
@@ -65,13 +67,12 @@ int main() {
     t.setTranslation({1.2, 0.4, -1.5}); t.setScale({0.4, 0.4, 0.4}); mirror_sphere.setTransform(t); t.reset();
 
     // Scene
-    RT_ObjectList scene;
-    scene.add(&floor_q);
-    scene.add(&back_wall);
-    scene.add(&left_wall);
-    scene.add(&right_wall);
-    scene.add(&sphere);
-    scene.add(&mirror_sphere);
+    scene.addObject(&floor_q);
+    scene.addObject(&back_wall);
+    scene.addObject(&left_wall);
+    scene.addObject(&right_wall);
+    scene.addObject(&sphere);
+    scene.addObject(&mirror_sphere);
 
     RT_Renderer renderer(800, 16.0/9.0, 100, 50);
     renderer.setCamera(&cam);
@@ -83,5 +84,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "planar.ppm");
     assert(file.good());
     std::cout << "planar.ppm generated successfully\n";
-    return 0;
+    return 0; */
 }

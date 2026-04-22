@@ -13,7 +13,9 @@
 #include "ray_tracer/RT_Medium.h"
 #include "ray_tracer/RT_DirectionalLight.h"
 
-int main() {
+int main() { /*
+    RT_Scene scene;
+
     RT_Camera cam(
         Point3d(0, 0, 2),
         Point3d(0, 0, -1),
@@ -76,23 +78,23 @@ int main() {
     );
 
     // Scene
-    RT_ObjectList scene;
-    scene.add(&ground);
-    scene.add(&sphere1);
-    scene.add(&sphere2);
-    scene.add(&sphere3);
-    scene.add(&sphere4);
-    scene.add(&sphere5);
-    scene.add(&cyl1);
-    scene.add(&cyl2);
-    scene.add(&cone1);
-    scene.add(&cone2);
+    scene.addObject(&ground);
+    scene.addObject(&sphere1);
+    scene.addObject(&sphere2);
+    scene.addObject(&sphere3);
+    scene.addObject(&sphere4);
+    scene.addObject(&sphere5);
+    scene.addObject(&cyl1);
+    scene.addObject(&cyl2);
+    scene.addObject(&cone1);
+    scene.addObject(&cone2);
     //scene.add(&smoke);
+
+    scene.addLight(&light);
 
     RT_Renderer renderer(800, 16.0/9.0, 100, 20);
     renderer.setCamera(&cam);
     renderer.setScene(&scene);
-    renderer.p_lights.push_back(&light);
     renderer.setBackground(Color(0.0, 0.0, 0.0));
     renderer.render();
     renderer.writePPM(EXAMPLE_OUTPUT_DIR "perlin_scene.ppm");
@@ -100,5 +102,5 @@ int main() {
     std::ifstream file(EXAMPLE_OUTPUT_DIR "perlin_scene.ppm");
     assert(file.good());
     std::cout << "perlin_scene.ppm was generated successfully\n";
-    return 0;
+    return 0; */
 }

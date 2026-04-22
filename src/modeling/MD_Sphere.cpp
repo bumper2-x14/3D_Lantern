@@ -13,10 +13,6 @@ MD_Sphere::MD_Sphere(float _longtitude_seg , float _latitude_seg ) :
     mesh->setupMD_Mesh();
 }
 
-std::string MD_Sphere::serialize() const {
-    return "sphere " + std::to_string(longitude_seg) + " " + std::to_string(latitude_seg);
-}
-
 void MD_Sphere::buildShape(){
     
     float delta1 = M_PI /(2.0 * latitude_seg );

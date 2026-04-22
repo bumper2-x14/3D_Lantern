@@ -11,26 +11,29 @@ Mat4f MD_Object::getTransformMatrix() const {
 }
 
 std::string MD_Object::serialize() const {
-    std::string result = "object ";
+    std::string result = "object {\n";
 
-    if (shape) {
-        result += shape->serialize();
-    } else {
-        result += "null_shape";
-    }
+    result += "    name " + name + "\n";
+    result += "    type " + shape->typeToString(shape->type) + "\n";
 
-    result += " trs ";
-    result += std::to_string(trs.translation.x) + " ";
-    result += std::to_string(trs.translation.y) + " ";
-    result += std::to_string(trs.translation.z) + " ";
+    result += "    material_ref default_mat\n";
 
-    result += std::to_string(trs.rotation.x) + " ";
-    result += std::to_string(trs.rotation.y) + " ";
-    result += std::to_string(trs.rotation.z) + " ";
+    result += "    translate "
+           + std::to_string(trs.translation.x) + " "
+           + std::to_string(trs.translation.y) + " "
+           + std::to_string(trs.translation.z) + "\n";
 
-    result += std::to_string(trs.scale.x) + " ";
-    result += std::to_string(trs.scale.y) + " ";
-    result += std::to_string(trs.scale.z);
+    result += "    rotate "
+           + std::to_string(trs.rotation.x) + " "
+           + std::to_string(trs.rotation.y) + " "
+           + std::to_string(trs.rotation.z) + "\n";
+
+    result += "    scale "
+           + std::to_string(trs.scale.x) + " "
+           + std::to_string(trs.scale.y) + " "
+           + std::to_string(trs.scale.z) + "\n";
+
+    result += "}\n";
 
     return result;
 }
@@ -58,3 +61,4 @@ void MD_Object::draw(MD_Shader& shader) {
 
     glBindVertexArray(0);
 }
+
