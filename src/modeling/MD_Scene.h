@@ -6,6 +6,8 @@
 #include "MD_PointLight.h"
 #include "MD_Quad.h"
 #include "MD_Sphere.h"
+#include "MD_Cylinder.h"
+#include "MD_Cone.h"
 
 
 class MD_Scene{
@@ -51,13 +53,18 @@ class MD_Scene{
 		void setSelectedObject(int index);
 		void setSelectedPointLight(int index);
 
+				
+		MD_Sphere default_sphere{25, 25};
+		MD_Cylinder default_cylinder{25};
+		MD_Cone default_cone{25};
+
+		
+		MD_Material default_sphere_mat{Vec3f(0.2f, 0.6f, 1.0f), MD_Material::MatType::DIFFUSE};
+		MD_Material default_cylinder_mat{Vec3f(1.0f, 0.3f, 0.3f), MD_Material::MatType::DIFFUSE};
+		MD_Material default_cone_mat{Vec3f(0.3f, 1.0f, 0.3f), MD_Material::MatType::DIFFUSE};
     private:	
 		MD_Quad default_ground{100, 100};
-		MD_Sphere default_sphere{25, 25};
-
 		MD_Material default_ground_mat{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE};
-		MD_Material default_sphere_mat{Vec3f(0.2f, 0.6f, 1.0f), MD_Material::MatType::DIFFUSE};
-		
 };
 
 #endif

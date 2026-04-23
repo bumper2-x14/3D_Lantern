@@ -69,11 +69,7 @@ void MD_Scene::loadDefaultScene() {
                                      TRSDataf{ {0.f, 0.f, 0.f} },
                                      &default_ground_mat);
     ground->selectable = false;
-
-    // sphere sitting on the ground
-    createObject("Sphere", &default_sphere,
-                 TRSDataf{ {0.f, 1.f, 0.f} },
-                 &default_sphere_mat);
+  
 
     // one warm point light above and to the side
     createPointLight(Vec3f(3.f, 4.f, 3.f), Color(1.f, 1.f, 1.f), 2.0f);

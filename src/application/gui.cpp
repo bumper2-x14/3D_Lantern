@@ -12,6 +12,7 @@ GUI::GUI(SDL_Window* window, SDL_GLContext gl_context,
     ImGui::CreateContext();
     
     ImGuiIO& io = ImGui::GetIO();
+    io.FontGlobalScale =1.3f;
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
@@ -113,6 +114,27 @@ void GUI::drawPanelRight(MD_Scene& scene){
                 }
                 ImGui::EndListBox();
             }
+            ImGui::Separator();
+            ImGui::Text("Add shape");
+
+            if (ImGui::Button("Add Sphere")) {
+                scene.createObject("Sphere", &scene.default_sphere,
+                                TRSDataf{{0.f, 1.f, 0.f}},
+                                &scene.default_sphere_mat);
+            }
+
+            if (ImGui::Button("Add Cylinder")) {
+                scene.createObject("Cylinder", &scene.default_cylinder,
+                                TRSDataf{{2.f, 1.f, 0.f}},
+                                &scene.default_cylinder_mat);
+            }
+
+            if (ImGui::Button("Add Cone")) {
+                scene.createObject("Cone", &scene.default_cone,
+                                TRSDataf{{-2.f, 1.f, 0.f}},
+                                &scene.default_cone_mat);
+            } 
+            
             ImGui::EndTabItem();
         }
 
