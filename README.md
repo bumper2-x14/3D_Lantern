@@ -49,14 +49,14 @@ build/bin/lantern
 cd build && ctest
 ```
 
-Or run individual test binaries from `build/bin/test/`.
+Or run individual test binaries from `build/test/`.
 
 ### Running Examples
 
-Example binaries are output to `build/bin/example/`. Each example renders a scene and writes a `.ppm` image to the `example/` directory.
+Example binaries are output to `build/example/`. Each example renders a scene and writes a `.ppm` image to the `example/` directory.
 
 ```bash
-./build/bin/example/boxes
+./build/example/boxes
 ```
 
 ## Project Structure
