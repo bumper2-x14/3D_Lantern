@@ -112,8 +112,8 @@ void Window::winRun() {
                      SHADER_DIR "trs_shader.fs");
 
     // ── textures ─────────────────────────────────────────
-    ImageTexture texture(IMG_DIR "coolJoshHomme.jfif");
-    ImageTexture texture2(IMG_DIR "bluePng.png");
+    ImageTexture texture(IMG_DIR "cylinder.png");
+    ImageTexture texture2(IMG_DIR "cylinder.png");
     CheckerTexture chk(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 5); 
 
     ColorTexture col(Color(1.0, 0.0, 0.0));

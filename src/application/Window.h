@@ -44,8 +44,8 @@ private:
 
     // Panels expressed as fractions of the display size
     static constexpr float kTopPanelFrac    = 0.1f; // ~4% of height  (toolbar)
-    static constexpr float kBottomPanelFrac = 0.04f; // ~4% of height  (status bar)
-    static constexpr float kLeftPanelFrac   = 0.05f; // ~12% of width  (outliner)
+    static constexpr float kBottomPanelFrac = 0.08f; // ~4% of height  (status bar)
+    static constexpr float kLeftPanelFrac   = 0.15f; // ~12% of width  (outliner)
     static constexpr float kRightPanelFrac  = 0.20f; // ~20% of width  (properties)
 
     int panel_top = 0; // derived in constructor / updateViewport
