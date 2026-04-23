@@ -7,7 +7,7 @@
 The project also includes a custom scene description language, allowing users to define and render complex scenes programmatically via `.lnt` files.
 
 <p align="center">
-  <img src="https://imgur.com/p7g4IKE" width="900"/>
+  <img src="https://i.imgur.com/p7g4IKE.png" width="1270" height=720/>
 </p>
 
 ## Features
