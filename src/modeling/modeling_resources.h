@@ -12,6 +12,10 @@ public:
     MD_Material* getMaterial(const std::string& key) const  { return materials.get(key); }
     bool hasMaterial(const std::string& key) const  { return materials.has(key); }
 
+    const std::unordered_map<std::string, MD_Material*>& getMaterials() const {
+        return materials.getAll();
+    }
+
 private:
     Registry<MD_Material> materials;
 };

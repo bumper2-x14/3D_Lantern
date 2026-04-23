@@ -118,3 +118,15 @@ Point3d PerlinTexture::uvToWorldConverter(const Vec2d& uv) const {
             (uv.y - 0.5) * 4.0
         );
 }
+
+std::string PerlinTexture::serializeLNT() const {
+    std::string t;
+    switch (type) {
+        case MARBLE:      t = "marble";      break;
+        case WOOD:        t = "wood";        break;
+        case TURBULENCE:  t = "turbulence";  break;
+        case NOISE:       t = "noise";       break;
+        case WARPED:      t = "warped";      break;
+    }
+    return "    type " + t + "\n    scale " + std::to_string(scale) + "\n";
+}

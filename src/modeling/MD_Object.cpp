@@ -11,12 +11,14 @@ Mat4f MD_Object::getTransformMatrix() const {
 }
 
 std::string MD_Object::serialize() const {
+    std::string mat_ref = material ? name + "_mat" : "default_mat";
+
     std::string result = "object {\n";
 
     result += "    name " + name + "\n";
     result += "    type " + shape->typeToString(shape->type) + "\n";
 
-    result += "    material_ref default_mat\n";
+    result += "    material_ref " + mat_ref + "\n";
 
     result += "    translate "
            + std::to_string(trs.translation.x) + " "

@@ -11,6 +11,8 @@ class CheckerTexture : public Texture {
         Color sample(const Vec2d& uv, const Point3d& p) const override;
         Point3d uvToWorldConverter(const Vec2d& uv) const override;
 
+        std::string serializeLNT() const override;
+
     private:
         Texture* even;
         Texture* odd;

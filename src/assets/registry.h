@@ -15,7 +15,8 @@ class Registry {
 
         ~Registry() {
             for (auto& [key, ptr] : storage){
-                delete ptr;
+                if (ptr)
+                    delete ptr;
             }
         }
 
@@ -45,6 +46,8 @@ class Registry {
         bool has(const std::string& key) const {
             return storage.count(key) > 0;
         }
+
+        const std::unordered_map<std::string, T*>& getAll() const { return storage; }
 
     private:
         std::unordered_map<std::string, T*> storage;

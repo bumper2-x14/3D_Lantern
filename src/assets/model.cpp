@@ -38,9 +38,9 @@ const MeshData& Model::getMesh() const {
     return *mesh;
 }
 
-MeshData& Model::getMesh() {
+MeshData* Model::getMesh() {
     assert(mesh != nullptr && "getMesh() called before loading OBJ");
-    return *mesh;
+    return mesh;
 }
 
 
@@ -152,11 +152,11 @@ void Model::regressionTest() {
     // --- Test 2: loading a valid OBJ ---
     Model model(validPath);
     assert(model.hasMesh() && "Model should have mesh after loading");
-    const MeshData& mesh = model.getMesh();
-    assert(!mesh.vertices.empty() && "Mesh should have vertices");
-    assert(!mesh.indices.empty()  && "Mesh should have indices");
-    assert(mesh.vertices.size() % 3 == 0 && "Vertices should be in triangles");
-    assert(mesh.indices.size() == mesh.vertices.size() && "Indices should match vertices");
+    MeshData* mesh = model.getMesh();
+    assert(!mesh->vertices.empty() && "Mesh should have vertices");
+    assert(!mesh->indices.empty()  && "Mesh should have indices");
+    assert(mesh->vertices.size() % 3 == 0 && "Vertices should be in triangles");
+    assert(mesh->indices.size() == mesh->vertices.size() && "Indices should match vertices");
 
     // --- Test 3: loading an invalid path ---
     Model bad;

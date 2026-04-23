@@ -32,6 +32,7 @@ class MD_Material{
         bool hasTexture() const { return type == MatType::TEXTURE; }
         Color getColor() const { return color; }
         float getShininess() const { return shininess; }
+        Texture* getTexture() const { return texture; }
         unsigned int getTextureId(){ return gl_texture_id; }
 
         void setColor(const Color& _color) { color = _color; }

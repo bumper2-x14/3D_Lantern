@@ -9,6 +9,7 @@ add_library(modeling STATIC
     MD_Circle.cpp
     MD_Cone.cpp
     MD_Torus.cpp
+    MD_ModelShape.cpp
     MD_Renderer.cpp
     MD_Material.cpp
     MD_Scene.cpp

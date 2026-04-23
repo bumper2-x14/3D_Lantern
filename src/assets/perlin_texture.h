@@ -23,6 +23,7 @@ class PerlinTexture : public Texture {
         PerlinTexture(PerlinType _type, double _scale);
         Color sample(const Vec2d& uv, const Point3d& p) const override;
         Point3d uvToWorldConverter(const Vec2d& uv) const override;
+        std::string serializeLNT() const override;
     private:
         Perlin noise_gen;
         double scale;

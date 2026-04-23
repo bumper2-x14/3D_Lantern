@@ -16,10 +16,13 @@ class MD_Camera {
         Mat4f getProjectionMatrix() const; // uses fov, aspect, near, far
 
         // state
+        Vec3f getFront() const { return front; }
+        Vec3f getUp() const { return up;    }
+        float getFov() const { return fov;   }
         Vec3f getPosition() const { return pos; }
-        void  setAspect(float a)  { aspect = a; }
-        void  setFov(float f)     { fov = f;    }
-        void  setFloorY(float y)  { floorY = y; }
+        void  setAspect(float a) { aspect = a; }
+        void  setFov(float f) { fov = f;    }
+        void  setFloorY(float y) { floorY = y; }
 
         // per-frame update
         struct CameraInput {

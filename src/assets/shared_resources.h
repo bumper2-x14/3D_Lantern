@@ -31,6 +31,15 @@ class SharedResources {
         Texture* getTexture(const std::string& key) const { return textures.get(key); }
         bool hasTexture(const std::string& key) const { return textures.has(key); }
 
+        const std::unordered_map<std::string, Texture*>& getTextures() const {
+            return textures.getAll();
+        }
+        std::string findTextureName(const Texture* ptr) const {
+            for (const auto& [name, tex] : textures.getAll())
+                if (tex == ptr) return name;
+            return "";
+        }
+        
     private:
         Registry<Image> images;
         Registry<Model> models;

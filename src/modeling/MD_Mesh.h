@@ -8,6 +8,7 @@
 class MD_Mesh{
     public:
         MeshData* data;
+        bool owns_data = true;
         
         unsigned int VAO;
         unsigned int VBO;
@@ -16,7 +17,7 @@ class MD_Mesh{
         MD_Mesh();
         void setData(const MeshData& newData);
         MD_Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigned int>& _indice);
-        MD_Mesh(const MeshData* _data);
+        MD_Mesh(MeshData* _data);
 
         ~MD_Mesh();
 

@@ -61,6 +61,8 @@ class Texture {
             }
             return buffer;
         }
+
+        virtual std::string serializeLNT() const { return ""; }
 };
 
 #endif

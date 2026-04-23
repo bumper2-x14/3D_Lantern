@@ -6,7 +6,7 @@
 class ColorTexture : public Texture {
     public:
         ColorTexture(const Color& _albedo);
-
+        Color getColor() const { return albedo; }
         Color sample(const Vec2d& uv, const Point3d& p) const override;
 
     private:

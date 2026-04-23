@@ -26,7 +26,7 @@ class Model{
 
         bool loadModel(const std::string& path);
         const MeshData& getMesh() const ;
-        MeshData& getMesh();
+        MeshData* getMesh();
         
         const std::string& getName() const { return name; }
 

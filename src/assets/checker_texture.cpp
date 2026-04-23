@@ -1,5 +1,8 @@
+#include <iomanip>
+
 #include "checker_texture.h"
 #include "color_texture.h"
+
 
 CheckerTexture::CheckerTexture(Texture* _even, Texture* _odd, double _scale) :
     even(_even), odd(_odd), scale(_scale) {}
@@ -31,4 +34,22 @@ Point3d CheckerTexture::uvToWorldConverter(const Vec2d& uv) const {
         0.0,
         (uv.y - 0.5) * range
     );
+}
+
+std::string CheckerTexture::serializeLNT() const {
+    const ColorTexture* e = dynamic_cast<const ColorTexture*>(even);
+    const ColorTexture* o = dynamic_cast<const ColorTexture*>(odd);
+
+    if (!e || !o) return "";  // nested non-color textures — not expressible in .lnt
+
+    Color ec = e->getColor();
+    Color oc = o->getColor();
+
+    std::ostringstream s;
+    s << std::fixed << std::setprecision(4);
+    s << "    type checker\n"
+      << "    even " << ec.r << " " << ec.g << " " << ec.b << "\n"
+      << "    odd "  << oc.r << " " << oc.g << " " << oc.b << "\n"
+      << "    scale " << scale << "\n";
+    return s.str();
 }

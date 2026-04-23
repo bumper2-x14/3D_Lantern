@@ -8,11 +8,13 @@
 #include "modeling/MD_Circle.h"
 #include "modeling/MD_Cone.h"
 #include "modeling/MD_Torus.h"
+#include "modeling/MD_ModelShape.h"
 #include "controller.h"
 #include "assets/image_texture.h"
 #include "assets/checker_texture.h"
 #include "assets/color_texture.h"
 #include "assets/perlin_texture.h"
+#include "assets/shared_resources.h"
 
 void Window::sdlSetAttributes() {
     // SDL_Init is called once here; don't call it again in the constructor.
@@ -80,7 +82,7 @@ void Window::winInitGl() {
                                                 panel_right);
 }
 
-// ── main loop ─────────────────────────────────────────────────────────────────
+// main loop 
 
 void Window::updateViewport() {
     // The GL scene lives in the rectangle that remains after all four panels
@@ -99,80 +101,29 @@ void Window::winRun() {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     updateViewport();
 
-    // ── renderer ─────────────────────────────────────────
+    // renderer
     MD_Renderer renderer;
 
-    // ── camera ───────────────────────────────────────────
+    // camera
     MD_Camera& camera = renderer.getCameraMain();
     camera = MD_Camera(Vec3f(0.f, 2.f, 6.f), Vec3f(0.f, 0.f, -1.f));
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
 
-    // ── shader ───────────────────────────────────────────
+    // shader
     MD_Shader shader(SHADER_DIR "trs_shader.vs",
                      SHADER_DIR "trs_shader.fs");
 
-    // ── textures ─────────────────────────────────────────
-    ImageTexture texture(IMG_DIR "cylinder.png");
-    ImageTexture texture2(IMG_DIR "cylinder.png");
-    CheckerTexture chk(Color(1.0, 1.0, 1.0), Color(0.0, 0.0, 0.0), 5); 
-
-    ColorTexture col(Color(1.0, 0.0, 0.0));
-
-    PerlinTexture per(PerlinType::MARBLE, 10);
-    
-    MD_Material matTex(&texture);
-    MD_Material matTex2(&chk);
-
-    MD_Material matCol(&col);
-
-    MD_Material matPerlin(&per);
-
-    MD_Material matDiffuse(Vec3f(0.2f, 0.8f, 0.3f), MD_Material::MatType::DIFFUSE);
-    MD_Material matSpec(Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::SPECULAR, 64.f);
-
-    MD_Material imgTex1(&texture);
-    MD_Material imgTex2(&texture2);
-
-    // ── scene ────────────────────────────────────────────
+    // scene
     MD_Scene scene;
     scene.loadDefaultScene();
-        
-    /*
-    MD_Sphere sp1(5, 5);
-    scene.createObject(&sp1, { {30.f, 0.f, 30.f} }, &matTex);
 
-    MD_Sphere sp(25, 25);
-    scene.createObject(&sp, { {0.f, 1.f, 0.f} }, &matDiffuse);  
-
-    MD_Quad quad0(10, 10);
-    scene.createObject(&quad0, { {0.f, 0.f, 0.f} }, &matTex2);
-
-    MD_Quad quad1(10, 10);
-    scene.createObject(&quad1, { {0.f, 6.f, 0.f} }, &matCol);
-
-    MD_Cylinder cylinder(25);
-    scene.createObject(&cylinder, { {2.f, 2.f, 0.f}, {0.5f, 2.f, 0.5f} }, &matTex);
-
-    MD_Disk circle(40);
-    scene.createObject(&circle, { {0.f, 4.f, 0.f} }, &matDiffuse);
-
-    MD_Cone cone;
-    scene.createObject(&cone, { {-2.f, 1.f, 0.f} }, &imgTex1);
-
-    MD_Torus torus;
-    scene.createObject(&torus, { {-7.f, 1.f, 0.f} }, &matSpec);
-
-    MD_PointLight pl;
-    scene.createPointLight(Vec3f(3.0, 2.0, .10), Color(1.0, 1.0, 1.0), 2.0);
-    */
-
-    // ── timing ───────────────────────────────────────────
+    // timing
     Uint64 last = SDL_GetPerformanceCounter();
     double deltaTime = 0.0;
 
     Input input;
     Controller controller;
-
+    
     while (!stop) {
         input.beginFrame();
 
@@ -233,19 +184,11 @@ void Window::winRun() {
 
         gui->begin();
         // draw UI
-
         gui->drawPanelTop(scene);
-
         gui->drawPanelBottom(scene);
-
         gui->drawPanelRight(scene);
-
         gui->drawPanelLeft(scene);
-
-
-
         gui->render();
-
         SDL_GL_SwapWindow(win);
 
     }

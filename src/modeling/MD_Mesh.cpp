@@ -22,12 +22,10 @@ MD_Mesh::MD_Mesh(const std::vector<Vertex>& _vertices,
     data->indices = _indice;
 }
 
-MD_Mesh::MD_Mesh(const MeshData* _data){
-    data = new MeshData(*_data);
-}
+MD_Mesh::MD_Mesh(MeshData* _data) : data(_data), owns_data(false) {}
 
-MD_Mesh::~MD_Mesh(){
-    delete data;
+MD_Mesh::~MD_Mesh() {
+    if (owns_data) delete data;
 }
 
 bool MD_Mesh::setupMD_Mesh(){

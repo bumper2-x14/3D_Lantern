@@ -75,7 +75,7 @@ void Interpreter::buildTextures() {
                 break;
             case TextureType::IMAGE:
                 shared.loadImage(name, std::string(IMG_DIR) + td.file_img);
-                tex = new ImageTexture(shared.getImage(name));
+                tex = new ImageTexture(shared.getImage(name), name);
                 break;
             case TextureType::MARBLE:
                 tex = new PerlinTexture(MARBLE, td.scale);
@@ -155,7 +155,7 @@ void Interpreter::buildObjects() {
                             << od.file_mesh << "'\n";
                     continue;
                 }
-                obj = scene.emplaceObject<RT_Mesh>(model->getMesh(), mat);
+                obj = scene.emplaceObject<RT_Mesh>(*model->getMesh(), mat);
                 break;
             }
 
