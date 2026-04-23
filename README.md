@@ -6,6 +6,8 @@
 
 The project also includes a custom scene description language, allowing users to define and render complex scenes programmatically via `.lnt` files.
 
+![demo](https://imgur.com/a/oWOSrk8)
+
 ## Features
 
 - Real-time 3D rendering using OpenGL
