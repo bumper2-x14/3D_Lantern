@@ -1,9 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include <glad/glad.h>
 #include <SDL2/SDL.h>
-
-#include "gui.h"
 #include "imgui.h"
 
 #include "modeling/MD_Camera.h"
@@ -47,6 +46,11 @@ private:
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+    GLuint icon_sphere;
+    GLuint icon_cylinder;
+    GLuint icon_cone;
+    GLuint icon_torus;    
 };
 
 #endif
