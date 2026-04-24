@@ -83,6 +83,30 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("Outliner", nullptr, flags);
     ImGui::Text("Scene objects");
+    ImGui::Text("Add shape:");
+
+    if (ImGui::Button("Sphere")) {
+        scene.createObject("Sphere", &scene.default_sphere,
+                        TRSDataf{{0.f, 1.f, 0.f}},
+                        &scene.default_material);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cylinder")) {
+        scene.createObject("Cylinder", &scene.default_cylinder,
+                        TRSDataf{{2.f, 1.f, 0.f}},
+                        &scene.default_material);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cone")) {
+        scene.createObject("Cone", &scene.default_cone,
+                        TRSDataf{{-2.f, 1.f, 0.f}},
+                        &scene.default_material);
+    }
+    ImGui::Separator();
     ImGui::End();
     ImGui::PopStyleVar();
     
@@ -114,26 +138,6 @@ void GUI::drawPanelRight(MD_Scene& scene){
                 }
                 ImGui::EndListBox();
             }
-            ImGui::Separator();
-            ImGui::Text("Add shape");
-
-            if (ImGui::Button("Add Sphere")) {
-                scene.createObject("Sphere", &scene.default_sphere,
-                                TRSDataf{{0.f, 1.f, 0.f}},
-                                &scene.default_sphere_mat);
-            }
-
-            if (ImGui::Button("Add Cylinder")) {
-                scene.createObject("Cylinder", &scene.default_cylinder,
-                                TRSDataf{{2.f, 1.f, 0.f}},
-                                &scene.default_cylinder_mat);
-            }
-
-            if (ImGui::Button("Add Cone")) {
-                scene.createObject("Cone", &scene.default_cone,
-                                TRSDataf{{-2.f, 1.f, 0.f}},
-                                &scene.default_cone_mat);
-            } 
             
             ImGui::EndTabItem();
         }
