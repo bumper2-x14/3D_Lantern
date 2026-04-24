@@ -12,6 +12,7 @@ target_link_libraries(application PUBLIC
     glad
     ${SDL2_LIBRARIES}
     modeling
+    interpreter
 )
 
 target_include_directories(application PUBLIC ${CMAKE_SOURCE_DIR}/src)

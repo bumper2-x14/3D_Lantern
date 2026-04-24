@@ -1,0 +1,54 @@
+setting {
+    width 800
+    height 450
+    samples 100
+    depth 20
+    aspect_ratio 1.7778
+    background 0.0000 0.0000 0.0000
+}
+
+camera {
+    position 0.0000 2.0000 6.0000
+    lookat -0.0000 2.0000 5.0000
+    up_view 0.0000 0.0000 0.0000
+    vfov 45.0000
+    defocus_angle 0.0
+    focus_distance 10.0
+}
+
+material {
+    name ground_mat
+    type lambertian
+    color 0.50 0.50 0.50
+}
+
+material {
+    name def_mat
+    type lambertian
+    color 0.2000 0.6000 1.0000
+}
+
+object {
+    name Ground
+    type quad
+    material_ref ground_mat
+    translate 0.000000 0.000000 0.000000
+    rotate 0.000000 0.000000 0.000000
+    scale 100.000000 100.000000 100.000000
+}
+
+object {
+    name Sphere
+    type sphere
+    material_ref def_mat
+    translate 0.000000 1.000000 0.000000
+    rotate 0.000000 0.000000 0.000000
+    scale 1.000000 1.000000 1.000000
+}
+
+light {
+    type point
+    position 3.0000 4.0000 3.0000
+    color 1.0000 1.0000 1.0000
+    intensity 2.0000
+}

@@ -15,6 +15,7 @@
 #include "assets/color_texture.h"
 #include "assets/perlin_texture.h"
 #include "assets/shared_resources.h"
+#include "interpreter/scene_serializer.h"
 
 void Window::sdlSetAttributes() {
     // SDL_Init is called once here; don't call it again in the constructor.
@@ -123,6 +124,8 @@ void Window::winRun() {
 
     Input input;
     Controller controller;
+
+    SceneSerializer ser;
     
     while (!stop) {
         input.beginFrame();
@@ -192,4 +195,10 @@ void Window::winRun() {
         SDL_GL_SwapWindow(win);
 
     }
+    SharedResources rs;
+    ModelingResources mr;
+    mr.addMaterial("def_mat", &scene.default_sphere_mat);
+    SerializerSettings set;
+    std::string code = ser.serialize(scene, camera, rs, mr, set);
+    std::cout<<code<<std::endl;
 }
