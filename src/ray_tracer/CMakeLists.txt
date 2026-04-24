@@ -5,6 +5,7 @@ add_library(ray_tracer STATIC
     RT_Cone.cpp
     RT_Quad.cpp
     RT_Box.cpp
+    RT_Torus.cpp
     RT_Triangle.cpp
     RT_Mesh.cpp
     RT_ObjectList.cpp

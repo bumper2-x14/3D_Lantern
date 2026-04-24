@@ -1,7 +1,8 @@
 #ifndef MD_MATERIAL_H
 #define MD_MATERIAL_H
 
-#include "MD_Texture.h"
+#include "MD_Shader.h"
+#include "assets/texture.h"
 #include "math/vec3.h"
 
 class MD_Material{

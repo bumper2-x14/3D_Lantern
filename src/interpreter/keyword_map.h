@@ -9,7 +9,7 @@ enum class BlockType {
 };
 
 enum class ObjectType {
-    SPHERE, CYLINDER, CONE, BOX, QUAD, DISK, MESH, UNKNOWN
+    SPHERE, CYLINDER, CONE, BOX, QUAD, DISK, TORUS, MESH, UNKNOWN
 };
 
 enum class TextureType {
@@ -87,6 +87,7 @@ inline ObjectType convertToObjectType(const std::string& s) {
         { "box",      ObjectType::BOX      },
         { "quad",     ObjectType::QUAD     },
         { "disk",     ObjectType::DISK     },
+        { "torus",     ObjectType::TORUS   },
         { "mesh",     ObjectType::MESH     }
     };
     auto it = m.find(s);
