@@ -2,6 +2,10 @@
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "modeling/MD_Sphere.h"
+#include "modeling/MD_Cylinder.h"
+#include "modeling/MD_Cone.h"
+#include "modeling/MD_Torus.h"
 
 
 GUI::GUI(SDL_Window* window, SDL_GLContext gl_context, 
@@ -81,35 +85,118 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     ImGui::SetNextWindowPos(ImVec2(0, panel_top));
     ImGui::SetNextWindowSize(ImVec2(panel_left, height - panel_top - panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
+
     ImGui::Begin("Outliner", nullptr, flags);
+
     ImGui::Text("Scene objects");
+    ImGui::Separator();
+
     ImGui::Text("Add shape:");
 
-    if (ImGui::Button("Sphere")) {
-        scene.createObject("Sphere", &scene.default_sphere,
-                        TRSDataf{{0.f, 1.f, 0.f}},
-                        &scene.default_material);
-    }
+    enum ShapeChoice {
+        NONE = -1,
+        SPHERE,
+        CYLINDER,
+        CONE,
+        TORUS
+    };
 
-    ImGui::SameLine();
+    static int selectedShape = NONE;
+
+    if (ImGui::Button("Sphere")) {
+        selectedShape = SPHERE;
+        ImGui::OpenPopup("Create Shape");
+    }
 
     if (ImGui::Button("Cylinder")) {
-        scene.createObject("Cylinder", &scene.default_cylinder,
-                        TRSDataf{{2.f, 1.f, 0.f}},
-                        &scene.default_material);
+        selectedShape = CYLINDER;
+        ImGui::OpenPopup("Create Shape");
     }
-
-    ImGui::SameLine();
 
     if (ImGui::Button("Cone")) {
-        scene.createObject("Cone", &scene.default_cone,
-                        TRSDataf{{-2.f, 1.f, 0.f}},
-                        &scene.default_material);
+        selectedShape = CONE;
+        ImGui::OpenPopup("Create Shape");
     }
-    ImGui::Separator();
+
+    if (ImGui::Button("Torus")) {
+        selectedShape = TORUS;
+        ImGui::OpenPopup("Create Shape");
+    }
+
+    static float pos[3] = {0.f, 1.f, 0.f};
+    static int segments = 25;
+    static int rings = 25;
+
+    if (ImGui::BeginPopupModal("Create Shape", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+        ImGui::Text("Create Shape");
+        ImGui::Separator();
+
+        ImGui::DragFloat3("Position", pos, 0.1f);
+
+        if (selectedShape == SPHERE || selectedShape == TORUS) {
+            ImGui::InputInt("Segments", &segments);
+            ImGui::InputInt("Rings", &rings);
+        }
+        else if (selectedShape == CYLINDER || selectedShape == CONE) {
+            ImGui::InputInt("Segments", &segments);
+        }
+
+        if (ImGui::Button("Create")) {
+            std::cout << "CREATE BUTTON CLICKED" << std::endl;
+
+            if (selectedShape == SPHERE) {
+                scene.createObject(
+                    "Sphere",
+                    &scene.default_sphere,
+                    TRSDataf{{pos[0], pos[1], pos[2]}},
+                    &scene.default_material
+                );
+            }
+
+            else if (selectedShape == CYLINDER) {
+                scene.createObject(
+                    "Cylinder",
+                    &scene.default_cylinder,
+                    TRSDataf{{pos[0], pos[1], pos[2]}},
+                    &scene.default_material
+                );
+            }
+
+            else if (selectedShape == CONE) {
+                scene.createObject(
+                    "Cone",
+                    &scene.default_cone,
+                    TRSDataf{{pos[0], pos[1], pos[2]}},
+                    &scene.default_material
+                );
+            }
+
+            else if (selectedShape == TORUS) {
+                scene.createObject(
+                    "Torus",
+                    &scene.default_torus,
+                    TRSDataf{{pos[0], pos[1], pos[2]}},
+                    &scene.default_material
+                );
+            }
+
+            std::cout << "Objects count = " << scene.objects.size() << std::endl;
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel")) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     ImGui::End();
     ImGui::PopStyleVar();
-    
 }
 
 void GUI::drawPanelRight(MD_Scene& scene){
