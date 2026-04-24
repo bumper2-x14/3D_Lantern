@@ -15,7 +15,7 @@ class MD_Scene{
 		std::vector<MD_Object*> objects;
 		std::vector<MD_PointLight*> point_lights;
 
-		static constexpr int LIGHT_ID_OFFSET = 1000;
+		static constexpr int LIGHT_ID_OFFSET = 10000;
 		int selected_obj_index = -2;
 		bool show_selected = false;
 		int selected_light_index = -2;
@@ -57,7 +57,7 @@ class MD_Scene{
 		MD_Sphere default_sphere{25, 25};
 		MD_Cylinder default_cylinder{25};
 		MD_Cone default_cone{25};
-
+		
 		
 		MD_Material default_sphere_mat{Vec3f(0.2f, 0.6f, 1.0f), MD_Material::MatType::DIFFUSE};
 		MD_Material default_cylinder_mat{Vec3f(1.0f, 0.3f, 0.3f), MD_Material::MatType::DIFFUSE};

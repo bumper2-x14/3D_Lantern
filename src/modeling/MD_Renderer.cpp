@@ -160,7 +160,7 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
                          int vp_x, int vp_y, int vp_w, int vp_h) {
     if (!pick_FBO || pick_w != vp_w || pick_h != vp_h)
         initPickBuffer(vp_w, vp_h);
-
+    
     Mat4f view = camera_main.getViewMatrix();
     Mat4f proj = camera_main.getProjectionMatrix();
 
@@ -188,12 +188,11 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
     auto& lights = scene.getPointLights();
     for (int i = 0; i < (int)lights.size(); i++) {
         Mat4f model = Mat4f::translation(lights[i]->getPosition())
-                    * Mat4f::scale(Vec3f(0.8f, 0.8f, 0.8f));
+                    * Mat4f::scale(Vec3f(0.2f, 0.2f, 0.2f));
         Mat4f ltv = view * model;
         pick_shader.setMat4("uLocalToView", ltv);
-        pick_shader.setInt ("uObjectID", LIGHT_ID_OFFSET + i + 1);
-        MD_Object p_light_gizmo_obj("PLG", &pick_light_gizmo);
-        p_light_gizmo_obj.draw(pick_shader); // draw raw mesh, no material needed
+        pick_shader.setInt ("uObjectID", MD_Scene::LIGHT_ID_OFFSET + i + 1);
+        light_gizmo_obj.draw(pick_shader);
     }
 
     // read pixel 
@@ -202,6 +201,7 @@ int MD_Renderer::pickAt(MD_Scene& scene, int mouse_x, int mouse_y,
     int gl_y = vp_h - (mouse_y - vp_y) - 1;
 
     unsigned char pixel[4] = {0};
+    
     glReadPixels(gl_x, gl_y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(vp_x, vp_y, vp_w, vp_h);  // restore viewport

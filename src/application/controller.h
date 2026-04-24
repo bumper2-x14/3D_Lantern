@@ -29,7 +29,8 @@ class Controller {
         void updateTranslate(const Input& in, MD_Object* selected_obj, float dt);
         void updateRotate(const Input& in, MD_Object* selected_obj, float dt);
         void updateScale(const Input& in, MD_Object* selected_obj, float dt);
-        
+        void updateTranslateLight(const Input& in, MD_Scene& scene, float dt);
+
         void handleSelection(const Input& in, MD_Scene& scene, int picked);
 
         void modeSwitcher(const Input& in);

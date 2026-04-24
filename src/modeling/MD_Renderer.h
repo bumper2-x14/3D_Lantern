@@ -9,8 +9,6 @@
 
 class MD_Renderer {
 public:
-    static constexpr int LIGHT_ID_OFFSET = 10000;
-
     MD_Renderer();
 
     // cameras

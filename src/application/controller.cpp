@@ -13,13 +13,19 @@ void Controller::ctrlUpdate(const Input& in, MD_Camera& cam,
             updateCamera(in, cam, dt);
             break;
         case CtrlMode::TRANSLATE:
-            updateTranslate(in, selected_obj, dt);
+            if (scene.selected_is_light) {
+                updateTranslateLight(in, scene, dt);
+            } else {
+                updateTranslate(in, selected_obj, dt);
+            }
             break;
         case CtrlMode::ROTATE:
-            updateRotate(in, selected_obj, dt);
+            if (!scene.selected_is_light)
+                updateRotate(in, selected_obj, dt);
             break;
         case CtrlMode::SCALE:
-            updateScale(in, selected_obj, dt);
+            if (!scene.selected_is_light)
+                updateScale(in, selected_obj, dt);
             break;
     }
 }
@@ -138,6 +144,38 @@ void Controller::updateScale(const Input& in, MD_Object* selected_obj, float dt)
             break;
     }
     selected_obj->trs.scaleBy(factor);
+}
+
+void Controller::updateTranslateLight(const Input& in, MD_Scene& scene, float dt) {
+    auto& lights = scene.getPointLights();
+    if (scene.selected_light_index < 0 || 
+        scene.selected_light_index >= (int)lights.size()) return;
+
+    MD_PointLight* light = lights[scene.selected_light_index];
+
+    float mv = 5.0f * dt;
+    if (in.isKeyDown(SDL_SCANCODE_LCTRL))
+        mv *= 0.2f;
+
+    float dir = 0.f;
+    if (in.isKeyDown(SDL_SCANCODE_UP))   dir += 1.f;
+    if (in.isKeyDown(SDL_SCANCODE_DOWN)) dir -= 1.f;
+
+    Vec3f delta{0.f, 0.f, 0.f};
+
+    switch (axis) {
+        case AxisOfChange::X: delta.x = dir * mv; break;
+        case AxisOfChange::Y: delta.y = dir * mv; break;
+        case AxisOfChange::Z: delta.z = dir * mv; break;
+        case AxisOfChange::NONE:
+            if (in.isKeyDown(SDL_SCANCODE_LEFT))  delta.x -= mv;
+            if (in.isKeyDown(SDL_SCANCODE_RIGHT)) delta.x += mv;
+            if (in.isKeyDown(SDL_SCANCODE_UP))    delta.y += mv;
+            if (in.isKeyDown(SDL_SCANCODE_DOWN))  delta.y -= mv;
+            break;
+    }
+
+    light->setPosition(light->getPosition() + delta);
 }
 
 void Controller::handleSelection(const Input& in, MD_Scene& scene, int picked) {
