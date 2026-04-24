@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/rt_sphere_test.dir/rt_sphere_test.cpp.o -o rt_sphere_test  ../../src/ray_tracer/libray_tracer.a ../../src/assets/libassets.a ../../external/libstb_image.a ../../external/libtinyobjloader.a

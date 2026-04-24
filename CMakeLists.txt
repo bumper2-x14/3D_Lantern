@@ -14,6 +14,8 @@ add_compile_definitions(
     ROOT_DIR="${CMAKE_SOURCE_DIR}/"
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # Enabled for code execution and memory testing
 enable_testing()  
 

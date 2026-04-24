@@ -3,7 +3,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cerr << "usage: lantern <scene.lt> <output.ppm>\n";
+        std::cerr << "usage: lantern <scene.lnt> <output.img_format>\n";
         return 1;
     }
 

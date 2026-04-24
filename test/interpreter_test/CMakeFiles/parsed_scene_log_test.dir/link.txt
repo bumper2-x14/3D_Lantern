@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/parsed_scene_log_test.dir/parsed_scene_log_test.cpp.o -o parsed_scene_log_test  ../../src/interpreter/libinterpreter.a

@@ -11,6 +11,8 @@ target_include_directories(lantern PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 target_link_libraries(lantern PRIVATE
+    application
+    modeling
     interpreter
     ray_tracer
     assets

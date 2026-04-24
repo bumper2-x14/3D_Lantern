@@ -1,3 +1,5 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}bin/test)
+
 # Using valgrind for memory check
 find_program(VALGRIND_EXECUTABLE valgrind)
 
