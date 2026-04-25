@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include "imgui.h"
+#include "controller.h"
 
 #include "modeling/MD_Camera.h"
 #include "modeling/MD_Scene.h"
@@ -25,12 +26,14 @@ public:
 
     void drawPanelTop(MD_Scene& scene);
 
-    void drawPanelBottom(MD_Scene& scene);
+    void drawPanelBottom(MD_Scene& scene, MD_Camera& camera);
 
     void drawPanelRight(MD_Scene& scene);
 
     void drawPanelLeft(MD_Scene& scene);
 
+    void setSelectedTool(CtrlMode mode) { selected_tool = mode; }
+    CtrlMode getSelectedTool() const { return selected_tool; }
 
 private:
     SDL_Window* window = nullptr;
@@ -41,6 +44,9 @@ private:
     int panel_bottom = 0;
     int panel_right = 0;
     int panel_left = 0;
+
+    CtrlMode selected_tool = CtrlMode::CAMERA;
+
     ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoMove |

@@ -20,6 +20,9 @@ class Controller {
         void ctrlUpdate(const Input& in, MD_Camera& cam, 
                             MD_Object* selected_obj, MD_Scene& scene, int picked, float dt);
 
+        CtrlMode getMode() const { return mode; } 
+        void setMode(CtrlMode newMode) { mode = newMode; }                   
+
     private:
         CtrlMode mode = CtrlMode::CAMERA;
         AxisOfChange axis = AxisOfChange::NONE;
