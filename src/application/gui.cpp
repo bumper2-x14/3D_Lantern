@@ -2,11 +2,35 @@
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "modeling/MD_Sphere.h"
-#include "modeling/MD_Cylinder.h"
-#include "modeling/MD_Cone.h"
-#include "modeling/MD_Torus.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include <iostream>
+#include <glad/glad.h>
+
+GLuint loadTexture(const char* path) {
+    int w, h, channels;
+    unsigned char* data = stbi_load(path, &w, &h, &channels, 4);
+
+    if (!data) {
+        std::cerr << "Failed to load image: " << path << std::endl;
+        return 0;
+    }
+
+    GLuint tex = 0;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+    return tex;
+}
 
 GUI::GUI(SDL_Window* window, SDL_GLContext gl_context, 
                 int _width, int _height, int _panel_bottom,
@@ -28,6 +52,11 @@ GUI::GUI(SDL_Window* window, SDL_GLContext gl_context,
     panel_top = _panel_top;
     panel_left = _panel_left;
     panel_right = _panel_right;
+
+    icon_sphere   = loadTexture("../../../img/Sphere.png");
+    icon_cylinder = loadTexture("../../../img/Cylinder.png");
+    icon_cone     = loadTexture("../../../img/Cone.png");
+    icon_torus    = loadTexture("../../../img/Torus.png");
 }
 
 GUI::~GUI() {
@@ -57,27 +86,60 @@ void GUI::drawPanelTop(MD_Scene& scene){
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("TopBar", nullptr, flags);
     ImGui::Text("Toolbar");
+    int selected = 0;
 
-    static int selected = 0;
+    //move cursor to the right side
+    float rightAlign = ImGui::GetWindowWidth() - 600; 
+    ImGui::SetCursorPosX(rightAlign);
+
+
+    if (selected_tool == CtrlMode::CAMERA) selected = 0;
+    else if (selected_tool == CtrlMode::TRANSLATE) selected = 1;
+    else if (selected_tool == CtrlMode::ROTATE) selected = 2;
+    else if (selected_tool == CtrlMode::SCALE) selected = 3;
+
     ImGui::RadioButton("move camera", &selected, 0); ImGui::SameLine();
     ImGui::RadioButton("move object", &selected, 1); ImGui::SameLine();
-    ImGui::RadioButton("rotate object", &selected, 2);
+    ImGui::RadioButton("rotate object", &selected, 2); ImGui::SameLine();
+    ImGui::RadioButton("scale object", &selected, 3);
+
+    if (selected == 0) selected_tool = CtrlMode::CAMERA;
+    else if (selected == 1) selected_tool = CtrlMode::TRANSLATE;
+    else if (selected == 2) selected_tool = CtrlMode::ROTATE;
+    else if (selected == 3) selected_tool = CtrlMode::SCALE;
 
     ImGui::End();
     ImGui::PopStyleVar();
 
    }
 
-void GUI::drawPanelBottom(MD_Scene& scene){
+void GUI::drawPanelBottom(MD_Scene& scene, MD_Camera& camera){
     
     ImGui::SetNextWindowPos(ImVec2(0, height - panel_bottom));
     ImGui::SetNextWindowSize(ImVec2(width, panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
+
     ImGui::Begin("Status", nullptr, flags);
-    ImGui::Text("Status bar");
+
+    MD_Object* selected = scene.getSelectedObject();
+
+    if (selected) {
+        Vec3f p = selected->trs.translation;
+
+        ImGui::Text("Selected object: %s", selected->name.c_str());
+        ImGui::SameLine();
+        ImGui::Text(" | Position: %.2f %.2f %.2f", p.x, p.y, p.z);
+    }
+    else {
+        ImGui::Text("Selected object: none");
+    }
+
+    Vec3f camPos = camera.getPosition();
+    ImGui::SameLine();
+    ImGui::Text(" | Camera: %.2f %.2f %.2f", camPos.x, camPos.y, camPos.z);
+
     ImGui::End();
     ImGui::PopStyleVar();
-    
 }
 
 void GUI::drawPanelLeft(MD_Scene& scene){
@@ -89,8 +151,8 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     ImGui::Begin("Outliner", nullptr, flags);
 
     ImGui::Text("Scene objects");
-    ImGui::Separator();
 
+    ImGui::Separator();
     ImGui::Text("Add shape:");
 
     enum ShapeChoice {
@@ -102,86 +164,120 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     };
 
     static int selectedShape = NONE;
-
-    if (ImGui::Button("Sphere")) {
-        selectedShape = SPHERE;
-        ImGui::OpenPopup("Create Shape");
-    }
-
-    if (ImGui::Button("Cylinder")) {
-        selectedShape = CYLINDER;
-        ImGui::OpenPopup("Create Shape");
-    }
-
-    if (ImGui::Button("Cone")) {
-        selectedShape = CONE;
-        ImGui::OpenPopup("Create Shape");
-    }
-
-    if (ImGui::Button("Torus")) {
-        selectedShape = TORUS;
-        ImGui::OpenPopup("Create Shape");
-    }
-
     static float pos[3] = {0.f, 1.f, 0.f};
-    static int segments = 25;
-    static int rings = 25;
+    static float color[3] = {0.5f, 0.5f, 0.5f};
 
+    // Sphere icon
+    if (ImGui::ImageButton("sphere_icon",
+                           (ImTextureID)(intptr_t)icon_sphere,
+                           ImVec2(45, 45))) {
+        selectedShape = SPHERE;
+        pos[0] = 0.f; pos[1] = 1.f; pos[2] = 0.f;
+        ImGui::OpenPopup("Create Shape");
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sphere");
+
+    ImGui::SameLine();
+
+    // Cone icon
+    if (ImGui::ImageButton("cone_icon",
+                           (ImTextureID)(intptr_t)icon_cone,
+                           ImVec2(45, 45))) {
+        selectedShape = CONE;
+        pos[0] = 0.f; pos[1] = 1.f; pos[2] = 0.f;
+        ImGui::OpenPopup("Create Shape");
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cone");
+
+    ImGui::SameLine();
+
+    // Torus icon
+    if (ImGui::ImageButton("torus_icon",
+                           (ImTextureID)(intptr_t)icon_torus,
+                           ImVec2(45, 45))) {
+        selectedShape = TORUS;
+        pos[0] = 0.f; pos[1] = 1.f; pos[2] = 0.f;
+        ImGui::OpenPopup("Create Shape");
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Torus");
+
+    ImGui::SameLine();
+
+    // Cylinder icon
+    if (ImGui::ImageButton("cylinder_icon",
+                           (ImTextureID)(intptr_t)icon_cylinder,
+                           ImVec2(45, 45))) {
+        selectedShape = CYLINDER;
+        pos[0] = 0.f; pos[1] = 1.f; pos[2] = 0.f;
+        ImGui::OpenPopup("Create Shape");
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cylinder");
+
+    // Popup
     if (ImGui::BeginPopupModal("Create Shape", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const char* shapeName = "Shape";
 
-        ImGui::Text("Create Shape");
+        if (selectedShape == SPHERE) shapeName = "Sphere";
+        else if (selectedShape == CYLINDER) shapeName = "Cylinder";
+        else if (selectedShape == CONE) shapeName = "Cone";
+        else if (selectedShape == TORUS) shapeName = "Torus";
+
+        ImGui::Text("Create %s", shapeName);
         ImGui::Separator();
 
         ImGui::DragFloat3("Position", pos, 0.1f);
-
-        if (selectedShape == SPHERE || selectedShape == TORUS) {
-            ImGui::InputInt("Segments", &segments);
-            ImGui::InputInt("Rings", &rings);
-        }
-        else if (selectedShape == CYLINDER || selectedShape == CONE) {
-            ImGui::InputInt("Segments", &segments);
-        }
+        ImGui::ColorEdit3("Color", color);
 
         if (ImGui::Button("Create")) {
-            std::cout << "CREATE BUTTON CLICKED" << std::endl;
+            MD_Material* mat = new MD_Material(
+                Vec3f(color[0], color[1], color[2]),
+                MD_Material::MatType::DIFFUSE
+            );
+
+            MD_Object* created = nullptr;
 
             if (selectedShape == SPHERE) {
-                scene.createObject(
+                created = scene.createObject(
                     "Sphere",
                     &scene.default_sphere,
                     TRSDataf{{pos[0], pos[1], pos[2]}},
-                    &scene.default_material
+                    mat
                 );
             }
 
             else if (selectedShape == CYLINDER) {
-                scene.createObject(
+                created = scene.createObject(
                     "Cylinder",
                     &scene.default_cylinder,
                     TRSDataf{{pos[0], pos[1], pos[2]}},
-                    &scene.default_material
+                    mat
                 );
             }
 
             else if (selectedShape == CONE) {
-                scene.createObject(
+                created = scene.createObject(
                     "Cone",
                     &scene.default_cone,
                     TRSDataf{{pos[0], pos[1], pos[2]}},
-                    &scene.default_material
+                    mat
                 );
             }
 
             else if (selectedShape == TORUS) {
-                scene.createObject(
+                created = scene.createObject(
                     "Torus",
                     &scene.default_torus,
                     TRSDataf{{pos[0], pos[1], pos[2]}},
-                    &scene.default_material
+                    mat
                 );
             }
 
-            std::cout << "Objects count = " << scene.objects.size() << std::endl;
+            if (created) {
+                scene.selected_obj_index = (int)scene.objects.size() - 1;
+                scene.selected_light_index = -1;
+                scene.selected_is_light = false;
+                scene.show_selected = true;
+            }
 
             ImGui::CloseCurrentPopup();
         }
@@ -194,6 +290,8 @@ void GUI::drawPanelLeft(MD_Scene& scene){
 
         ImGui::EndPopup();
     }
+
+    ImGui::Separator();
 
     ImGui::End();
     ImGui::PopStyleVar();
@@ -214,7 +312,7 @@ void GUI::drawPanelRight(MD_Scene& scene){
             if (ImGui::BeginListBox("##objects_list", ImVec2(-1, 200))) {
                 for (auto& obj : scene.objects) {
                     char label[100];
-                    snprintf(label, sizeof(label), "Object : %s", obj->name.c_str());
+                    snprintf(label, sizeof(label), "Object : %s##object_%d", obj->name.c_str(), i);
 
                     bool is_selected = (scene.selected_obj_index == i);
                     if (ImGui::Selectable(label, is_selected))
@@ -224,6 +322,14 @@ void GUI::drawPanelRight(MD_Scene& scene){
                     i++;
                 }
                 ImGui::EndListBox();
+                if (scene.selected_obj_index >= 0) {
+
+                    if (ImGui::Button("🗑")) {
+                        scene.removeObject(scene.selected_obj_index);
+                        scene.selected_obj_index = -1;
+                    }
+
+                 }
             }
             
             ImGui::EndTabItem();

@@ -202,7 +202,7 @@ void Window::winRun() {
         // ── controller ────────────────────────────────────
         // pick on left click
         int picked = -1;
-        if (input.isMousePressed(SDL_BUTTON_RIGHT)) {
+        if (input.isMousePressed(SDL_BUTTON_LEFT)) {
             int mx, my;
             SDL_GetMouseState(&mx, &my);
             picked = renderer.pickAt(scene, mx, my,
@@ -214,6 +214,19 @@ void Window::winRun() {
         if (!scene.getObjects().empty() && !scene.selected_is_light)
             selected = scene.getObject(scene.selected_obj_index);
 
+        if (input.isKeyPressed(SDL_SCANCODE_T)) {
+            gui->setSelectedTool(CtrlMode::TRANSLATE);
+        }
+
+        if (input.isKeyPressed(SDL_SCANCODE_R)) {
+            gui->setSelectedTool(CtrlMode::ROTATE);
+        }
+
+        if (input.isKeyPressed(SDL_SCANCODE_S)) {
+            gui->setSelectedTool(CtrlMode::SCALE);
+        }
+
+        controller.setMode(gui->getSelectedTool());
         controller.ctrlUpdate(input, camera, selected, scene, picked,
                             static_cast<float>(deltaTime));
 
@@ -236,7 +249,7 @@ void Window::winRun() {
 
         gui->drawPanelTop(scene);
 
-        gui->drawPanelBottom(scene);
+        gui->drawPanelBottom(scene,camera);
 
         gui->drawPanelRight(scene);
 
