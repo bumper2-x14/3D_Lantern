@@ -2,18 +2,7 @@
 #include "modeling/MD_Renderer.h"
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Scene.h"
-#include "modeling/MD_Sphere.h"
-#include "modeling/MD_Quad.h"
-#include "modeling/MD_Cylinder.h"
-#include "modeling/MD_Circle.h"
-#include "modeling/MD_Cone.h"
-#include "modeling/MD_Torus.h"
-#include "modeling/MD_ModelShape.h"
 #include "controller.h"
-#include "assets/image_texture.h"
-#include "assets/checker_texture.h"
-#include "assets/color_texture.h"
-#include "assets/perlin_texture.h"
 #include "assets/shared_resources.h"
 #include "interpreter/scene_serializer.h"
 
@@ -76,11 +65,13 @@ void Window::winInitGl() {
     }
     if (SDL_GL_SetSwapInterval(1) < 0)
         std::cerr << "warning: unable to set VSync\n";
+
+    int logical_w, logical_h;
+    SDL_GetWindowSize(win, &logical_w, &logical_h);
     
     if (!gui)
-        gui = new GUI(win, gl_context, width, height,
-                        panel_bottom, panel_top, panel_left,
-                                                panel_right);
+        gui = new GUI(win, gl_context, logical_w, logical_h,
+                      panel_bottom, panel_top, panel_left, panel_right);
 }
 
 // main loop 
@@ -124,8 +115,6 @@ void Window::winRun() {
 
     Input input;
     Controller controller;
-
-    SceneSerializer ser;
     
     while (!stop) {
         input.beginFrame();
@@ -133,14 +122,20 @@ void Window::winRun() {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             gui->processEvent(e);   // ImGui sees every event
-            input.handleEvent(e);   // so does input system
+            if (!ImGui::GetIO().WantCaptureKeyboard && !ImGui::GetIO().WantCaptureMouse)
+                input.handleEvent(e);
+            
             if (e.type == SDL_WINDOWEVENT &&
                 e.window.event == SDL_WINDOWEVENT_RESIZED) {
+                SDL_GetWindowSize(win, &logical_w, &logical_h);
                 SDL_GL_GetDrawableSize(win, &width, &height);
+                // recalculate panels from drawable size
                 panel_top = static_cast<int>(height * kTopPanelFrac);
                 panel_bottom = static_cast<int>(height * kBottomPanelFrac);
                 panel_left = static_cast<int>(width  * kLeftPanelFrac);
                 panel_right = static_cast<int>(width  * kRightPanelFrac);
+                // update GUI with logical size
+                gui->resize(logical_w, logical_h, panel_bottom, panel_top, panel_left, panel_right);
                 updateViewport();
                 camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
             }
@@ -156,7 +151,7 @@ void Window::winRun() {
         // ── controller ────────────────────────────────────
         // pick on left click
         int picked = -1;
-        if (input.isMousePressed(SDL_BUTTON_LEFT)) {
+        if (input.isMousePressed(SDL_BUTTON_RIGHT)) {
             int mx, my;
             SDL_GetMouseState(&mx, &my);
             picked = renderer.pickAt(scene, mx, my,
@@ -210,10 +205,4 @@ void Window::winRun() {
         SDL_GL_SwapWindow(win);
 
     }
-    SharedResources rs;
-    ModelingResources mr;
-    mr.addMaterial("def_mat", &scene.default_sphere_mat);
-    SerializerSettings set;
-    std::string code = ser.serialize(scene, camera, rs, mr, set);
-    std::cout<<code<<std::endl;
 }

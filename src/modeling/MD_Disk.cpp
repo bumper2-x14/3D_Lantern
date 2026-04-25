@@ -1,4 +1,4 @@
-#include "MD_Circle.h"
+#include "MD_Disk.h"
 
 MD_Disk::MD_Disk(int _nb_seg){
     nb_seg = _nb_seg;

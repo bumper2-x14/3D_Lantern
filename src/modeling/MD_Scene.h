@@ -9,6 +9,7 @@
 #include "MD_Cylinder.h"
 #include "MD_Cone.h"
 #include "MD_Torus.h"
+#include "MD_Disk.h"
 
 
 class MD_Scene{
@@ -59,6 +60,8 @@ class MD_Scene{
 		MD_Cylinder default_cylinder{25};
 		MD_Cone default_cone{25};
 		MD_Torus default_torus{25,25};
+		MD_Quad default_quad {5, 5};
+		MD_Disk default_disk {25};
 
 		
 		MD_Material default_material{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE};

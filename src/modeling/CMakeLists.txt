@@ -6,7 +6,7 @@ add_library(modeling STATIC
     MD_Sphere.cpp
     MD_Quad.cpp
     MD_Cylinder.cpp
-    MD_Circle.cpp
+    MD_Disk.cpp
     MD_Cone.cpp
     MD_Torus.cpp
     MD_ModelShape.cpp

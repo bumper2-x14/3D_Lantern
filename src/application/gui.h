@@ -19,6 +19,8 @@ public:
     void begin();   // start ImGui frame
     void render();  // render ImGui
 
+    void resize(int w, int h, int pb, int pt, int pl, int pr);
+
     void processEvent(const SDL_Event& e);
 
     void drawPanels(MD_Scene& scene, int width, int height, int panel_top,int panel_bottom,
@@ -51,12 +53,7 @@ private:
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    GLuint icon_sphere;
-    GLuint icon_cylinder;
-    GLuint icon_cone;
-    GLuint icon_torus;    
+        ImGuiWindowFlags_NoBringToFrontOnFocus; 
 };
 
 #endif

@@ -97,8 +97,14 @@ void MD_Scene::deselect() {
 
 void MD_Scene::setSelectedObject(int index) {
     selected_obj_index = index;
+    selected_is_light = false;
+    selected_light_index = -1;
+    show_selected = true;
 }
 
 void MD_Scene::setSelectedPointLight(int index) {
     selected_light_index = index;
+    selected_is_light = true;
+    selected_obj_index = -1;
+    show_selected = true;
 }
