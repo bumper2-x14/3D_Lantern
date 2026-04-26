@@ -6,6 +6,11 @@
 #include "modeling/MD_Cylinder.h"
 #include "modeling/MD_Cone.h"
 #include "modeling/MD_Torus.h"
+#include "modeling/MD_ModelShape.h"
+#include "assets/color_texture.h"
+#include "assets/checker_texture.h"
+#include "assets/image_texture.h"
+#include "assets/perlin_texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -127,7 +132,7 @@ void GUI::drawPanelBottom(MD_Scene& scene, MD_Camera& camera){
     ImGui::PopStyleVar();
 }
 
-void GUI::drawPanelLeft(MD_Scene& scene){
+void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedResources& shared){
     ImGui::SetNextWindowPos(ImVec2(0, panel_top));
     ImGui::SetNextWindowSize(ImVec2(panel_left, height - panel_top - panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
@@ -139,6 +144,8 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     enum ShapeChoice { NONE = -1, SPHERE, CYLINDER, CONE, TORUS, QUAD, DISK };
     static int selectedShape = NONE;
     static float pos[3] = {0.f, 1.f, 0.f};
+    static float rot[3] = {0.f, 0.f, 0.f};
+    static float scale[3] = {1.f, 1.f, 1.f};
     static float color[3] = {0.5f, 0.5f, 0.5f};
 
     float btn_w = (ImGui::GetContentRegionAvail().x - 10) / 2.f;
@@ -150,6 +157,16 @@ void GUI::drawPanelLeft(MD_Scene& scene){
     if (ImGui::Button("+ Cylinder", ImVec2(-1, 30))) { selectedShape = CYLINDER; ImGui::OpenPopup("Create Shape"); }
     if (ImGui::Button("+ Plane", ImVec2(-1, 30))) { selectedShape = QUAD; ImGui::OpenPopup("Create Shape"); }
     if (ImGui::Button("+ Disk", ImVec2(-1, 30))) { selectedShape = DISK; ImGui::OpenPopup("Create Shape"); }
+    
+
+    ImGui::Separator();
+    ImGui::Text("Meshes");
+    ImGui::Separator();
+    if (ImGui::Button("+ Mesh",  ImVec2(-1, 30))) ImGui::OpenPopup("Load Mesh");
+    ImGui::Separator();
+    ImGui::Text("Meshes");
+    ImGui::Separator();
+    if (ImGui::Button("+ PointLight", ImVec2(-1, 30))) ImGui::OpenPopup("Create Light");
     ImGui::PopStyleVar();
 
     // Popup unchanged
@@ -167,6 +184,8 @@ void GUI::drawPanelLeft(MD_Scene& scene){
         static char obj_name[64] = "";
         ImGui::InputText("Name", obj_name, sizeof(obj_name));
         ImGui::DragFloat3("Position", pos, 0.1f);
+        ImGui::DragFloat3("Rotation", rot,   0.5f);
+        ImGui::DragFloat3("Scale", scale, 0.05f, 0.01f, 100.f);
         ImGui::ColorEdit3("Color", color);
 
         if (ImGui::Button("Create")) {
@@ -175,14 +194,20 @@ void GUI::drawPanelLeft(MD_Scene& scene){
             MD_Material* mat = new MD_Material(
                 Vec3f(color[0], color[1], color[2]),
                 MD_Material::MatType::DIFFUSE);
+            
+            TRSDataf trs{
+                {pos[0],   pos[1],   pos[2]},   // translation
+                {scale[0], scale[1], scale[2]}, // scale
+                {rot[0],   rot[1],   rot[2]}    // rotation
+            };
 
             MD_Object* created = nullptr;
-            if (selectedShape == SPHERE)   created = scene.createObject(name, &scene.default_sphere,   TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
-            else if (selectedShape == CYLINDER) created = scene.createObject(name, &scene.default_cylinder, TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
-            else if (selectedShape == CONE) created = scene.createObject(name, &scene.default_cone,     TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
-            else if (selectedShape == TORUS) created = scene.createObject(name, &scene.default_torus,    TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
-            else if (selectedShape == QUAD) created = scene.createObject(name, &scene.default_quad, TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
-            else if (selectedShape == DISK) created = scene.createObject(name, &scene.default_disk,  TRSDataf{{pos[0],pos[1],pos[2]}}, mat);
+            if (selectedShape == SPHERE)   created = scene.createObject(name, &scene.default_sphere, trs, mat);
+            else if (selectedShape == CYLINDER) created = scene.createObject(name, &scene.default_cylinder, trs, mat);
+            else if (selectedShape == CONE) created = scene.createObject(name, &scene.default_cone, trs, mat);
+            else if (selectedShape == TORUS) created = scene.createObject(name, &scene.default_torus, trs, mat);
+            else if (selectedShape == QUAD) created = scene.createObject(name, &scene.default_quad, trs, mat);
+            else if (selectedShape == DISK) created = scene.createObject(name, &scene.default_disk, trs, mat);
 
             if (created) {
                 scene.selected_obj_index = (int)scene.objects.size() - 1;
@@ -191,6 +216,10 @@ void GUI::drawPanelLeft(MD_Scene& scene){
                 scene.show_selected = true;
             }
             obj_name[0] = '\0';  // clear for next time
+            // reset transforms
+            pos[0] = 0.f; pos[1] = 1.f; pos[2] = 0.f;
+            rot[0] = 0.f; rot[1] = 0.f; rot[2] = 0.f;
+            scale[0] = 1.f; scale[1] = 1.f; scale[2] = 1.f;
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -201,12 +230,83 @@ void GUI::drawPanelLeft(MD_Scene& scene){
         ImGui::EndPopup();
     }
 
+    // Create Light popup
+    if (ImGui::BeginPopupModal("Create Light", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        static float lpos[3]   = {0.f, 3.f, 0.f};
+        static float lcolor[3] = {1.f, 1.f, 1.f};
+        static float intensity = 1.f;
+
+        ImGui::Text("Create Point Light");
+        ImGui::Separator();
+        ImGui::DragFloat3("Position",  lpos,   0.1f);
+        ImGui::ColorEdit3("Color",     lcolor);
+        ImGui::DragFloat ("Intensity", &intensity, 0.05f, 0.f, 20.f);
+
+        if (ImGui::Button("Create")) {
+            scene.createPointLight(
+                Vec3f(lpos[0], lpos[1], lpos[2]),
+                Color(lcolor[0], lcolor[1], lcolor[2]),
+                intensity);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
+    // Load Mesh popup
+    if (ImGui::BeginPopupModal("Load Mesh", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        static char mesh_name[64] = "";
+        static char mesh_path[256] = "";
+        static float mpos[3]   = {0.f, 0.f, 0.f};
+        static float mcolor[3] = {0.5f, 0.5f, 0.5f};
+
+        ImGui::Text("Load OBJ Mesh");
+        ImGui::Separator();
+        ImGui::InputText("Name", mesh_name, sizeof(mesh_name));
+        ImGui::InputText("Path", mesh_path, sizeof(mesh_path));
+        ImGui::DragFloat3("Position", mpos, 0.1f);
+        ImGui::ColorEdit3("Color",    mcolor);
+
+        if (ImGui::Button("Load")) {
+            if (mesh_path[0] != '\0') {
+                const std::string name = (mesh_name[0] != '\0') ? mesh_name : "Mesh";
+
+                // 1. load into shared resources
+                Model* model = shared.loadModel(name, mesh_path);
+                if (model) {
+                    MD_ModelShape* shape = modeling.addModelShape(name, model);
+                    MD_Material* mat = modeling.addMaterial(name + "_mat",
+                        new MD_Material(Vec3f(mcolor[0], mcolor[1], mcolor[2]),
+                                        MD_Material::MatType::DIFFUSE));
+                    scene.createObject(name, shape,TRSDataf{{mpos[0], mpos[1], mpos[2]}}, mat);
+                    scene.selected_obj_index = (int)scene.objects.size() - 1;
+                    scene.selected_is_light = false;
+                    scene.show_selected = true;
+                } else {
+                    std::cerr << "Failed to load OBJ: " << mesh_path << '\n';
+                }
+            }
+            mesh_name[0] = '\0';
+            mesh_path[0] = '\0';
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel")) {
+            mesh_name[0] = '\0';
+            mesh_path[0] = '\0';
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+
     ImGui::Separator();
     ImGui::End();
     ImGui::PopStyleVar();
 }
 
-void GUI::drawPanelRight(MD_Scene& scene){
+void GUI::drawPanelRight(MD_Scene& scene, ModelingResources& modeling, SharedResources& shared){
     ImGui::SetNextWindowPos(ImVec2(width - panel_right, panel_top));
     ImGui::SetNextWindowSize(ImVec2(panel_right, height - panel_top - panel_bottom));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
@@ -270,8 +370,183 @@ void GUI::drawPanelRight(MD_Scene& scene){
         ImGui::EndTabBar();
     }
 
+    if (ImGui::CollapsingHeader("Properties", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::Text("sel_obj=%d is_light=%d", scene.selected_obj_index, (int)scene.selected_is_light);
+
+        if (!scene.selected_is_light && scene.selected_obj_index >= 0) {
+            MD_Object* obj = scene.getSelectedObject();
+            if (obj) {
+                ImGui::Text("Object: %s", obj->name.c_str());
+                ImGui::Separator();
+                ImGui::Text("Material");
+
+                const std::string cur_mat = modeling.findMaterialName(obj->getMaterial());
+                ImGui::Text("Current: %s", cur_mat.empty() ? "none" : cur_mat.c_str());
+
+                static int mat_idx = 0;
+                const auto& mats = modeling.getMaterials();
+                std::vector<const char*> mat_names;
+                std::vector<MD_Material*> mat_ptrs;
+                for (auto& [name, mat] : mats) {
+                    mat_names.push_back(name.c_str());
+                    mat_ptrs.push_back(mat);
+                }
+
+                if (!mat_names.empty()) {
+                    ImGui::Combo("##mat_select", &mat_idx, mat_names.data(), (int)mat_names.size());
+                    if (ImGui::Button("Apply Material", ImVec2(-1, 30)))
+                        if (mat_idx < (int)mat_ptrs.size())
+                            obj->setMaterial(mat_ptrs[mat_idx]);
+                } else {
+                    ImGui::TextDisabled("No materials in registry");
+                }
+            }
+        } else if (scene.selected_is_light && scene.selected_light_index >= 0) {
+            MD_PointLight* light = scene.getSelectedLight();
+            if (light) {
+                ImGui::Text("Light %d", scene.selected_light_index);
+                ImGui::Separator();
+                Vec3f pos = light->getPosition();
+                float p[3] = {pos.x, pos.y, pos.z};
+                if (ImGui::DragFloat3("Position", p, 0.1f))
+                    light->setPosition(Vec3f(p[0], p[1], p[2]));
+                float intensity = light->getIntensity();
+                if (ImGui::DragFloat("Intensity", &intensity, 0.05f, 0.f, 20.f))
+                    light->setIntensity(intensity);
+            }
+        } else {
+            ImGui::TextDisabled("Nothing selected");
+        }
+    }
+
     ImGui::Separator();
-    ImGui::Text("Factory");
+    ImGui::Separator();
+    if (ImGui::BeginTabBar("Factory")) {
+
+        // ── TEXTURE TAB ──────────────────────────────────────────────────
+        if (ImGui::BeginTabItem("Texture")) {
+            static char tex_name[64] = "";
+            static int tex_type = 0; // 0=Color, 1=Checker, 2=Image, 3=Noise, 4=Turbulence, 5=Marble, 6=Wood, 7=Warped
+            static float tex_color[3]  = {1.f, 1.f, 1.f};
+            static float tex_color2[3] = {0.f, 0.f, 0.f};
+            static float tex_scale     = 1.f;
+            static char  tex_path[256] = "";
+
+            const char* tex_types[] = { "Color", "Checker", "Image", "Noise", "Turbulence", "Marble", "Wood", "Warped" };
+            ImGui::InputText("Name##tex", tex_name, sizeof(tex_name));
+            ImGui::Combo("Type", &tex_type, tex_types, IM_ARRAYSIZE(tex_types));
+
+            switch (tex_type) {
+                case 0: // Color
+                    ImGui::ColorEdit3("Color##tc", tex_color);
+                    break;
+                case 1: // Checker
+                    ImGui::ColorEdit3("Color A", tex_color);
+                    ImGui::ColorEdit3("Color B", tex_color2);
+                    ImGui::DragFloat("Scale##tc", &tex_scale, 0.05f, 0.01f, 100.f);
+                    break;
+                case 2: // Image
+                    ImGui::InputText("Path##tex", tex_path, sizeof(tex_path));
+                    break;
+                default: // Perlin variants
+                    ImGui::DragFloat("Scale##tc", &tex_scale, 0.05f, 0.01f, 100.f);
+                    break;
+            }
+
+            if (ImGui::Button("Create Texture", ImVec2(-1, 30))) {
+                const std::string name = (tex_name[0] != '\0') ? tex_name : tex_types[tex_type];
+                if (!shared.hasTexture(name)) {
+                    switch (tex_type) {
+                        case 0: shared.addTexture(name, new ColorTexture(Vec3f(tex_color[0], tex_color[1], tex_color[2]))); break;
+                        case 1: shared.addTexture(name, new CheckerTexture(Vec3f(tex_color[0], tex_color[1], tex_color[2]),
+                                                                            Vec3f(tex_color2[0], tex_color2[1], tex_color2[2]), tex_scale)); break;
+                        case 2: if (tex_path[0]) shared.addTexture(name, new ImageTexture(tex_path)); break;
+                        case 3: shared.addTexture(name, new PerlinTexture(PerlinClassType::NOISE, tex_scale)); break;
+                        case 4: shared.addTexture(name, new PerlinTexture(PerlinClassType::TURBULENCE, tex_scale)); break;
+                        case 5: shared.addTexture(name, new PerlinTexture(PerlinClassType::MARBLE, tex_scale)); break;
+                        case 6: shared.addTexture(name, new PerlinTexture(PerlinClassType::WOOD, tex_scale)); break;
+                        case 7: shared.addTexture(name, new PerlinTexture(PerlinClassType::WARPED, tex_scale)); break;
+                    }
+                }
+                tex_name[0] = '\0';
+                tex_path[0] = '\0';
+                tex_scale   = 1.f;
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Loaded textures:");
+            for (auto& [name, tex] : shared.getTextures()) {
+                ImGui::BulletText("%s", name.c_str());
+            }
+
+            ImGui::EndTabItem();
+        }
+
+        // ── MATERIAL TAB ─────────────────────────────────────────────────
+        if (ImGui::BeginTabItem("Material")) {
+            static char mat_name[64]    = "";
+            static int  mat_type        = 0; // 0=Diffuse, 1=Specular, 2=Ambient, 3=Texture
+            static float mat_color[3]   = {0.5f, 0.5f, 0.5f};
+            static float mat_shininess  = 32.f;
+            static char  mat_tex[64]    = ""; // texture name from shared
+
+            const char* mat_types[] = { "Diffuse", "Specular", "Ambient", "Texture" };
+            ImGui::InputText("Name##mat", mat_name, sizeof(mat_name));
+            ImGui::Combo("Type##mat", &mat_type, mat_types, IM_ARRAYSIZE(mat_types));
+
+            switch (mat_type) {
+                case 0: // Diffuse
+                case 2: // Ambient
+                    ImGui::ColorEdit3("Color##mat", mat_color);
+                    break;
+                case 1: // Specular
+                    ImGui::ColorEdit3("Color##mat", mat_color);
+                    ImGui::DragFloat("Shininess", &mat_shininess, 0.5f, 1.f, 256.f);
+                    break;
+                case 3: // Texture
+                    ImGui::InputText("Texture##mat", mat_tex, sizeof(mat_tex));
+                    ImGui::Text("(must match a loaded texture name)");
+                    break;
+            }
+
+            if (ImGui::Button("Create Material", ImVec2(-1, 30))) {
+                const std::string name = (mat_name[0] != '\0') ? mat_name : "Material";
+                if (!modeling.hasMaterial(name)) {
+                    MD_Material* mat = nullptr;
+                    switch (mat_type) {
+                        case 0: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::DIFFUSE);  break;
+                        case 1: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::SPECULAR, mat_shininess); break;
+                        case 2: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::AMBIENT);  break;
+                        case 3: {
+                            Texture* tex = shared.getTexture(mat_tex);
+                            if (tex) mat = new MD_Material(tex);
+                            else ImGui::OpenPopup("tex_not_found");
+                            break;
+                        }
+                    }
+                    if (mat) modeling.addMaterial(name, mat);
+                }
+                mat_name[0] = '\0';
+                mat_tex[0]  = '\0';
+            }
+
+            if (ImGui::BeginPopup("tex_not_found")) {
+                ImGui::Text("Texture not found in shared resources.");
+                if (ImGui::Button("OK")) ImGui::CloseCurrentPopup();
+                ImGui::EndPopup();
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Materials:");
+            for (auto& [name, mat] : modeling.getMaterials()) {
+                ImGui::BulletText("%s", name.c_str());
+            }
+
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    }
 
     ImGui::End();
     ImGui::PopStyleVar();

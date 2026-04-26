@@ -1,11 +1,7 @@
-#include "application/Window.h"
-#include <string.h>
+#include "application/app.h"
 
-int main (){
-    
-    Window window("name", 800, 600) ;
-    window.winInitGl();
-    window.winRun();
-
+int main() {
+    App app("3D Lantern", 800, 600);
+    app.run();
     return 0;
 }

@@ -3,7 +3,6 @@
 #include "modeling/MD_Shader.h"
 #include "modeling/MD_Scene.h"
 #include "controller.h"
-#include "assets/shared_resources.h"
 #include "interpreter/scene_serializer.h"
 
 void Window::sdlSetAttributes() {
@@ -47,7 +46,6 @@ Window::Window(const std::string& name, int x, int y)
 }
 
 Window::~Window() {
-    delete gui;
     if (gl_context) SDL_GL_DeleteContext(gl_context);
     if (win) SDL_DestroyWindow(win);
     SDL_Quit();
@@ -65,13 +63,6 @@ void Window::winInitGl() {
     }
     if (SDL_GL_SetSwapInterval(1) < 0)
         std::cerr << "warning: unable to set VSync\n";
-
-    int logical_w, logical_h;
-    SDL_GetWindowSize(win, &logical_w, &logical_h);
-    
-    if (!gui)
-        gui = new GUI(win, gl_context, logical_w, logical_h,
-                      panel_bottom, panel_top, panel_left, panel_right);
 }
 
 // main loop 
@@ -86,123 +77,106 @@ void Window::updateViewport() {
 }
 
 
-void Window::winRun() {
-    winInitGl();
-
+void Window::winRun(GUI& gui, Controller& controller,
+                    MD_Scene& scene, MD_Renderer& renderer,
+                    SharedResources& shared, ModelingResources& modeling) {
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     updateViewport();
 
-    // renderer
-    MD_Renderer renderer;
-
-    // camera
     MD_Camera& camera = renderer.getCameraMain();
     camera = MD_Camera(Vec3f(0.f, 2.f, 6.f), Vec3f(0.f, 0.f, -1.f));
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
 
-    // shader
-    MD_Shader shader(SHADER_DIR "trs_shader.vs",
-                     SHADER_DIR "trs_shader.fs");
-
-    // scene
-    MD_Scene scene;
+    MD_Shader shader(SHADER_DIR "trs_shader.vs", SHADER_DIR "trs_shader.fs");
     scene.loadDefaultScene();
 
-    // timing
-    Uint64 last = SDL_GetPerformanceCounter();
-    double deltaTime = 0.0;
-
     Input input;
-    Controller controller;
-    
-    while (!stop) {
+    Uint64 last = SDL_GetPerformanceCounter();
+    float dt = 0.f;
+    bool running = true;
+
+    while (running) {
         input.beginFrame();
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            gui->processEvent(e);   // ImGui sees every event
+            gui.processEvent(e);
             if (!ImGui::GetIO().WantCaptureKeyboard && !ImGui::GetIO().WantCaptureMouse)
                 input.handleEvent(e);
-            
+            if (e.type == SDL_QUIT)
+                running = false;
             if (e.type == SDL_WINDOWEVENT &&
                 e.window.event == SDL_WINDOWEVENT_RESIZED) {
-                SDL_GetWindowSize(win, &logical_w, &logical_h);
                 SDL_GL_GetDrawableSize(win, &width, &height);
-                // recalculate panels from drawable size
-                panel_top = static_cast<int>(height * kTopPanelFrac);
+                int lw, lh;
+                SDL_GetWindowSize(win, &lw, &lh);
+                panel_top    = static_cast<int>(height * kTopPanelFrac);
                 panel_bottom = static_cast<int>(height * kBottomPanelFrac);
-                panel_left = static_cast<int>(width  * kLeftPanelFrac);
-                panel_right = static_cast<int>(width  * kRightPanelFrac);
-                // update GUI with logical size
-                gui->resize(logical_w, logical_h, panel_bottom, panel_top, panel_left, panel_right);
+                panel_left   = static_cast<int>(width  * kLeftPanelFrac);
+                panel_right  = static_cast<int>(width  * kRightPanelFrac);
                 updateViewport();
+                gui.resize(lw, lh, panel_bottom, panel_top, panel_left, panel_right);
                 camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
             }
         }
-        if (input.quitPressed() || input.isKeyPressed(SDL_SCANCODE_ESCAPE))
-            stop = true;
 
-        // ── timing ────────────────────────────────────────
+        if (input.quitPressed() || input.isKeyPressed(SDL_SCANCODE_ESCAPE))
+            running = false;
+
+        // timing
         Uint64 now = SDL_GetPerformanceCounter();
-        deltaTime  = static_cast<double>(now - last) / SDL_GetPerformanceFrequency();
+        dt = static_cast<float>(
+            static_cast<double>(now - last) / SDL_GetPerformanceFrequency());
         last = now;
 
-        // ── controller ────────────────────────────────────
-        // pick on left click
+        // pick
         int picked = -1;
         if (input.isMousePressed(SDL_BUTTON_RIGHT)) {
             int mx, my;
             SDL_GetMouseState(&mx, &my);
-            picked = renderer.pickAt(scene, mx, my,
-                                    panel_left, panel_bottom,
-                                    viewport_w, viewport_h);
+            bool in_viewport = mx > panel_left
+                            && mx < (panel_left + viewport_w)
+                            && my > panel_top
+                            && my < (panel_top  + viewport_h);
+            if (in_viewport)
+                picked = renderer.pickAt(scene, mx, my,
+                                         panel_left, panel_bottom,
+                                         viewport_w, viewport_h);
         }
 
+        // mode sync
+        if (input.isKeyPressed(SDL_SCANCODE_T)) gui.setSelectedTool(CtrlMode::TRANSLATE);
+        if (input.isKeyPressed(SDL_SCANCODE_R)) gui.setSelectedTool(CtrlMode::ROTATE);
+        if (input.isKeyPressed(SDL_SCANCODE_S)) gui.setSelectedTool(CtrlMode::SCALE);
+        if (input.isKeyPressed(SDL_SCANCODE_P)) gui.setSelectedTool(CtrlMode::CAMERA);
+        controller.setMode(gui.getSelectedTool());
+
+        // selected object
         MD_Object* selected = nullptr;
-        if (!scene.getObjects().empty() && !scene.selected_is_light)
+        if (!scene.selected_is_light && scene.selected_obj_index >= 0)
             selected = scene.getObject(scene.selected_obj_index);
 
-        if (input.isKeyPressed(SDL_SCANCODE_T)) {
-            gui->setSelectedTool(CtrlMode::TRANSLATE);
-        }
-
-        if (input.isKeyPressed(SDL_SCANCODE_R)) {
-            gui->setSelectedTool(CtrlMode::ROTATE);
-        }
-
-        if (input.isKeyPressed(SDL_SCANCODE_S)) {
-            gui->setSelectedTool(CtrlMode::SCALE);
-        }
-
-        controller.setMode(gui->getSelectedTool());
-        controller.ctrlUpdate(input, camera, selected, scene, picked,
-                            static_cast<float>(deltaTime));
+        controller.ctrlUpdate(input, camera, selected, scene, picked, dt);
 
         // render
         glDisable(GL_SCISSOR_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         glEnable(GL_SCISSOR_TEST);
         glScissor(panel_left, panel_bottom, viewport_w, viewport_h);
         glClearColor(0.35f, 0.35f, 0.38f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_SCISSOR_TEST);
 
-        // RENDER 
         renderer.render(scene, shader);
 
-        gui->begin();
-        // draw UI
-        gui->drawPanelTop(scene);
+        gui.begin();
+        gui.drawPanelTop(scene);
+        gui.drawPanelBottom(scene, camera);
+        gui.drawPanelRight(scene, modeling, shared);
+        gui.drawPanelLeft(scene, modeling, shared);
+        gui.render();
 
-        gui->drawPanelBottom(scene,camera);
-
-        gui->drawPanelRight(scene);
-        gui->drawPanelLeft(scene);
-        gui->render();
         SDL_GL_SwapWindow(win);
-
     }
 }

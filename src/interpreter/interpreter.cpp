@@ -78,19 +78,19 @@ void Interpreter::buildTextures() {
                 tex = new ImageTexture(shared.getImage(name), name);
                 break;
             case TextureType::MARBLE:
-                tex = new PerlinTexture(MARBLE, td.scale);
+                tex = new PerlinTexture(PerlinClassType::MARBLE, td.scale);
                 break;
             case TextureType::WOOD:
-                tex = new PerlinTexture(WOOD, td.scale);
+                tex = new PerlinTexture(PerlinClassType::WOOD, td.scale);
                 break;
             case TextureType::TURBULENCE:
-                tex = new PerlinTexture(TURBULENCE, td.scale);
+                tex = new PerlinTexture(PerlinClassType::TURBULENCE, td.scale);
                 break;
             case TextureType::NOISE:
-                tex = new PerlinTexture(NOISE, td.scale);
+                tex = new PerlinTexture(PerlinClassType::NOISE, td.scale);
                 break;
             case TextureType::WARPED:
-                tex = new PerlinTexture(WARPED, td.scale);
+                tex = new PerlinTexture(PerlinClassType::WARPED, td.scale);
                 break;
             default:
                 std::cerr << "Interpreter: unknown texture type for '" << name << "'\n";

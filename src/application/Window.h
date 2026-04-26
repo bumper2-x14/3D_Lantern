@@ -1,6 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "modeling/MD_Renderer.h"
+#include "assets/shared_resources.h"
+#include "modeling/modeling_resources.h"
+
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
 #endif
@@ -20,13 +24,20 @@ public:
     ~Window();
 
     void winInitGl();
-    void winRun();
+    void winRun(GUI& gui, Controller& controller,
+                    MD_Scene& scene, MD_Renderer& renderer,
+                    SharedResources& shared, ModelingResources& modeling);
 
     SDL_Window* getWin() const { return win; }
+    SDL_GLContext getGLContext() const { return gl_context; }
     int getWidth() const { return width; }
     int getHeight() const { return height; }
     int getViewportW() const { return viewport_w; }
     int getViewportH() const { return viewport_h; }
+    int getPanelTop()    const { return panel_top; }
+    int getPanelBottom() const { return panel_bottom; }
+    int getPanelLeft()   const { return panel_left; }
+    int getPanelRight()  const { return panel_right; }
 
 private:
     void sdlSetAttributes();

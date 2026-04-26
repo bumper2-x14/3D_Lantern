@@ -4,7 +4,7 @@
 #include "texture.h"
 #include "perlin.h"
 
-enum PerlinType {
+enum class PerlinClassType {
     NOISE,
     TURBULENCE,
     MARBLE,
@@ -20,14 +20,14 @@ enum PerlinType {
 
 class PerlinTexture : public Texture {
     public:
-        PerlinTexture(PerlinType _type, double _scale);
+        PerlinTexture(PerlinClassType _type, double _scale);
         Color sample(const Vec2d& uv, const Point3d& p) const override;
         Point3d uvToWorldConverter(const Vec2d& uv) const override;
         std::string serializeLNT() const override;
     private:
         Perlin noise_gen;
         double scale;
-        PerlinType type;
+        PerlinClassType type;
 };
 
 #endif

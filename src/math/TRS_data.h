@@ -16,8 +16,8 @@ struct TRSData {
 
     // Absolute mutators
     void setTranslation(const Vec3<T>& t) { translation = t; }
-    void setRotation(const Vec3<T>& r) { rotation    = r; }
-    void setScale(const Vec3<T>& s) { scale       = s; }
+    void setRotation(const Vec3<T>& r) { rotation = r; }
+    void setScale(const Vec3<T>& s) { scale = s; }
 
     void reset() { *this = TRSData<T>{}; }
 };

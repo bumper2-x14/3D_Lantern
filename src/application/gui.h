@@ -8,6 +8,8 @@
 
 #include "modeling/MD_Camera.h"
 #include "modeling/MD_Scene.h"
+#include "assets/shared_resources.h"
+#include "modeling/modeling_resources.h"
 
 class GUI {
 public:
@@ -30,9 +32,9 @@ public:
 
     void drawPanelBottom(MD_Scene& scene, MD_Camera& camera);
 
-    void drawPanelRight(MD_Scene& scene);
+    void drawPanelRight(MD_Scene& scene, ModelingResources& modeling, SharedResources& shared);
 
-    void drawPanelLeft(MD_Scene& scene);
+    void drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedResources& shared);
 
     void setSelectedTool(CtrlMode mode) { selected_tool = mode; }
     CtrlMode getSelectedTool() const { return selected_tool; }
