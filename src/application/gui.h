@@ -10,6 +10,9 @@
 #include "modeling/MD_Scene.h"
 #include "assets/shared_resources.h"
 #include "modeling/modeling_resources.h"
+#include "interpreter/interpreter.h"
+#include "ray_tracer/RT_Renderer.h"
+#include "interpreter/scene_serializer.h"
 
 class GUI {
 public:
@@ -28,7 +31,8 @@ public:
     void drawPanels(MD_Scene& scene, int width, int height, int panel_top,int panel_bottom,
                         int panel_left, int panel_right);
 
-    void drawPanelTop(MD_Scene& scene);
+    void drawPanelTop(MD_Scene& scene, MD_Camera& camera,
+                       SharedResources& shared, ModelingResources& modeling);
 
     void drawPanelBottom(MD_Scene& scene, MD_Camera& camera);
 
@@ -56,6 +60,10 @@ private:
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoBringToFrontOnFocus; 
+
+    SerializerSettings render_settings;
+    char render_output[256] = "render.ppm";
+    bool render_threaded = true;
 };
 
 #endif

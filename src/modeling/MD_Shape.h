@@ -6,7 +6,7 @@
 
 /// @brief Enum describing the type of shape.
 enum class ShapeType{
-    SPHERE, CYLINDER, CONE, DISK, QUAD, MESH
+    BOX, SPHERE, CYLINDER, CONE, DISK, QUAD, MESH
 };
 
 /// @brief Base class for all shapes.
@@ -40,6 +40,7 @@ class MD_Shape {
         /// @brief Converts shape type enum to string.
         std::string typeToString(ShapeType type) const{
             switch (type) {
+                case ShapeType::BOX : return "box"; break;
                 case ShapeType:: SPHERE : return "sphere"; break;
                 case ShapeType:: CYLINDER : return "cylinder"; break;
                 case ShapeType:: CONE : return "CONE"; break;

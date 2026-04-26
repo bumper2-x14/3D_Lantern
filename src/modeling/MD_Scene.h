@@ -10,6 +10,7 @@
 #include "MD_Cone.h"
 #include "MD_Torus.h"
 #include "MD_Disk.h"
+#include "MD_Box.h"
 
 /// @brief Represents the full scene (objects + lights + selection state).
 class MD_Scene{
@@ -90,6 +91,7 @@ class MD_Scene{
 		MD_Torus default_torus{25,25}; ///< Default torus.
 		MD_Quad default_quad {5, 5}; ///< Default quad.
 		MD_Disk default_disk {25}; ///< Default disk.
+		MD_Box default_box {1}; ///< Default box
 
 		// default material
 		MD_Material default_material{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE};

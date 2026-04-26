@@ -1,16 +1,16 @@
-#ifndef MD_CUBE_H
-#define MD_CUBE_H
+#ifndef MD_BOX_H
+#define MD_BOX_H
 
 #include "MD_Shape.h"
 #include "assets/vertex.h"
 
 /// @brief Represents a cube shape built procedurally.
 ///        Inherits from MD_Shape and defines its own geometry.
-class MD_Cube : public MD_Shape{
+class MD_Box : public MD_Shape{
     public:
         /// @brief Creates a cube with a given size.
         /// @param _size Length of the cube edges.
-        MD_Cube(float _size = 1.0f);
+        MD_Box(float _size = 1.0f);
 
         /// @brief Builds the cube geometry (vertices + indices).
         void buildShape() override;

@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include "lexer.h"
 
 Lexer::Lexer(const std::string& _path) : src_path(_path) {
@@ -66,6 +67,31 @@ void Lexer::tokenize() {
     file.close();
 }
 
+void Lexer::tokenizeFromString(const std::string& source) {
+    std::istringstream file(source);
+    std::string word;
+    int line = 1;
+    char c;
+
+    auto generator = [&]() {
+        if (!word.empty()) {
+            tokens.push_back(makeToken(word, line));
+            word.clear();
+        }
+    };
+
+    while (file.get(c)) {
+        if (c == '\n') { generator(); ++line; }
+        else if (c == '#') { generator(); while (file.get(c) && c != '\n'); ++line; }
+        else if (c == '{') { generator(); tokens.push_back(makeLBraceToken(line)); }
+        else if (c == '}') { generator(); tokens.push_back(makeRBraceToken(line)); }
+        else if (std::isspace(c)) { generator(); }
+        else { word += c; }
+    }
+
+    generator();
+    tokens.push_back(makeEndToken(line));
+}
 
 void Lexer::logger(std::ostream& os) const {
         os << "=== Lexer output: " << tokens.size() << " tokens ===\n";

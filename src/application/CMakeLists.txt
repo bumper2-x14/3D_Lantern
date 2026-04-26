@@ -14,6 +14,8 @@ target_link_libraries(application PUBLIC
     ${SDL2_LIBRARIES}
     modeling
     interpreter
+    ray_tracer
+    assets
 )
 
 target_include_directories(application PUBLIC ${CMAKE_SOURCE_DIR}/src)

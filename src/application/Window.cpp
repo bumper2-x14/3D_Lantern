@@ -171,7 +171,7 @@ void Window::winRun(GUI& gui, Controller& controller,
         renderer.render(scene, shader);
 
         gui.begin();
-        gui.drawPanelTop(scene);
+        gui.drawPanelTop(scene, renderer.getCameraMain(), shared, modeling);
         gui.drawPanelBottom(scene, camera);
         gui.drawPanelRight(scene, modeling, shared);
         gui.drawPanelLeft(scene, modeling, shared);

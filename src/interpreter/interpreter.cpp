@@ -26,6 +26,13 @@ Interpreter::Interpreter(const std::string& _path) {
     scene_des = parser.parse();
 }
 
+Interpreter::Interpreter(const std::string& input, bool from_string) {
+    Lexer lex;
+    lex.tokenizeFromString(input);
+    Parser parser(lex.getTokens());
+    scene_des = parser.parse();
+}
+
 Interpreter::~Interpreter() {
     delete renderer;
     delete camera;

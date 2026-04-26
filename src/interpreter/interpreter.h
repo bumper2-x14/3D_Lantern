@@ -11,6 +11,7 @@
 class Interpreter {
     public:
         Interpreter(const std::string& _path);
+        Interpreter(const std::string& input, bool from_string);
         ~Interpreter();
 
         Interpreter(const Interpreter&) = delete;

@@ -20,6 +20,7 @@ struct SerializerSettings {
     int depth = 20;
     double aspectRatio = 16.0 / 9.0;
     Vec3f background = {0, 0, 0};
+    bool threaded = false;
 };
 
 class SceneSerializer {

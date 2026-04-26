@@ -28,9 +28,9 @@ int main() {
     RaytracerResources rt;
 
     // textures
-    shared.addTexture("perlin_marble",  new PerlinTexture(MARBLE,      10));
-    shared.addTexture("perlin_wood",    new PerlinTexture(WOOD,        30));
-    shared.addTexture("perlin_turb",    new PerlinTexture(TURBULENCE,   5));
+    shared.addTexture("perlin_marble",  new PerlinTexture(PerlinClassType::MARBLE,      10));
+    shared.addTexture("perlin_wood",    new PerlinTexture(PerlinClassType::WOOD,        30));
+    shared.addTexture("perlin_turb",    new PerlinTexture(PerlinClassType::TURBULENCE,   5));
     shared.addTexture("checker",        new CheckerTexture(Color(1,1,1), Color(0,0,0), 4));
     shared.addTexture("bg_image",       new ImageTexture(IMG_DIR "texture-background.jpg"));
 

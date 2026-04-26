@@ -1,7 +1,7 @@
 
-#include "MD_Cube.h"
+#include "MD_Box.h"
 
-MD_Cube::MD_Cube(float _size){
+MD_Box::MD_Box(float _size){
 
     size = _size;
     mesh = new MD_Mesh;
@@ -9,7 +9,7 @@ MD_Cube::MD_Cube(float _size){
     mesh->setupMD_Mesh();
 }
 
-void MD_Cube::addFace(Vec3f p0, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal){
+void MD_Box::addFace(Vec3f p0, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal){
     unsigned int start = mesh->data->vertices.size();
 
     mesh->data->vertices.push_back(Vertex(p0, normal, Vec2f(0.0f, 0.0f)));
@@ -26,7 +26,7 @@ void MD_Cube::addFace(Vec3f p0, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal){
     mesh->data->indices.push_back(start + 3);
 }
 
-void MD_Cube::buildShape(){
+void MD_Box::buildShape(){
     float h = size / 2.0f;
 
     // Top
@@ -72,7 +72,7 @@ void MD_Cube::buildShape(){
     );
 }
 
-void MD_Cube::applyTransform(Transform* transform){
+void MD_Box::applyTransform(Transform* transform){
     for (auto& v : mesh->data->vertices){
         v.position = transform->mat * v.position;
         v.normal = transform->transformNormal(v.normal);

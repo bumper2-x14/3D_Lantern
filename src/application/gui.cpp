@@ -70,38 +70,91 @@ void GUI::resize(int w, int h, int pb, int pt, int pl, int pr) {
     panel_right = pr;
 }
 
-void GUI::drawPanelTop(MD_Scene& scene){
+void GUI::drawPanelTop(MD_Scene& scene, MD_Camera& camera,
+                       SharedResources& shared, ModelingResources& modeling) {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(width, panel_top));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     ImGui::Begin("TopBar", nullptr, flags);
-    ImGui::Text("Toolbar");
-    int selected = 0;
 
-    //move cursor to the right side
-    float rightAlign = ImGui::GetWindowWidth() - 600; 
+    ImGui::Text("3D Lantern");
+    ImGui::SameLine();
+
+    // mode radio buttons on the right
+    float rightAlign = ImGui::GetWindowWidth() - 600;
     ImGui::SetCursorPosX(rightAlign);
 
-
-    if (selected_tool == CtrlMode::CAMERA) selected = 0;
+    int selected = 0;
+    if (selected_tool == CtrlMode::CAMERA)    selected = 0;
     else if (selected_tool == CtrlMode::TRANSLATE) selected = 1;
-    else if (selected_tool == CtrlMode::ROTATE) selected = 2;
-    else if (selected_tool == CtrlMode::SCALE) selected = 3;
+    else if (selected_tool == CtrlMode::ROTATE)    selected = 2;
+    else if (selected_tool == CtrlMode::SCALE)     selected = 3;
 
-    ImGui::RadioButton("move camera", &selected, 0); ImGui::SameLine();
-    ImGui::RadioButton("move object", &selected, 1); ImGui::SameLine();
-    ImGui::RadioButton("rotate object", &selected, 2); ImGui::SameLine();
-    ImGui::RadioButton("scale object", &selected, 3);
+    ImGui::RadioButton("Camera",    &selected, 0); ImGui::SameLine();
+    ImGui::RadioButton("Translate", &selected, 1); ImGui::SameLine();
+    ImGui::RadioButton("Rotate",    &selected, 2); ImGui::SameLine();
+    ImGui::RadioButton("Scale",     &selected, 3); ImGui::SameLine();
 
     if (selected == 0) selected_tool = CtrlMode::CAMERA;
     else if (selected == 1) selected_tool = CtrlMode::TRANSLATE;
     else if (selected == 2) selected_tool = CtrlMode::ROTATE;
     else if (selected == 3) selected_tool = CtrlMode::SCALE;
 
+    // render button far right
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 120);
+    if (ImGui::Button(">> Render", ImVec2(110, panel_top - 10)))
+        ImGui::OpenPopup("Render Settings");
+
+    // Render Settings popup
+    ImGui::SetNextWindowSize(ImVec2(350, 0), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Render Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Render Settings");
+        ImGui::Separator();
+
+        ImGui::DragInt  ("Width",   &render_settings.width,   1.f, 100, 4096);
+        ImGui::DragInt  ("Height",  &render_settings.height,  1.f, 100, 4096);
+        ImGui::DragInt  ("Samples", &render_settings.samples, 1.f, 1,   512);
+        ImGui::DragInt  ("Depth",   &render_settings.depth,   1.f, 1,   64);
+
+        float bg[3] = { render_settings.background.x,
+                        render_settings.background.y,
+                        render_settings.background.z };
+        if (ImGui::ColorEdit3("Background", bg))
+            render_settings.background = {bg[0], bg[1], bg[2]};
+
+        ImGui::InputText("Output path", render_output, sizeof(render_output));
+        ImGui::Checkbox("Multithreaded", &render_threaded);
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Render", ImVec2(-1, 35))) {
+            SerializerSettings ss;
+            ss.width       = render_settings.width;
+            ss.aspectRatio = render_settings.aspectRatio;
+            ss.samples     = render_settings.samples;
+            ss.depth       = render_settings.depth;
+            ss.background  = render_settings.background;
+
+            std::string lnt = SceneSerializer::serialize(scene, camera, shared, modeling, ss);
+
+            Interpreter interp(lnt, true);
+            RT_Renderer& rt = interp.makeRayTracer();
+            rt.render(render_settings.threaded);
+            rt.writePPM(render_output);
+            std::cout << "Render saved to " << render_output << '\n';
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(-1, 35)))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::EndPopup();
+    }
+
     ImGui::End();
     ImGui::PopStyleVar();
-
-   }
+}
 
 void GUI::drawPanelBottom(MD_Scene& scene, MD_Camera& camera){
     
@@ -141,7 +194,7 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
     ImGui::Text("Objects");
     ImGui::Separator();
 
-    enum ShapeChoice { NONE = -1, SPHERE, CYLINDER, CONE, TORUS, QUAD, DISK };
+    enum ShapeChoice { NONE = -1, SPHERE, CYLINDER, CONE, TORUS, QUAD, DISK, BOX };
     static int selectedShape = NONE;
     static float pos[3] = {0.f, 1.f, 0.f};
     static float rot[3] = {0.f, 0.f, 0.f};
@@ -151,6 +204,7 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
     float btn_w = (ImGui::GetContentRegionAvail().x - 10) / 2.f;
 
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.05f, 0.5f));
+    if (ImGui::Button("+ Box", ImVec2(-1, 30))) { selectedShape = BOX; ImGui::OpenPopup("Create Shape"); }
     if (ImGui::Button("+ Sphere", ImVec2(-1, 30))) { selectedShape = SPHERE; ImGui::OpenPopup("Create Shape"); }
     if (ImGui::Button("+ Cone", ImVec2(-1, 30))) { selectedShape = CONE; ImGui::OpenPopup("Create Shape"); }
     if (ImGui::Button("+ Torus", ImVec2(-1, 30))) { selectedShape = TORUS; ImGui::OpenPopup("Create Shape"); }
@@ -171,7 +225,8 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
 
     // Popup unchanged
     if (ImGui::BeginPopupModal("Create Shape", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        const char* shapeName = selectedShape == SPHERE ? "Sphere"
+        const char* shapeName = selectedShape == BOX ? "Box"
+                            : selectedShape == SPHERE ? "Sphere"
                             : selectedShape == CYLINDER ? "Cylinder"
                             : selectedShape == CONE ? "Cone"
                             : selectedShape == TORUS ? "Torus"
@@ -203,6 +258,7 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
 
             MD_Object* created = nullptr;
             if (selectedShape == SPHERE)   created = scene.createObject(name, &scene.default_sphere, trs, mat);
+            else if (selectedShape == BOX) created = scene.createObject(name, &scene.default_box, trs, mat);
             else if (selectedShape == CYLINDER) created = scene.createObject(name, &scene.default_cylinder, trs, mat);
             else if (selectedShape == CONE) created = scene.createObject(name, &scene.default_cone, trs, mat);
             else if (selectedShape == TORUS) created = scene.createObject(name, &scene.default_torus, trs, mat);
@@ -258,7 +314,9 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
     if (ImGui::BeginPopupModal("Load Mesh", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         static char mesh_name[64] = "";
         static char mesh_path[256] = "";
-        static float mpos[3]   = {0.f, 0.f, 0.f};
+        static float mpos[3]  = {0.f, 0.f, 0.f};
+        static float mscale[3] = {1.0f, 1.0f, 1.0f};
+        static float mrotate[3] = {0.0f, 0.0f, 0.0f};
         static float mcolor[3] = {0.5f, 0.5f, 0.5f};
 
         ImGui::Text("Load OBJ Mesh");
@@ -266,7 +324,15 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
         ImGui::InputText("Name", mesh_name, sizeof(mesh_name));
         ImGui::InputText("Path", mesh_path, sizeof(mesh_path));
         ImGui::DragFloat3("Position", mpos, 0.1f);
-        ImGui::ColorEdit3("Color",    mcolor);
+        ImGui::DragFloat3("Scale", mscale, 0.1f);
+        ImGui::DragFloat3("Rotation", mrotate, 0.1f);
+        ImGui::ColorEdit3("Color", mcolor);
+
+        TRSDataf mtrs{
+                {pos[0],   pos[1],   pos[2]},   // translation
+                {scale[0], scale[1], scale[2]}, // scale
+                {rot[0],   rot[1],   rot[2]}    // rotation
+        };
 
         if (ImGui::Button("Load")) {
             if (mesh_path[0] != '\0') {
@@ -279,7 +345,7 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
                     MD_Material* mat = modeling.addMaterial(name + "_mat",
                         new MD_Material(Vec3f(mcolor[0], mcolor[1], mcolor[2]),
                                         MD_Material::MatType::DIFFUSE));
-                    scene.createObject(name, shape,TRSDataf{{mpos[0], mpos[1], mpos[2]}}, mat);
+                    scene.createObject(name, shape, mtrs, mat);
                     scene.selected_obj_index = (int)scene.objects.size() - 1;
                     scene.selected_is_light = false;
                     scene.show_selected = true;

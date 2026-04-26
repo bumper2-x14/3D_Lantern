@@ -8,9 +8,11 @@
 
 class Lexer {
     public:
+        Lexer() = default;
         Lexer(const std::string& _path);
         void tokenize();
         const std::vector<Token>& getTokens() const;
+        void tokenizeFromString(const std::string& source);
         void logger(std::ostream& os = std::cout) const;
         static void regressionTest();
     private:

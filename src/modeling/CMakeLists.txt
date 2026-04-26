@@ -9,6 +9,7 @@ add_library(modeling STATIC
     MD_Disk.cpp
     MD_Cone.cpp
     MD_Torus.cpp
+    MD_Box.cpp
     MD_ModelShape.cpp
     MD_Renderer.cpp
     MD_Material.cpp
