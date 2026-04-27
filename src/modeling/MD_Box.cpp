@@ -2,7 +2,7 @@
 #include "MD_Box.h"
 
 MD_Box::MD_Box(float _size){
-
+    type = ShapeType::BOX;
     size = _size;
     mesh = new MD_Mesh;
     buildShape();

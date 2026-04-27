@@ -20,13 +20,13 @@ class MD_Material{
 
         /// @brief Creates a material using a texture.
         /// @param _texture Pointer to the texture.
-        MD_Material(Texture* _texture);
+        MD_Material(const std::string& _name ,Texture* _texture);
 
         /// @brief Creates a material using a flat color.
         /// @param color Base color.
         /// @param type Type of material (ambient, diffuse, specular).
         /// @param shininess Specular exponent (used for lighting).
-        MD_Material(const Vec3f& color, MatType type, float shininess = 32.f);
+        MD_Material(const std::string& _name, const Vec3f& color, MatType type, float shininess = 32.f);
 
         /// @brief Destructor (frees GL resources if needed).
         ~MD_Material();
@@ -44,6 +44,9 @@ class MD_Material{
 
         /// @brief Returns the material type.
         MatType getType() const { return type; }
+
+        /// @brief Returns the material name.
+        std::string getName() const { return name; }
 
         /// @brief Checks if this material uses a texture.
         bool hasTexture() const { return type == MatType::TEXTURE; }
@@ -67,6 +70,7 @@ class MD_Material{
         /// @brief Uploads the texture to the GPU.
         void uploadTexture();
 
+        std::string name;
         MatType type = MatType::DIFFUSE; ///< Type of material.
         Texture* texture = nullptr; ///< Pointer to texture (if any).
         Color color {}; ///< Base color.

@@ -7,6 +7,7 @@
 #include "ray_tracer/RT_Box.h"
 #include "ray_tracer/RT_Disk.h"
 #include "ray_tracer/RT_Quad.h"
+#include "ray_tracer/RT_Torus.h"
 #include "ray_tracer/RT_PointLight.h"
 #include "ray_tracer/RT_DirectionalLight.h"
 
@@ -152,6 +153,8 @@ void Interpreter::buildObjects() {
                 obj = scene.emplaceObject<RT_Box>(mat); break;
             case ObjectType::DISK:
                 obj = scene.emplaceObject<RT_Disk>(mat); break;
+            case ObjectType::TORUS:
+                obj = scene.emplaceObject<RT_Torus>(mat); break;
             case ObjectType::QUAD:
                 obj = scene.emplaceObject<RT_Quad>(mat); break;
             case ObjectType::MESH: {

@@ -2,7 +2,7 @@
 
 MD_Cylinder::MD_Cylinder(int _nb_seg){
     nb_seg = _nb_seg;
-
+    type = ShapeType::CYLINDER;
     mesh = new MD_Mesh;
     buildShape();
     mesh->setupMD_Mesh();

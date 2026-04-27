@@ -1,8 +1,12 @@
 #include "MD_Scene.h"
 
-MD_Scene::MD_Scene() {}
+MD_Scene::MD_Scene() {
+    	default_material = new MD_Material ("default_mat" , Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE);
+
+}
 
 MD_Scene::~MD_Scene() {
+    delete default_material;
     for (auto* obj : objects) delete obj;
     for (auto* lgt : point_lights) delete lgt;
 }
@@ -56,7 +60,7 @@ MD_PointLight* MD_Scene::getPointLight(int index) {
 
 std::vector<MD_PointLight*>& MD_Scene::getPointLights() { return point_lights; }
 
-void MD_Scene::loadDefaultScene() {
+void MD_Scene::loadDefaultScene(ModelingResources& modeling) {
     // clear anything already in the scene
     for (auto* o : objects)     delete o;
     for (auto* l : point_lights) delete l;
@@ -64,13 +68,17 @@ void MD_Scene::loadDefaultScene() {
     point_lights.clear();
     selected_obj_index = 0;
 
+    MD_Material* ground_mat = modeling.addMaterial("ground_mat",
+        new MD_Material("ground_mat", Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE));
     // ground — not selectable
-    MD_Object* ground = createObject("Ground", &default_ground,
-                                     TRSDataf{ {0.f, 0.f, 0.f} },
-                                     &default_ground_mat);
+    MD_Object* ground = createObject("ground", &default_ground,
+                                     TRSDataf{
+                                        {0.f, 0.f, 0.f},   // translation
+                                        {50.f, 50.f, 50.f}, // scale
+                                        {0.f, 0.f, 0.f}    // rotation
+                                    },
+                                     ground_mat);
     ground->selectable = false;
-  
-
     // one warm point light above and to the side
     createPointLight(Vec3f(3.f, 4.f, 3.f), Color(1.f, 1.f, 1.f), 2.0f);
 }

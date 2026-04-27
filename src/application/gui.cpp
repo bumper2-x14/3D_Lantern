@@ -80,7 +80,6 @@ void GUI::drawPanelTop(MD_Scene& scene, MD_Camera& camera,
     ImGui::Text("3D Lantern");
     ImGui::SameLine();
 
-    // mode radio buttons on the right
     float rightAlign = ImGui::GetWindowWidth() - 600;
     ImGui::SetCursorPosX(rightAlign);
 
@@ -100,21 +99,31 @@ void GUI::drawPanelTop(MD_Scene& scene, MD_Camera& camera,
     else if (selected == 2) selected_tool = CtrlMode::ROTATE;
     else if (selected == 3) selected_tool = CtrlMode::SCALE;
 
-    // render button far right
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 120);
+    // buttons
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 240);
+
+    if (ImGui::Button("Save Scene", ImVec2(110, panel_top - 10))) {
+        SerializerSettings ss = render_settings;
+        ss.aspectRatio = (double)render_settings.width / render_settings.height;
+        std::string lnt = SceneSerializer::serialize(scene, camera, shared, modeling, ss);
+        std::ofstream f(scene_output);
+        if (f) { f << lnt; std::cout << "Scene saved to " << scene_output << '\n'; }
+        else std::cerr << "Failed to save scene to " << scene_output << '\n';
+    }
+    ImGui::SameLine();
     if (ImGui::Button(">> Render", ImVec2(110, panel_top - 10)))
         ImGui::OpenPopup("Render Settings");
 
-    // Render Settings popup
+    // popup
     ImGui::SetNextWindowSize(ImVec2(350, 0), ImGuiCond_Always);
     if (ImGui::BeginPopupModal("Render Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("Render Settings");
         ImGui::Separator();
 
-        ImGui::DragInt  ("Width",   &render_settings.width,   1.f, 100, 4096);
-        ImGui::DragInt  ("Height",  &render_settings.height,  1.f, 100, 4096);
-        ImGui::DragInt  ("Samples", &render_settings.samples, 1.f, 1,   512);
-        ImGui::DragInt  ("Depth",   &render_settings.depth,   1.f, 1,   64);
+        ImGui::DragInt("Width",   &render_settings.width,   1.f, 100, 4096);
+        ImGui::DragInt("Height",  &render_settings.height,  1.f, 100, 4096);
+        ImGui::DragInt("Samples", &render_settings.samples, 1.f, 1,   512);
+        ImGui::DragInt("Depth",   &render_settings.depth,   1.f, 1,   64);
 
         float bg[3] = { render_settings.background.x,
                         render_settings.background.y,
@@ -122,29 +131,22 @@ void GUI::drawPanelTop(MD_Scene& scene, MD_Camera& camera,
         if (ImGui::ColorEdit3("Background", bg))
             render_settings.background = {bg[0], bg[1], bg[2]};
 
+        ImGui::Separator();
+        ImGui::InputText("Scene path",  scene_output,  sizeof(scene_output));
         ImGui::InputText("Output path", render_output, sizeof(render_output));
         ImGui::Checkbox("Multithreaded", &render_threaded);
-
         ImGui::Separator();
 
         if (ImGui::Button("Render", ImVec2(-1, 35))) {
-            SerializerSettings ss;
-            ss.width       = render_settings.width;
-            ss.aspectRatio = render_settings.aspectRatio;
-            ss.samples     = render_settings.samples;
-            ss.depth       = render_settings.depth;
-            ss.background  = render_settings.background;
-
-            std::string lnt = SceneSerializer::serialize(scene, camera, shared, modeling, ss);
-
+            render_settings.aspectRatio = (double)render_settings.width / render_settings.height;
+            std::string lnt = SceneSerializer::serialize(scene, camera, shared, modeling, render_settings);
             Interpreter interp(lnt, true);
             RT_Renderer& rt = interp.makeRayTracer();
-            rt.render(render_settings.threaded);
+            rt.render(render_threaded);
             rt.writePPM(render_output);
             std::cout << "Render saved to " << render_output << '\n';
             ImGui::CloseCurrentPopup();
         }
-
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(-1, 35)))
             ImGui::CloseCurrentPopup();
@@ -246,10 +248,12 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
         if (ImGui::Button("Create")) {
             const std::string name = (obj_name[0] != '\0') ? obj_name : shapeName;
 
+            /*
             MD_Material* mat = new MD_Material(
                 Vec3f(color[0], color[1], color[2]),
                 MD_Material::MatType::DIFFUSE);
-            
+            */
+
             TRSDataf trs{
                 {pos[0],   pos[1],   pos[2]},   // translation
                 {scale[0], scale[1], scale[2]}, // scale
@@ -257,13 +261,13 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
             };
 
             MD_Object* created = nullptr;
-            if (selectedShape == SPHERE)   created = scene.createObject(name, &scene.default_sphere, trs, mat);
-            else if (selectedShape == BOX) created = scene.createObject(name, &scene.default_box, trs, mat);
-            else if (selectedShape == CYLINDER) created = scene.createObject(name, &scene.default_cylinder, trs, mat);
-            else if (selectedShape == CONE) created = scene.createObject(name, &scene.default_cone, trs, mat);
-            else if (selectedShape == TORUS) created = scene.createObject(name, &scene.default_torus, trs, mat);
-            else if (selectedShape == QUAD) created = scene.createObject(name, &scene.default_quad, trs, mat);
-            else if (selectedShape == DISK) created = scene.createObject(name, &scene.default_disk, trs, mat);
+            if (selectedShape == SPHERE)   created = scene.createObject(name, &scene.default_sphere, trs, scene.default_material);
+            else if (selectedShape == BOX) created = scene.createObject(name, &scene.default_box, trs, scene.default_material);
+            else if (selectedShape == CYLINDER) created = scene.createObject(name, &scene.default_cylinder, trs, scene.default_material);
+            else if (selectedShape == CONE) created = scene.createObject(name, &scene.default_cone, trs, scene.default_material);
+            else if (selectedShape == TORUS) created = scene.createObject(name, &scene.default_torus, trs, scene.default_material);
+            else if (selectedShape == QUAD) created = scene.createObject(name, &scene.default_quad, trs, scene.default_material);
+            else if (selectedShape == DISK) created = scene.createObject(name, &scene.default_disk, trs, scene.default_material);
 
             if (created) {
                 scene.selected_obj_index = (int)scene.objects.size() - 1;
@@ -342,10 +346,12 @@ void GUI::drawPanelLeft(MD_Scene& scene, ModelingResources& modeling, SharedReso
                 Model* model = shared.loadModel(name, mesh_path);
                 if (model) {
                     MD_ModelShape* shape = modeling.addModelShape(name, model);
+                    /*
                     MD_Material* mat = modeling.addMaterial(name + "_mat",
                         new MD_Material(Vec3f(mcolor[0], mcolor[1], mcolor[2]),
                                         MD_Material::MatType::DIFFUSE));
-                    scene.createObject(name, shape, mtrs, mat);
+                    */
+                    scene.createObject(name, shape, mtrs, scene.default_material);
                     scene.selected_obj_index = (int)scene.objects.size() - 1;
                     scene.selected_is_light = false;
                     scene.show_selected = true;
@@ -580,12 +586,12 @@ void GUI::drawPanelRight(MD_Scene& scene, ModelingResources& modeling, SharedRes
                 if (!modeling.hasMaterial(name)) {
                     MD_Material* mat = nullptr;
                     switch (mat_type) {
-                        case 0: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::DIFFUSE);  break;
-                        case 1: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::SPECULAR, mat_shininess); break;
-                        case 2: mat = new MD_Material(Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::AMBIENT);  break;
+                        case 0: mat = new MD_Material(name, Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::DIFFUSE);  break;
+                        case 1: mat = new MD_Material(name, Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::SPECULAR, mat_shininess); break;
+                        case 2: mat = new MD_Material(name, Vec3f(mat_color[0], mat_color[1], mat_color[2]), MD_Material::MatType::AMBIENT);  break;
                         case 3: {
                             Texture* tex = shared.getTexture(mat_tex);
-                            if (tex) mat = new MD_Material(tex);
+                            if (tex) mat = new MD_Material(name, tex);
                             else ImGui::OpenPopup("tex_not_found");
                             break;
                         }

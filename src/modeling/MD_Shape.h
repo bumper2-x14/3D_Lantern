@@ -6,7 +6,7 @@
 
 /// @brief Enum describing the type of shape.
 enum class ShapeType{
-    BOX, SPHERE, CYLINDER, CONE, DISK, QUAD, MESH
+    BOX, SPHERE, CYLINDER, CONE, DISK, QUAD, TORUS, MESH
 };
 
 /// @brief Base class for all shapes.
@@ -43,10 +43,11 @@ class MD_Shape {
                 case ShapeType::BOX : return "box"; break;
                 case ShapeType:: SPHERE : return "sphere"; break;
                 case ShapeType:: CYLINDER : return "cylinder"; break;
-                case ShapeType:: CONE : return "CONE"; break;
-                case ShapeType:: DISK : return "DISK"; break;
+                case ShapeType:: CONE : return "cone"; break;
+                case ShapeType:: DISK : return "disk"; break;
                 case ShapeType:: QUAD : return "quad"; break;
                 case ShapeType:: MESH : return "mesh"; break;
+                case ShapeType::TORUS : return "torus";
             }
             return "";
         } 

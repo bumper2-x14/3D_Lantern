@@ -1,12 +1,12 @@
 #include "MD_Material.h"
 
-MD_Material::MD_Material(Texture* t)
-    : type(MatType::TEXTURE), texture(t) {
+MD_Material::MD_Material(const std::string& _name, Texture* t)
+    : name(_name) ,type(MatType::TEXTURE), texture(t) {
     uploadTexture();
 }
 
-MD_Material::MD_Material(const Vec3f& _color, MatType _type, float _shininess)
-    : type(_type), color(_color), shininess(_shininess) {
+MD_Material::MD_Material(const std::string& _name, const Vec3f& _color, MatType _type, float _shininess)
+    : name(_name), type(_type), color(_color), shininess(_shininess) {
     if (type == MatType::TEXTURE) type = MatType::DIFFUSE; // guard against misuse
 }
 

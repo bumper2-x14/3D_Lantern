@@ -10,8 +10,8 @@ RT_Quad::RT_Quad(const Point3d& _Q, const Vec3d& _u, const Vec3d& _v, RT_Materia
       material(_material) {
     Vec3d n = cross(u, v);
     normal  = normalize(n);
-    w       = n / dot(n, n);
-    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    w = n / dot(n, n);
+    D = dot(normal, Vec3d(Q.x, Q.y, Q.z));
 }
 
 RT_Quad::RT_Quad(RT_Material* _material) : 
@@ -24,9 +24,9 @@ RT_Quad::RT_Quad(RT_Material* _material) :
     material(_material)
 {
     Vec3d n = cross(u, v);
-    normal  = normalize(n);
-    w       = n / dot(n, n);
-    D       = dot(normal, Vec3d(Q.x, Q.y, Q.z));
+    normal = normalize(n);
+    w = n / dot(n, n);
+    D = dot(normal, Vec3d(Q.x, Q.y, Q.z));
 }
 
 

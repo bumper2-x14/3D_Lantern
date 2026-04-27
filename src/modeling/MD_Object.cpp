@@ -11,7 +11,7 @@ Mat4f MD_Object::getTransformMatrix() const {
 }
 
 std::string MD_Object::serialize() const {
-    std::string mat_ref = material ? name + "_mat" : "default_mat";
+    std::string mat_ref = material ? material->getName() : "default_mat";
 
     std::string result = "object {\n";
 

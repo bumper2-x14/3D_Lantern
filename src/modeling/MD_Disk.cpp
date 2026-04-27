@@ -2,7 +2,7 @@
 
 MD_Disk::MD_Disk(int _nb_seg){
     nb_seg = _nb_seg;
-
+    type = ShapeType::DISK;
     mesh = new MD_Mesh;
     buildShape();
     mesh->setupMD_Mesh();

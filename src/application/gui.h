@@ -63,6 +63,7 @@ private:
 
     SerializerSettings render_settings;
     char render_output[256] = "render.ppm";
+    char scene_output[256] = "scene.lnt";
     bool render_threaded = true;
 };
 

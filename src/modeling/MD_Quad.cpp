@@ -4,7 +4,7 @@
 MD_Quad::MD_Quad(float _width, float _lenght){
     width = _width;
     length = _lenght;
-
+    type = ShapeType::QUAD;
     mesh = new MD_Mesh;
     buildShape();
     mesh->setupMD_Mesh();

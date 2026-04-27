@@ -2,6 +2,7 @@
 #define MD_SCENE_H
 
 #include <vector>
+#include "modeling_resources.h"
 #include "MD_Object.h"
 #include "MD_PointLight.h"
 #include "MD_Quad.h"
@@ -67,7 +68,7 @@ class MD_Scene{
 		std::vector<MD_PointLight*>& getPointLights();
 
 		/// @brief Loads a default scene with basic objects/lights.
-		void loadDefaultScene();
+		void loadDefaultScene(ModelingResources& modeling);
 
 		/// @brief Returns currently selected object (or nullptr).
 		MD_Object* getSelectedObject() const;
@@ -94,11 +95,10 @@ class MD_Scene{
 		MD_Box default_box {1}; ///< Default box
 
 		// default material
-		MD_Material default_material{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE};
+		MD_Material* default_material = nullptr;
 
     private:	
 		MD_Quad default_ground{100, 100}; ///< Large quad used as ground.
-		MD_Material default_ground_mat{Vec3f(0.5f, 0.5f, 0.5f), MD_Material::MatType::DIFFUSE}; ///< Ground material.
 };
 
 #endif

@@ -47,7 +47,7 @@ private:
 
     // light gizmo (small sphere used to visualize light position)
     MD_Sphere light_gizmo_shape{4, 4};
-    MD_Material light_gizmo_mat{Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::AMBIENT};
+    MD_Material light_gizmo_mat{"light_gizmo" , Vec3f(1.f, 1.f, 1.f), MD_Material::MatType::AMBIENT};
     MD_Object light_gizmo_obj{"Light_gizmo", &light_gizmo_shape, &light_gizmo_mat};
 
     // picking buffers (used to detect clicked object)

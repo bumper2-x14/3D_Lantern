@@ -2,7 +2,7 @@
 
 MD_Cone::MD_Cone(int _nb_seg){
     nb_seg = _nb_seg;
-
+    type = ShapeType::CONE;
     mesh = new MD_Mesh;
     buildShape();
     mesh->setupMD_Mesh();

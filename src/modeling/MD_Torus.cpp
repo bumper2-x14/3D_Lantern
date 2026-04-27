@@ -3,7 +3,7 @@
 MD_Torus::MD_Torus(int _nb_ring, int _nb_side){
     nb_ring = _nb_ring;
     nb_side = _nb_side;
-
+    type = ShapeType::TORUS;
     mesh = new MD_Mesh;
     buildShape();
     mesh->setupMD_Mesh();

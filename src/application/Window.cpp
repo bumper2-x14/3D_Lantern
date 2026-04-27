@@ -88,7 +88,7 @@ void Window::winRun(GUI& gui, Controller& controller,
     camera.setAspect(static_cast<float>(viewport_w) / viewport_h);
 
     MD_Shader shader(SHADER_DIR "trs_shader.vs", SHADER_DIR "trs_shader.fs");
-    scene.loadDefaultScene();
+    scene.loadDefaultScene(modeling);
 
     Input input;
     Uint64 last = SDL_GetPerformanceCounter();
