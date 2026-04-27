@@ -39,6 +39,7 @@ Interpreter::~Interpreter() {
     delete camera;
 }
 
+// Suspected of wrong behavior 
 RT_Renderer& Interpreter::makeRayTracer() {
     buildTextures();
     buildMaterials();
@@ -91,7 +92,7 @@ void Interpreter::buildTextures() {
                 );
                 break;
             case TextureType::IMAGE:
-                shared.loadImage(name, std::string(IMG_DIR) + td.file_img);
+                shared.loadImage(name, td.file_img);
                 tex = new ImageTexture(shared.getImage(name), name);
                 break;
             case TextureType::MARBLE:
