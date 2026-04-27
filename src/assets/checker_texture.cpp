@@ -1,5 +1,5 @@
 #include <iomanip>
-
+#include <sstream>
 #include "checker_texture.h"
 #include "color_texture.h"
 

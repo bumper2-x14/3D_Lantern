@@ -6,3 +6,4 @@ add_library(interpreter STATIC
 )
 
 target_include_directories(interpreter PUBLIC ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(interpreter PUBLIC modeling)
