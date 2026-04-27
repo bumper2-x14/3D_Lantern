@@ -12,6 +12,9 @@ class RT_Camera {
         RT_Camera(const Point3d& _center, const Point3d& _lookAt, const Vec3d& _view_up, 
                     double _vertical_fov, double _defocus_angle, double _focus_distance);
 
+        RT_Camera(const Vec3d& md_pos, const Vec3d& md_lookAt,
+          const Vec3d& md_up, double _vfov, double _defocus_angle,  double _focus_distance);
+
         void initialize(float aspect_ratio, int width, int height, int samples_per_pix);
         Rayd generateRay(int i, int j, int inner_i, int inner_j) const;
 

@@ -11,6 +11,22 @@ RT_Camera::RT_Camera(const Point3d& _center, const Point3d& _lookAt, const Vec3d
         center(_center), lookAt(_lookAt), view_up(_view_up), vertical_fov(_vertical_fov), 
         defocus_angle(_defocus_angle), focus_distance(_focus_distance) {}
 
+RT_Camera::RT_Camera(const Vec3d& md_pos, const Vec3d& md_lookAt,
+          const Vec3d& md_up, double _vfov, double _defocus_angle,  double _focus_distance) {
+    // ---- MD → RT SPACE ADAPTATION ----
+    auto convert = [](const Vec3d& v) {
+        return Vec3d(v.x, v.z, v.y); // swap Y/Z (your current mismatch)
+    };
+
+    center = Point3d(md_pos.x, md_pos.y, md_pos.z);
+    lookAt = Point3d(md_lookAt.x, md_lookAt.y, md_lookAt.z);
+    view_up = convert(md_up);
+
+    vertical_fov = _vfov;
+    defocus_angle = _defocus_angle;
+    focus_distance = _focus_distance;
+}
+    
 
 void RT_Camera::initialize(float aspect_ratio, int width, int height, int samples_per_pix) {
     // Stratified sampling: divide pixel into sqrt_spp × sqrt_spp sub-cells

@@ -110,10 +110,10 @@ void Window::winRun(GUI& gui, Controller& controller,
                 SDL_GL_GetDrawableSize(win, &width, &height);
                 int lw, lh;
                 SDL_GetWindowSize(win, &lw, &lh);
-                panel_top    = static_cast<int>(height * kTopPanelFrac);
+                panel_top = static_cast<int>(height * kTopPanelFrac);
                 panel_bottom = static_cast<int>(height * kBottomPanelFrac);
-                panel_left   = static_cast<int>(width  * kLeftPanelFrac);
-                panel_right  = static_cast<int>(width  * kRightPanelFrac);
+                panel_left = static_cast<int>(width  * kLeftPanelFrac);
+                panel_right = static_cast<int>(width  * kRightPanelFrac);
                 updateViewport();
                 gui.resize(lw, lh, panel_bottom, panel_top, panel_left, panel_right);
                 camera.setAspect(static_cast<float>(viewport_w) / viewport_h);

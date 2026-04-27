@@ -50,10 +50,19 @@ RT_Renderer& Interpreter::makeRayTracer() {
 
     renderer = new RT_Renderer(s.width, s.aspectRatio, s.samples, s.depth);
 
+    Vec3d forward = normalize(c.lookat - c.position);
+    Vec3d up = normalize(c.upView);
+
+    // enforce orthogonality
+    Vec3d right = normalize(cross(forward, up));
+    up = cross(right, forward);
+
     camera = new RT_Camera(
         Point3d(c.position.x, c.position.y, c.position.z),
-        Point3d(c.lookat.x,   c.lookat.y,   c.lookat.z),
-        Vec3d  (c.upView.x,   c.upView.y,   c.upView.z),
+        Point3d(c.position.x + forward.x,
+                c.position.y + forward.y,
+                c.position.z + forward.z),
+        Vec3d(up.x, up.y, up.z),
         c.vfov, c.defocusAngle, c.focusDistance
     );
 
