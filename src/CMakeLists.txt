@@ -11,6 +11,12 @@ target_include_directories(lantern PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 
+add_executable(lantern3D lantern3D.cpp)
+
+target_link_libraries(lantern3D PRIVATE
+    application
+)
+
 set_target_properties(lantern PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )

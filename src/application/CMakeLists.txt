@@ -7,8 +7,13 @@ add_library(application STATIC
 )
 
 find_package(SDL2 REQUIRED)
-target_include_directories(application PUBLIC ${SDL2_INCLUDE_DIRS})
-target_link_libraries(application PUBLIC  
+
+target_include_directories(application PUBLIC
+    ${SDL2_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/src
+)
+
+target_link_libraries(application PUBLIC
     imgui
     glad
     ${SDL2_LIBRARIES}
@@ -17,9 +22,3 @@ target_link_libraries(application PUBLIC
     ray_tracer
     assets
 )
-
-target_include_directories(application PUBLIC ${CMAKE_SOURCE_DIR}/src)
-target_include_directories(application PUBLIC ${CMAKE_SOURCE_DIR}/src)
-
-
-
