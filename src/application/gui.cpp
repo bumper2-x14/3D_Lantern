@@ -443,8 +443,6 @@ void GUI::drawPanelRight(MD_Scene& scene, ModelingResources& modeling, SharedRes
     }
 
     if (ImGui::CollapsingHeader("Properties", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::Text("sel_obj=%d is_light=%d", scene.selected_obj_index, (int)scene.selected_is_light);
-
         if (!scene.selected_is_light && scene.selected_obj_index >= 0) {
             MD_Object* obj = scene.getSelectedObject();
             if (obj) {
