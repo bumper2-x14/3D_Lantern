@@ -32,6 +32,10 @@ std::string SceneSerializer::f(float v) {
 
 // blocks
 
+static Vec3f toRTCoords(const Vec3f& v) {
+    return Vec3f(v.x, v.z, -v.y);
+}
+
 void SceneSerializer::writeSettings(std::ostringstream& o,
                                     const SerializerSettings& s) {
     o << "setting {\n"
@@ -52,9 +56,9 @@ void SceneSerializer::writeCamera(std::ostringstream& o, const MD_Camera& cam) {
     Vec3f up     = cam.getUp();
 
     o << "camera {\n"
-      << "    position "       << v3(pos)         << "\n"
-      << "    lookat "         << v3(lookat)      << "\n"
-      << "    up_view "        << v3(up)          << "\n"
+      << "    position "       << v3(toRTCoords(pos))     << "\n"
+      << "    lookat "         << v3(toRTCoords(lookat))      << "\n"
+      << "    up_view "        << v3(toRTCoords(up))          << "\n"
       << "    vfov "           << f(cam.getFov()) << "\n"
       << "    defocus_angle "  << "0.0\n"
       << "    focus_distance " << "10.0\n"
@@ -124,7 +128,7 @@ void SceneSerializer::writeLights(std::ostringstream& o, const MD_Scene& scene) 
         if (!light) continue;
         o << "light {\n"
           << "    type point\n"
-          << "    position "  << v3(light->getPosition()) << "\n"
+          << "    position "  << v3(toRTCoords(light->getPosition())) << "\n"
           << "    color "     << v3(Vec3f(light->getColor().r,
                                           light->getColor().g,
                                           light->getColor().b)) << "\n"
@@ -132,3 +136,4 @@ void SceneSerializer::writeLights(std::ostringstream& o, const MD_Scene& scene) 
           << "}\n\n";
     }
 }
+

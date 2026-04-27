@@ -13,30 +13,31 @@ Mat4f MD_Object::getTransformMatrix() const {
 std::string MD_Object::serialize() const {
     std::string mat_ref = material ? material->getName() : "default_mat";
 
+    // Convert from MD (OpenGL Y-up, +Z forward) to RT (Y-up, Z-depth)
+    // RT.x =  MD.x
+    // RT.y =  MD.z
+    // RT.z = -MD.y
+    Vec3f rt_translation = { trs.translation.x,  trs.translation.z, -trs.translation.y };
+    Vec3f rt_rotation    = { trs.rotation.x,      trs.rotation.z,   -trs.rotation.y    };
+    Vec3f rt_scale       = { trs.scale.x,         trs.scale.z,       trs.scale.y       };
+
     std::string result = "object {\n";
-
-    result += "    name " + name + "\n";
-    result += "    type " + shape->typeToString(shape->type) + "\n";
-
+    result += "    name "         + name + "\n";
+    result += "    type "         + shape->typeToString(shape->type) + "\n";
     result += "    material_ref " + mat_ref + "\n";
-
     result += "    translate "
-           + std::to_string(trs.translation.x) + " "
-           + std::to_string(trs.translation.y) + " "
-           + std::to_string(trs.translation.z) + "\n";
-
+        + std::to_string(rt_translation.x) + " "
+        + std::to_string(rt_translation.y) + " "
+        + std::to_string(rt_translation.z) + "\n";
     result += "    rotate "
-           + std::to_string(trs.rotation.x) + " "
-           + std::to_string(trs.rotation.y) + " "
-           + std::to_string(trs.rotation.z) + "\n";
-
+        + std::to_string(rt_rotation.x) + " "
+        + std::to_string(rt_rotation.y) + " "
+        + std::to_string(rt_rotation.z) + "\n";
     result += "    scale "
-           + std::to_string(trs.scale.x) + " "
-           + std::to_string(trs.scale.y) + " "
-           + std::to_string(trs.scale.z) + "\n";
-
+        + std::to_string(rt_scale.x) + " "
+        + std::to_string(rt_scale.y) + " "
+        + std::to_string(rt_scale.z) + "\n";
     result += "}\n";
-
     return result;
 }
 
