@@ -4,26 +4,32 @@
 #include <unordered_map>
 #include <string>
 
+/// @brief Main block types that can appear in a scene file.
 enum class BlockType {
     SETTING, CAMERA, MATERIAL, TEXTURE, OBJECT, LIGHT, UNKNOWN
 };
 
+/// @brief Object/shape types supported by the parser.
 enum class ObjectType {
     SPHERE, CYLINDER, CONE, BOX, QUAD, DISK, TORUS, MESH, UNKNOWN
 };
 
+/// @brief Texture types supported in the scene description.
 enum class TextureType {
     SOLIDCOLOR, IMAGE, CHECKER, NOISE, TURBULENCE, MARBLE, WOOD, WARPED, UNKNOWN
 };
 
+/// @brief Material types supported by the ray tracer.
 enum class MaterialType {
     LAMBERTIAN, METALLIC, DIELECTRIC, ISOTROPIC, EMISSIVE, UNKNOWN
 };
 
+/// @brief Light types supported by the scene.
 enum class LightType {
     POINT, DIRECTIONAL, UNKNOWN
 };
 
+/// @brief Field names used inside scene blocks.
 enum class IdentType {
     TYPE,
     NAME,
@@ -65,7 +71,7 @@ enum class IdentType {
     UNKNOWN
 };
 
-
+/// @brief Converts a string keyword into a BlockType.
 inline BlockType convertToBlockType(const std::string& s) {
     static const std::unordered_map<std::string, BlockType> m {
         { "setting",  BlockType::SETTING  },
@@ -79,6 +85,7 @@ inline BlockType convertToBlockType(const std::string& s) {
     return it != m.end() ? it->second : BlockType::UNKNOWN;
 }
 
+/// @brief Converts a string keyword into an ObjectType.
 inline ObjectType convertToObjectType(const std::string& s) {
     static const std::unordered_map<std::string, ObjectType> m {
         { "sphere",   ObjectType::SPHERE   },
@@ -94,6 +101,7 @@ inline ObjectType convertToObjectType(const std::string& s) {
     return it != m.end() ? it->second : ObjectType::UNKNOWN;
 }
 
+/// @brief Converts a string keyword into a TextureType.
 inline TextureType convertToTextureType(const std::string& s) {
     static const std::unordered_map<std::string, TextureType> m {
         { "solidcolor", TextureType::SOLIDCOLOR },
@@ -109,6 +117,7 @@ inline TextureType convertToTextureType(const std::string& s) {
     return it != m.end() ? it->second : TextureType::UNKNOWN;
 }
 
+/// @brief Converts a string keyword into a MaterialType.
 inline MaterialType convertToMaterialType(const std::string& s) {
     static const std::unordered_map<std::string, MaterialType> m {
         { "lambertian", MaterialType::LAMBERTIAN },
@@ -121,6 +130,7 @@ inline MaterialType convertToMaterialType(const std::string& s) {
     return it != m.end() ? it->second : MaterialType::UNKNOWN;
 }
 
+/// @brief Converts a string keyword into a LightType.
 inline LightType convertToLightType(const std::string& s) {
     static const std::unordered_map<std::string, LightType> m {
         { "point",       LightType::POINT       },
@@ -130,6 +140,7 @@ inline LightType convertToLightType(const std::string& s) {
     return it != m.end() ? it->second : LightType::UNKNOWN;
 }
 
+/// @brief Converts a string keyword into an IdentType.
 inline IdentType convertToIdentType(const std::string& s) {
     static const std::unordered_map<std::string, IdentType> m {
         { "type",           IdentType::TYPE             },
@@ -178,6 +189,7 @@ inline IdentType convertToIdentType(const std::string& s) {
 //================================================================//
 
 
+/// @brief Converts a BlockType to a readable string for logs/errors.
 inline std::string logString(BlockType v) {
     switch (v) {
         case BlockType::SETTING:  return "SETTING";
@@ -190,6 +202,7 @@ inline std::string logString(BlockType v) {
     }
 }
 
+/// @brief Converts an ObjectType to a readable string for logs/errors.
 inline std::string logString(ObjectType v) {
     switch (v) {
         case ObjectType::SPHERE:   return "SPHERE";
@@ -203,6 +216,7 @@ inline std::string logString(ObjectType v) {
     }
 }
 
+/// @brief Converts a TextureType to a readable string for logs/errors.
 inline std::string logString(TextureType v) {
     switch (v) {
         case TextureType::SOLIDCOLOR: return "SOLIDCOLOR";
@@ -217,6 +231,7 @@ inline std::string logString(TextureType v) {
     }
 }
 
+/// @brief Converts a MaterialType to a readable string for logs/errors.
 inline std::string logString(MaterialType v) {
     switch (v) {
         case MaterialType::LAMBERTIAN: return "LAMBERTIAN";
@@ -228,6 +243,7 @@ inline std::string logString(MaterialType v) {
     }
 }
 
+/// @brief Converts a LightType to a readable string for logs/errors.
 inline std::string logString(LightType v) {
     switch (v) {
         case LightType::POINT:       return "POINT";
@@ -236,6 +252,7 @@ inline std::string logString(LightType v) {
     }
 }
 
+/// @brief Converts an IdentType to a readable string for logs/errors.
 inline std::string logString(IdentType v) {
     switch (v) {
         case IdentType::TYPE:           return "TYPE";

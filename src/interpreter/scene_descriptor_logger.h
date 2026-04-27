@@ -8,17 +8,20 @@
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
+/// @brief Adds indentation spaces to make the log easier to read.
 static inline std::ostream& indent(std::ostream& os, int n) {
     for (int i = 0; i < n; ++i) os << "  ";
     return os;
 }
 
+/// @brief Prints a Vec3d in a simple readable format.
 static inline void logVec3(std::ostream& os, const Vec3d& v) {
     os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
 // ── per-descriptor loggers ────────────────────────────────────────────────────
 
+/// @brief Logs the render/settings part of the scene descriptor.
 static inline void logSettings(std::ostream& os, const SettingDescriptor& s, int d = 1) {
     indent(os, d) << "[Settings]\n";
     indent(os, d+1) << "Resolution  : " << s.width << " x " << s.height << "\n";
@@ -28,6 +31,7 @@ static inline void logSettings(std::ostream& os, const SettingDescriptor& s, int
     indent(os, d+1) << "Background  : "; logVec3(os, s.background); os << "\n";
 }
 
+/// @brief Logs camera values from the scene descriptor.
 static inline void logCamera(std::ostream& os, const CameraDescriptor& c, int d = 1) {
     indent(os, d) << "[Camera]\n";
     indent(os, d+1) << "Position      : "; logVec3(os, c.position);  os << "\n";
@@ -38,6 +42,7 @@ static inline void logCamera(std::ostream& os, const CameraDescriptor& c, int d 
     indent(os, d+1) << "Focus Distance: " << c.focusDistance << "\n";
 }
 
+/// @brief Logs one texture descriptor.
 static inline void logTexture(std::ostream& os, const TextureDescriptor& t, int d = 1) {
     indent(os, d) << "[Texture] \"" << t.name << "\"\n";
     indent(os, d+1) << "Type  : " << logString(t.type) << "\n";
@@ -49,6 +54,7 @@ static inline void logTexture(std::ostream& os, const TextureDescriptor& t, int 
         indent(os, d+1) << "File  : \"" << t.file_img << "\"\n";
 }
 
+/// @brief Logs one material descriptor.
 static inline void logMaterial(std::ostream& os, const MaterialDescriptor& m, int d = 1) {
     indent(os, d) << "[Material] \"" << m.name << "\"\n";
     indent(os, d+1) << "Type        : " << logString(m.type) << "\n";
@@ -60,6 +66,7 @@ static inline void logMaterial(std::ostream& os, const MaterialDescriptor& m, in
     indent(os, d+1) << "Intensity   : " << m.intensity << "\n";
 }
 
+/// @brief Logs one object descriptor.
 static inline void logObject(std::ostream& os, const ObjectDescriptor& o, int d = 1) {
     indent(os, d) << "[Object] \"" << o.name << "\"\n";
     indent(os, d+1) << "Type         : " << logString(o.type) << "\n";
@@ -71,6 +78,7 @@ static inline void logObject(std::ostream& os, const ObjectDescriptor& o, int d 
     indent(os, d+1) << "Scale        : "; logVec3(os, o.scale);     os << "\n";
 }
 
+/// @brief Logs one light descriptor.
 static inline void logLight(std::ostream& os, const LightDescriptor& l, int idx, int d = 1) {
     indent(os, d) << "[Light #" << idx << "]\n";
     indent(os, d+1) << "Type      : " << logString(l.type) << "\n";
@@ -85,6 +93,7 @@ static inline void logLight(std::ostream& os, const LightDescriptor& l, int idx,
 
 // ── top-level scene logger ────────────────────────────────────────────────────
 
+/// @brief Logs the full scene descriptor in a readable way.
 inline void logSceneDescriptor(std::ostream& os, const SceneDescriptor& scene) {
     os << "╔══════════════════════════════════════╗\n"
        << "║        Scene Descriptor Dump         ║\n"
