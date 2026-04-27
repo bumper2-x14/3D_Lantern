@@ -8,10 +8,12 @@
 #include "vec4.h"
 #include "point3.h"
 
-
+/// @brief Generic 4x4 matrix class.
+///        Used for transforms, camera matrices and projection.
 template <typename T>
 class Mat4 {
     public:
+        /// @brief Creates an identity matrix by default.
         Mat4() {
             for(int i = 0; i < 4; i++){
                 for(int j = 0; j < 4; j++){
@@ -20,6 +22,7 @@ class Mat4 {
             }
         }
 
+        /// @brief Creates a matrix from a 4x4 array.
         Mat4(const T (&_m)[4][4]) {
             for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
@@ -28,6 +31,7 @@ class Mat4 {
             }
         }
 
+        /// @brief Creates a matrix from 16 values.
         Mat4(T m00, T m01, T m02, T m03,
             T m10, T m11, T m12, T m13,
             T m20, T m21, T m22, T m23,
@@ -38,12 +42,14 @@ class Mat4 {
             matrix[3][0]=m30; matrix[3][1]=m31; matrix[3][2]=m32; matrix[3][3]=m33;
         }
 
+        /// @brief Creates a matrix from a flat array of 16 values.
         Mat4(const T m[16]) {
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
                     matrix[i][j] = m[i * 4 + j];
         }
 
+        /// @brief Creates a matrix from 4 column vectors.
         Mat4(Vec4<T> c0, Vec4<T> c1, Vec4<T> c2, Vec4<T> c3) {
             matrix[0][0]=c0.x; matrix[1][0]=c0.y; matrix[2][0]=c0.z; matrix[3][0]=c0.w;
             matrix[0][1]=c1.x; matrix[1][1]=c1.y; matrix[2][1]=c1.z; matrix[3][1]=c1.w;
@@ -51,14 +57,17 @@ class Mat4 {
             matrix[0][3]=c3.x; matrix[1][3]=c3.y; matrix[2][3]=c3.z; matrix[3][3]=c3.w;
         }
         
+        /// @brief Returns matrix value at row/column.
         T operator()(int row, int col) const {
             return matrix[col][row];
         }
 
+        /// @brief Returns editable matrix value at row/column.
         T& operator()(int row, int col) {
             return matrix[col][row];
         }
 
+        /// @brief Copies another matrix.
         Mat4<T>& operator=(const Mat4<T>& _m) {
             for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
@@ -68,6 +77,7 @@ class Mat4 {
             return *this;
         }
 
+        /// @brief Multiplies matrix by a Vec4.
         Vec4<T> operator*(const Vec4<T>& v) const {
             return Vec4<T>(
                 (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z + (*this)(0,3)*v.w,
@@ -77,6 +87,7 @@ class Mat4 {
             );
         }
 
+        /// @brief Multiplies matrix by a Vec3 as a direction.
         Vec3<T> operator*(const Vec3<T>& v) const {
             return Vec3<T>(
                 (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z,
@@ -85,6 +96,7 @@ class Mat4 {
             );
         }
 
+        /// @brief Multiplies matrix by a Point3 (includes translation).
         Point3<T> operator*(const Point3<T>& v) const {
             return Point3<T>(
                 (*this)(0,0)*v.x + (*this)(0,1)*v.y + (*this)(0,2)*v.z + (*this)(0,3),
@@ -93,15 +105,19 @@ class Mat4 {
             );
         }
 
+        /// @brief Applies matrix to Vec4 and divides by w.
         Vec3<T> project(const Vec4<T>& v) const {
             Vec4<T> r = (*this) * v;
             return Vec3<T>(r.x / r.w, r.y / r.w, r.z / r.w);
         }
 
+        /// @brief Returns raw matrix data pointer.
         const T* data() const { return &matrix[0][0]; }
         
+        /// @brief Returns editable raw matrix data pointer.
         T* data() { return &matrix[0][0]; }
 
+        /// @brief Multiplies two matrices.
         Mat4 operator*(const Mat4& b) const {
             Mat4 r = Mat4::zero();
             for (int i = 0; i < 4; i++)
@@ -111,6 +127,7 @@ class Mat4 {
             return r;
         }
 
+        /// @brief Returns the transposed matrix.
         Mat4 transpose() const {
             Mat4 r = Mat4::zero();
             for (int i = 0; i < 4; i++)
@@ -119,6 +136,7 @@ class Mat4 {
             return r;
         }
 
+        /// @brief Returns the inverse matrix.
         Mat4 inverse() const {
             T s0 = (*this)(0,0)*(*this)(1,1) - (*this)(1,0)*(*this)(0,1);
             T s1 = (*this)(0,0)*(*this)(2,1) - (*this)(2,0)*(*this)(0,1);
@@ -161,6 +179,7 @@ class Mat4 {
             return r;
         }
 
+        /// @brief Faster inverse for TRS matrices.
         Mat4 inverseTRS() const {
             Vec3<T> c0 = {(*this)(0,0), (*this)(1,0), (*this)(2,0)};  // column 0
             Vec3<T> c1 = {(*this)(0,1), (*this)(1,1), (*this)(2,1)};  // column 1
@@ -187,6 +206,7 @@ class Mat4 {
 
         //=================================================//
 
+        /// @brief Creates a zero matrix.
         static Mat4 zero() {
             Mat4 m;
             for (int i = 0; i < 4; i++)
@@ -195,8 +215,10 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates an identity matrix.
         static Mat4<T> identity() { return Mat4(); }
 
+        /// @brief Creates a translation matrix.
         static Mat4<T> translation(const Vec3<T>& delta) {
             Mat4 m;
             m(0, 3) = delta.x;
@@ -205,6 +227,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates inverse translation matrix.
         static Mat4<T> inverseTranslation(const Vec3<T>& delta) {
             Mat4 m;
             m(0, 3) = -delta.x;
@@ -213,6 +236,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates a scale matrix.
         static Mat4<T> scale(const Vec3<T>& scale) {
             Mat4 m;
             m(0, 0) = scale.x;
@@ -221,6 +245,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates inverse scale matrix.
         static Mat4<T> inverseScale(const Vec3<T>& scale) {
             Mat4 m;
             m(0, 0) = 1 / scale.x;
@@ -229,6 +254,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates rotation matrix around X axis.
         static Mat4<T> rotationX(T theta) {
             Mat4<T> m;
             T theta_cos = std::cos(theta);
@@ -238,6 +264,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates rotation matrix around Y axis.
         static Mat4<T> rotationY(T theta) {
             Mat4<T> m;
             T theta_cos = std::cos(theta);
@@ -247,6 +274,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates rotation matrix around Z axis.
         static Mat4<T> rotationZ(T theta) {
             Mat4<T> m;
             T theta_cos = std::cos(theta);
@@ -256,6 +284,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates rotation matrix around any axis.
         static Mat4<T> rotation(T theta, const Vec3<T>& axis) {
             Vec3<T> a = normalize(axis);
             T c = std::cos(theta);
@@ -280,6 +309,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates a perspective projection matrix.
         static Mat4 perspective(T fovY, T aspect, T near, T far) {
             T tanHalf = std::tan(fovY * T(0.5));
 
@@ -294,6 +324,8 @@ class Mat4 {
         }
 
         // Returns a world to camera lookAt matrix 
+
+        /// @brief Creates a lookAt view matrix.
         static Mat4 lookAt(const Vec3<T>& eye, const Vec3<T>& target, const Vec3<T>& up) {
             Vec3<T> f = normalize(target - eye);
             Vec3<T> r = normalize(cross(f, up));
@@ -307,6 +339,7 @@ class Mat4 {
             return m;
         }
 
+        /// @brief Creates a transform matrix from translation, rotation and scale.
         static Mat4 TRS(const Vec3<T>& t, const Vec3<T>& rotDeg, const Vec3<T>& s) {
             return translation(t) * rotationZ(rotDeg.z) 
                                 * rotationY(rotDeg.y) 
@@ -315,7 +348,7 @@ class Mat4 {
         }
         
     private:
-        T matrix[4][4];
+        T matrix[4][4]; ///< Internal matrix storage.
 };
 
 using Mat4f = Mat4<float>;

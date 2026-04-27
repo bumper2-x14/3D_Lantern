@@ -7,31 +7,43 @@
 
 #include "utility.h"
 
+/// @brief Simple 3D vector class.
+///        Used for directions, normals, positions differences, etc.
 template <typename T>
 class Vec3 {
     public:
-        T x, y, z;
+        T x, y, z; ///< Vector components.
 
+        /// @brief Default constructor (0,0,0).
         Vec3(): x(0), y(0), z(0) {}
+
+        /// @brief Creates a vector from x, y, z.
         Vec3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {}
 
+        /// @brief Returns pointer to raw data.
         T* data() { return &x; }
+
+        /// @brief Returns const pointer to raw data.
         const T* data() const { return &x; }
 
+        /// @brief Read access by index.
         T operator[](int i) const {
             assert(i >= 0 && i <= 2);
             return (&x)[i];
         }
 
+        /// @brief Write access by index.
         T& operator[](int i) {
             assert(i >= 0 && i <= 2);
             return (&x)[i];
         }
 
+        /// @brief Vector addition.
         Vec3<T> operator+(const Vec3<T>& v) const {
             return Vec3<T>(x + v.x, y + v.y, z + v.z);
         }
 
+        /// @brief Add-assign.
         Vec3<T>& operator+=(const Vec3<T>& v) {
             x += v.x;
             y += v.y;
@@ -40,11 +52,13 @@ class Vec3 {
             return *this; 
         }
 
+        /// @brief Scalar multiplication.
         Vec3<T> operator*(T scalar) const {
             return Vec3<T>(x * scalar, y * scalar, z * scalar);
         }
 
 
+        /// @brief Scalar multiply-assign.
         Vec3<T>& operator*=(T scalar) {
             x *= scalar;
             y *= scalar;
@@ -53,6 +67,7 @@ class Vec3 {
             return *this;
         }
 
+        /// @brief Component-wise multiply-assign.
         Vec3<T>& operator*=(const Vec3<T>& v) {
             x *= v.x;
             y *= v.y;
@@ -61,12 +76,14 @@ class Vec3 {
             return *this;
         }
 
+        /// @brief Scalar division.
         Vec3<T> operator/(T scalar) const {
             assert(scalar != 0);
             double inv = (double)1 / scalar;
             return Vec3<T>(x * inv, y * inv, z * inv);
         }
 
+        /// @brief Divide-assign.
         Vec3<T>& operator/=(T scalar){
             assert(scalar != 0);
             double inv = (double)1 / scalar;
@@ -74,10 +91,12 @@ class Vec3 {
             return *this;
         }
 
+        /// @brief Vector subtraction.
         Vec3<T> operator-(const Vec3<T>& v) const {
             return Vec3(x - v.x, y - v.y, z - v.z);
         }
 
+        /// @brief Subtract-assign.
         Vec3<T>& operator-=(const Vec3<T>& v) {
             x -= v.x;
             y -= v.y;
@@ -86,31 +105,38 @@ class Vec3 {
             return *this;
         }
         
+        /// @brief Negation (-v).
         Vec3<T> operator-() const {
             return Vec3<T>(-x, -y, -z);
         }
 
+        /// @brief Equality check.
         bool operator==(const Vec3<T>& v) const {
             return x == v.x && y == v.y && z == v.z;
         }
 
+        /// @brief Inequality check.
         bool operator!=(const Vec3<T>& v) const {
             return !(*this == v);
         }
 
+        /// @brief Vector length.
         T length() const {
             return std::sqrt(x*x + y*y + z*z);
         }
 
+        /// @brief Squared length (faster than length).
         T lengthSquared() const {
             return x*x + y*y + z*z;
         }
 
+        /// @brief Checks if vector is almost zero.
         bool nearZero() const {
             auto s = 1e-8;
             return (std::abs(x) < s) && (std::abs(y) < s) && (std::abs(z) < s);
         }
 
+        /// @brief Creates a random vector in range.
         static Vec3<T> random(T min_r, T max_r) {
             return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
 
@@ -120,26 +146,31 @@ class Vec3 {
 using Vec3f = Vec3<float>;
 using Vec3d = Vec3<double>;
 
+/// @brief Prints vector.
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const Vec3<T>& v) {
     return os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
+/// @brief Scalar * vector.
 template <typename T>
 Vec3<T> operator*(T scalar, const Vec3<T>& v){
     return Vec3<T>(v.x * scalar, v.y * scalar, v.z * scalar);
 }
 
+/// @brief Absolute value of vector.
 template <typename T> 
 inline Vec3<T> abs(const Vec3<T>& v){
     return Vec3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
 } 
 
+/// @brief Dot product.
 template <typename T> 
 inline T dot(const Vec3<T>& v1, const Vec3<T>& v2){
     return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
 
+/// @brief Cross product.
 template <typename T>
 inline Vec3<T> cross(const Vec3<T>& v1, const Vec3<T>& v2){
     // A small optimaization by storing data as local variable
@@ -151,6 +182,7 @@ inline Vec3<T> cross(const Vec3<T>& v1, const Vec3<T>& v2){
                     (v1x * v2y) - (v1y * v2x));
 }
 
+/// @brief Returns normalized vector.
 template <typename T>
 inline Vec3<T> normalize(const Vec3<T>& v) {
     T len = v.length();
@@ -159,16 +191,19 @@ inline Vec3<T> normalize(const Vec3<T>& v) {
     return v / len;
 }
 
+/// @brief Distance between two vectors/points.
 template <typename T>
 T distance(const Vec3<T>& a, const Vec3<T>& b){
     return (a - b).length();
 }
 
+/// @brief Creates a random vector in range.
 template <typename T>
 static inline Vec3<T> random(T min_r, T max_r) {
     return Vec3<T>(randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r), randomizer<T>(min_r, max_r));
 } 
 
+/// @brief Returns a random point inside unit disk.
 template <typename T>
 inline Vec3<T> UnitDiskRandom() {
     while(true) {
@@ -178,6 +213,7 @@ inline Vec3<T> UnitDiskRandom() {
     }
 }
 
+/// @brief Returns a random unit vector.
 template <typename T>
 inline Vec3<T> randomUnitVector() {
     while (true) {
@@ -190,6 +226,7 @@ inline Vec3<T> randomUnitVector() {
     }
 }
 
+/// @brief Returns a random vector on the same hemisphere as normal.
 template <typename T>
 inline Vec3<T> randomOnHemisphere(const Vec3<T>& normal) {
     Vec3<T> unit_vec = randomUnitVector<T>();
@@ -199,11 +236,13 @@ inline Vec3<T> randomOnHemisphere(const Vec3<T>& normal) {
         return -unit_vec;
 }
 
+/// @brief Reflects a vector around a normal.
 template <typename T>
 inline Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& normal) {
     return v - 2 * dot(v, normal) * normal;
 }
 
+/// @brief Refracts a vector using Snell's law.
 template <typename T>
 inline Vec3<T> refract (const Vec3<T>& uv, const Vec3<T>& n, T eta_ratio) {
     T cos_theta = std::min(dot(-uv, n), T(1));

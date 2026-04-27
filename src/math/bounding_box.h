@@ -1,3 +1,5 @@
+
+
 #ifndef BOUNDING_BOX_H
 #define BOUNDING_BOX_H
 
@@ -5,18 +7,23 @@
 #include "point3.h"
 #include "ray.h"
 
+/// @brief Axis-aligned bounding box.
+///        Used to speed up ray intersection tests.
 template <typename  T> class BoundingBox {
     public:
-        Interval<T> x, y, z;
+        Interval<T> x, y, z; ///< Bounds on each axis.
 
+        /// @brief Creates an empty bounding box.
         BoundingBox() : x(Interval<T>::empty), y(Interval<T>::empty), z(Interval<T>::empty) {}
 
+        /// @brief Creates a bounding box from x, y and z intervals.
         BoundingBox(const Interval<T>& _x, const Interval<T>& _y, const Interval<T>& _z) :
             x(_x), y(_y), z(_z) {
                 
                 minPadding();
             }
 
+        /// @brief Creates a bounding box from two points.
         BoundingBox(const Point3<T>& p1, const Point3<T>& p2) {
             x = (p1.x <= p2.x) ? Interval<T>(p1.x, p2.x) : Interval<T>(p2.x, p1.x);
             y = (p1.y <= p2.y) ? Interval<T>(p1.y, p2.y) : Interval<T>(p2.y, p1.y);
@@ -25,12 +32,14 @@ template <typename  T> class BoundingBox {
             minPadding();
         }
 
+        /// @brief Creates a bounding box that contains two other boxes.
         BoundingBox(const BoundingBox<T>& bbox1, const BoundingBox<T>& bbox2) {
             x = Interval<T>(bbox1.x, bbox2.x);
             y = Interval<T>(bbox1.y, bbox2.y);
             z = Interval<T>(bbox1.z, bbox2.z);
         }
 
+        /// @brief Returns axis interval by index.
         Interval<T>& operator[](int i) {
             assert(i >= 0 && i < 3);
             if (i == 0) return x;
@@ -38,6 +47,7 @@ template <typename  T> class BoundingBox {
             return z;
         }
 
+        /// @brief Returns axis interval by index (read-only).
         const Interval<T>& operator[](int i) const {
             assert(i >= 0 && i < 3);
             if (i == 0) return x;
@@ -45,6 +55,7 @@ template <typename  T> class BoundingBox {
             return z;
         }
 
+        /// @brief Checks if a ray intersects the bounding box.
         bool rayIntersect(const Ray<T>& ray, Interval<T>& t_val) const {
             const Point3<T>& r_origin = ray.getOrigin();
             const Vec3<T>& r_direction = ray.getDirection();
@@ -72,15 +83,17 @@ template <typename  T> class BoundingBox {
             return true;
         }
 
+        /// @brief Returns the axis with the biggest size.
         int longestAxis() const {
             if (x.size() > y.size() && x.size() > z.size()) return 0;
             if (y.size() > z.size()) return 1;
             return 2;
         }
 
-        static const BoundingBox<T> empty, world;
+        static const BoundingBox<T> empty, world; ///< Common empty and world boxes.
 
     private:
+        /// @brief Adds a small padding to avoid zero-size boxes.
         void minPadding() {
             // Adjust the Bounding Box so that no side is narrower than some delta, padding if necessary.
             double delta = 0.0001;
@@ -93,17 +106,22 @@ template <typename  T> class BoundingBox {
 using BoundingBoxf = BoundingBox<float>;
 using BoundingBoxd = BoundingBox<double>;
 
+/// @brief Empty bounding box definition.
 template <typename T>
 const BoundingBox<T> BoundingBox<T>::empty = BoundingBox<T>(Interval<T>::empty, Interval<T>::empty, Interval<T>::empty);
+
 template <typename T>
 
+/// @brief World bounding box definition.
 const BoundingBox<T> BoundingBox<T>::world = BoundingBox<T>(Interval<T>::world, Interval<T>::world, Interval<T>::world);
 
+/// @brief Moves a bounding box by an offset.
 template <typename T>
 BoundingBox<T> operator+(const BoundingBox<T>& bbox, const Vec3<T>& offset){
     return BoundingBox<T>(bbox.x + offset.x(), bbox.y + offset.y(), bbox.z + offset.z());
 }
 
+/// @brief Moves a bounding box by an offset.
 template <typename T>
 BoundingBox<T> operator+(const Vec3<T>& offset, const BoundingBox<T>& bbox) {
     return bbox + offset;
