@@ -93,7 +93,7 @@ Example binaries are output to `build/example/`. Each example renders a scene an
 Within `3d_lantern/build/bin/` you will find 2 executable programs: `lantern`, which is the interpreter, and `lantern3D`, which is the main program with a 3D modeling tool. 
 
 
-# Scene Description Language Reference
+# lantern and Scene Description Language Reference
 
 This document describes the scene file format (.lnt) used to define rendering settings, cameras, textures, materials, objects, and lights.
 
@@ -363,3 +363,69 @@ light {
 - `name` values must be **unique within their block type** (e.g. two textures cannot share a name, but a texture and a material can).
 - `texture_ref` and `material_ref` must refer to a name that is defined elsewhere in the file.
 - There must be exactly **one `setting` block** and **one `camera` block**.
+
+
+## lantern3D — 3D Modeling Tool
+
+### Setup
+
+Before launching `lantern3D`, create the following directories in the same location as the executable:
+3d_lantern/build/bin/
+├── lantern3D
+├── img/          ← rendered images are saved here
+└── ressources/   ← place your .obj mesh files here
+
+> The program will not run correctly if these directories are missing.
+
+### Controls
+
+#### Selection
+
+| Input | Action |
+|---|---|
+| `Tab` | Cycle to the next object in the scene |
+| `Right Click` | Pick an object or light under the cursor |
+| Right click on empty space | Deselect current selection |
+
+#### Modes
+
+Switch the active editing mode with these keys:
+
+| Key | Mode | Description |
+|---|---|---|
+| `P` | Camera | Move and look around the scene |
+| `T` | Translate | Move the selected object or light |
+| `R` | Rotate | Rotate the selected object |
+| `S` | Scale | Scale the selected object |
+
+> Rotate and Scale are not available for lights — only Translate applies.
+
+#### Axis Lock
+
+Constrain transformations to a single axis. Press again or press `N` to go back to free movement:
+
+| Key | Axis |
+|---|---|
+| `X` | Lock to X axis |
+| `Y` | Lock to Y axis |
+| `Z` | Lock to Z axis |
+| `N` | Free (no axis lock) |
+
+#### Camera (Camera mode)
+
+| Input | Action |
+|---|---|
+| `↑ ↓ ← →` | Move forward / backward / left / right |
+| `Space` | Move up |
+| `Left Alt` | Move down |
+| `Left Shift` + movement | Sprint (3× speed) |
+| `Left Mouse` + drag | Look around |
+
+#### Transform (Translate / Rotate / Scale modes)
+
+| Input | Action |
+|---|---|
+| `↑` | Move / rotate / grow in the positive direction |
+| `↓` | Move / rotate / shrink in the negative direction |
+| `← →` | Move on X axis (Translate, free mode only) |
+| `Left Ctrl` + any | Precision mode (5× slower) |
